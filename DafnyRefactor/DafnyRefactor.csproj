@@ -32,6 +32,41 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dafny">
+      <HintPath>..\..\dafny\Binaries\Dafny.dll</HintPath>
+    </Reference>
+    <Reference Include="DafnyPipeline">
+      <HintPath>..\..\dafny\Binaries\DafnyPipeline.dll</HintPath>
+    </Reference>
+    <Reference Include="DafnyRuntime">
+      <HintPath>..\..\dafny\Binaries\DafnyRuntime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BoogieAbsInt">
+      <HintPath>..\..\boogie\Binaries\BoogieAbsInt.dll</HintPath>
+    </Reference>
+    <Reference Include="BoogieConcurrency">
+      <HintPath>..\..\boogie\Binaries\BoogieConcurrency.dll</HintPath>
+    </Reference>
+    <Reference Include="BoogieCore">
+      <HintPath>..\..\boogie\Binaries\BoogieCore.dll</HintPath>
+    </Reference>
+    <Reference Include="BoogieExecutionEngine">
+      <HintPath>..\..\boogie\Binaries\BoogieExecutionEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="BoogieParserHelper">
+      <HintPath>..\..\boogie\Binaries\BoogieParserHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Provers.SMTLib">
+      <HintPath>..\..\boogie\Binaries\Provers.SMTLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="BoogieVCGeneration">
+      <HintPath>..\..\boogie\Binaries\BoogieVCGeneration.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,7 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="DafnyRefactorDriver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
