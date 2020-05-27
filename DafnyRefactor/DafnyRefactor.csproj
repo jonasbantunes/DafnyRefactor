@@ -77,9 +77,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DafnyRefactor.cs" />
+    <Compile Include="InlineRefactorStep.cs" />
+    <Compile Include="InlineRetrieveStep.cs" />
     <Compile Include="DafnyRefactorDriver.cs" />
+    <Compile Include="InlineVar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RefatorStepBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
