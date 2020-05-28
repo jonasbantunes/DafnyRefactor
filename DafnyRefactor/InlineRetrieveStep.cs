@@ -1,17 +1,17 @@
 ﻿namespace Microsoft.Dafny
 {
-    public class InlineRetrieveStep: RefatorStepBase
+    public class InlineRetrieveStep : RefatorStepBase
     {
         public InlineVar inlineVar { get; }
 
-        public InlineRetrieveStep(Program program, string method, string name): base(program)
+        public InlineRetrieveStep(Program program, string method, string name) : base(program)
         {
             inlineVar = new InlineVar();
             inlineVar.method = method;
             inlineVar.name = name;
         }
 
-        protected override void next(VarDeclStmt vds)
+        protected override VarDeclStmt next(VarDeclStmt vds)
         {
             if (vds.Update is UpdateStmt up)
             {
@@ -24,9 +24,11 @@
                     }
                 }
             }
+
+            return vds;
         }
 
-        protected override void next(UpdateStmt up)
+        protected override UpdateStmt next(UpdateStmt up)
         {
             for (int i = 0; i < up.Lhss.Count; i++)
             {
@@ -42,6 +44,8 @@
                     }
                 }
             }
+
+            return up;
         }
     }
 }

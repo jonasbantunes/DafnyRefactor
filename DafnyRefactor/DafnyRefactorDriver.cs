@@ -3,21 +3,35 @@ using System.Diagnostics.Contracts;
 
 namespace Microsoft.Dafny
 {
-    public partial class DafnyRefactorDriver : DafnyDriver
+    public class DafnyRefactorDriver : DafnyDriver
     {
+        protected static int exitCode = (int)ExitValue.VERIFIED;
+        protected static Program program;
+
         public static new int Main(string[] args)
         {
             int ret = 0;
             var thread = new System.Threading.Thread(
               new System.Threading.ThreadStart(() =>
               { ret = ThreadMain(args); }),
-                0x10000000); // 256MB stack size to prevent stack overflow
+                0x10000000);
             thread.Start();
             thread.Join();
             return ret;
         }
 
         public static new int ThreadMain(string[] args)
+        {
+            initProgram(args);
+            if (exitCode == (int)ExitValue.DAFNY_ERROR)
+            {
+                return exitCode;
+            }
+            applyRefactor();
+            return exitCode;
+        }
+
+        protected static void initProgram(string[] args)
         {
             Contract.Requires(cce.NonNullElements(args));
 
@@ -27,24 +41,18 @@ namespace Microsoft.Dafny
             var dafnyFiles = new List<DafnyFile>();
             dafnyFiles.Add(new DafnyFile(args[0]));
 
-            Program program;
             string err = Dafny.Main.Parse(dafnyFiles, "the program", reporter, out program);
             if (err != null)
             {
-                return (int)ExitValue.DAFNY_ERROR;
+                exitCode = (int)ExitValue.DAFNY_ERROR;
             }
+        }
 
-            var method = "Main";
-            var name = "x";
-            var inlineRetriever = new InlineRetrieveStep(program, method, name);
-            inlineRetriever.execute();
-            var inVar = inlineRetriever.inlineVar;
-            var refactor = new InlineRefactorStep(program, inVar);
-            refactor.execute();
-
+        protected static void applyRefactor()
+        {
+            var refactor = new InlineRefactor(program, "Main", "x");
+            refactor.refactor();
             Dafny.Main.MaybePrintProgram(program, "-", false);
-
-            return (int)ExitValue.VERIFIED;
         }
     }
 }

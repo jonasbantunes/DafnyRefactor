@@ -77,6 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InlineRefactor.cs" />
     <Compile Include="InlineRefactorStep.cs" />
     <Compile Include="InlineRetrieveStep.cs" />
     <Compile Include="DafnyRefactorDriver.cs" />

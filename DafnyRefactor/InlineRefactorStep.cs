@@ -3,12 +3,13 @@
     public class InlineRefactorStep : RefatorStepBase
     {
         public InlineVar inlineVar { get; }
+
         public InlineRefactorStep(Program program, InlineVar inlineVar) : base(program)
         {
             this.inlineVar = inlineVar;
         }
 
-        protected override void next(UpdateStmt up)
+        protected override UpdateStmt next(UpdateStmt up)
         {
             for (int i = 0; i < up.Rhss.Count; i++)
             {
@@ -17,6 +18,15 @@
                     up.Rhss[i] = new ExprRhs(applyInlineTemp(erhs.Expr));
                 }
             }
+
+            return up;
+        }
+
+        protected override AssertStmt next(AssertStmt assert)
+        {
+            var expr = applyInlineTemp(assert.Expr);
+            var newAssert = new AssertStmt(assert.Tok, assert.EndTok, expr, assert.Proof, assert.Label, assert.Attributes);
+            return newAssert;
         }
 
         protected Expression applyInlineTemp(Expression exp)

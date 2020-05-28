@@ -1,91 +1,102 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Microsoft.Dafny
+﻿namespace Microsoft.Dafny
 {
     // TODO: Change to iterative approach instead of recursive
     public class RefatorStepBase
     {
-        // TODO: Check if this can be a Stack<T>
-        protected List<object> stack;
         protected Program program;
 
         public RefatorStepBase(Program program)
         {
             this.program = program;
-            stack = new List<object>();
         }
 
         public void execute()
         {
-            stack.Add(program);
-            next();
+            next(program);
         }
 
-        protected virtual void next()
-        {
-            var el = stack.Last();
-
-            if (el is Program prog)
-            {
-                next(prog);
-            }
-            else if (el is ClassDecl cd)
-            {
-                next(cd);
-            }
-            else if (el is Method mt)
-            {
-                next(mt);
-            }
-            else if (el is VarDeclStmt vds)
-            {
-                next(vds);
-            }
-            else if (el is UpdateStmt us)
-            {
-                next(us);
-            }
-
-            stack.RemoveAt(stack.Count - 1);
-        }
-
-        protected virtual void next(Program prog)
+        protected virtual Program next(Program prog)
         {
             foreach (TopLevelDecl tld in prog.DefaultModuleDef.TopLevelDecls)
             {
-                stack.Add(tld);
-                next();
+                next(tld);
             }
+
+            return program;
         }
 
-        protected virtual void next(ClassDecl cd)
+        protected virtual TopLevelDecl next(TopLevelDecl tld)
         {
-            foreach (MemberDecl md in cd.Members)
+            if (tld is ClassDecl cd)
             {
-                stack.Add(md);
-                next();
+                next(cd);
             }
+
+            return tld;
         }
 
-        protected virtual void next(Method mt)
+        protected virtual ClassDecl next(ClassDecl cd)
         {
-            foreach (Statement st in mt.Body.Body)
+            for (int i = 0; i < cd.Members.Count; i++)
             {
-                stack.Add(st);
-                next();
+                MemberDecl md = cd.Members[i];
+                cd.Members[i] = next(md);
             }
+
+            return cd;
         }
 
-        protected virtual void next(VarDeclStmt vds)
+        protected virtual MemberDecl next(MemberDecl md)
+        {
+            if (md is Method mt)
+            {
+                return next(mt);
+            }
+
+            return md;
+        }
+
+        protected virtual Method next(Method mt)
+        {
+            for (int i = 0; i < mt.Body.Body.Count; i++)
+            {
+                Statement st = mt.Body.Body[i];
+                mt.Body.Body[i] = next(st);
+            }
+
+            return mt;
+        }
+
+        protected virtual Statement next(Statement stmt)
+        {
+            if (stmt is VarDeclStmt vds)
+            {
+                return next(vds);
+            }
+            else if (stmt is UpdateStmt us)
+            {
+                return next(us);
+            }
+            else if (stmt is AssertStmt assert)
+            {
+                return next(assert);
+            }
+
+            return stmt;
+        }
+
+        protected virtual VarDeclStmt next(VarDeclStmt vds)
         {
             if (vds.Update is UpdateStmt up)
             {
-                stack.Add(up);
-                next();
+                next(up);
             }
+
+            return vds;
         }
 
-        protected virtual void next(UpdateStmt up) { }
+        protected virtual UpdateStmt next(UpdateStmt up) { return up; }
+
+        protected virtual AssertStmt next(AssertStmt assert) { return assert; }
     }
 }
