@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Dafny
 {
-    public class InlineRetrieveStep : RefatorStepBase
+    public class InlineRetrieveStep : DafnyProgramVisitor
     {
         public InlineVar inlineVar { get; }
 

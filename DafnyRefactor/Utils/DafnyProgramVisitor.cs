@@ -1,11 +1,11 @@
 ﻿namespace Microsoft.Dafny
 {
     // TODO: Change to iterative approach instead of recursive
-    public class RefatorStepBase
+    public class DafnyProgramVisitor
     {
         protected Program program;
 
-        public RefatorStepBase(Program program)
+        public DafnyProgramVisitor(Program program)
         {
             this.program = program;
         }
@@ -81,6 +81,10 @@
             {
                 return next(assert);
             }
+            else if (stmt is WhileStmt while_)
+            {
+                return next(while_);
+            }
 
             return stmt;
         }
@@ -98,5 +102,15 @@
         protected virtual UpdateStmt next(UpdateStmt up) { return up; }
 
         protected virtual AssertStmt next(AssertStmt assert) { return assert; }
+
+        protected virtual WhileStmt next(WhileStmt while_)
+        {
+            foreach (Statement stmt in while_.Body.Body)
+            {
+                next(stmt);
+            }
+
+            return while_;
+        }
     }
 }
