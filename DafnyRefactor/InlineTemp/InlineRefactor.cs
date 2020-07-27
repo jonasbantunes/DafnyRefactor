@@ -31,10 +31,11 @@
             {
                 return;
             }
-
             var refactor = new InlineRefactorStep(program, symbolTable, inVar);
-
             refactor.Execute();
+
+            var remover = new RemoveRefactoredDeclarationStep(program, symbolTable, inVar.tableDeclaration);
+            remover.Execute();
         }
     }
 }
