@@ -3,38 +3,40 @@
     public class SymbolTableGenerator : DafnyVisitor
     {
         protected SymbolTable curTable;
-        public SymbolTable table { get; protected set; }
+        public SymbolTable GeneratedTable { get; protected set; }
 
-        public override void execute()
+        public SymbolTableGenerator(Program program) : base(program) { }
+
+        public override void Execute()
         {
-            table = new SymbolTable();
-            curTable = table;
-            base.execute();
+            GeneratedTable = new SymbolTable();
+            curTable = GeneratedTable;
+            base.Execute();
         }
 
-        protected override VarDeclStmt next(VarDeclStmt vds)
+        protected override VarDeclStmt Visit(VarDeclStmt vds)
         {
             foreach (LocalVariable local in vds.Locals)
             {
-                curTable.insert(local.Tok);
+                curTable.Insert(local.Tok);
             }
 
             return vds;
         }
 
-        protected override WhileStmt next(WhileStmt while_)
+        protected override WhileStmt Visit(WhileStmt while_)
         {
             var subTable = new SymbolTable
             {
                 parent = curTable,
                 hashCode = while_.Tok.GetHashCode()
             };
-            curTable.insert(subTable);
+            curTable.Insert(subTable);
             curTable = subTable;
 
             foreach (Statement stmt in while_.Body.Body)
             {
-                next(stmt);
+                Visit(stmt);
             }
 
             curTable = curTable.parent;

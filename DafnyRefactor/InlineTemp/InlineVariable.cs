@@ -1,8 +1,8 @@
 ﻿namespace Microsoft.Dafny
 {
-    public class InlineVar
+    public class InlineVariable
     {
-        public string name => tableDeclaration.name;
+        public string Name => tableDeclaration.name;
         public Expression expr = null;
         public bool isUpdated = false;
         public SymbolTableDeclaration tableDeclaration = null;

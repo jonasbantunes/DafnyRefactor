@@ -10,7 +10,7 @@ namespace Microsoft.Dafny
         public int hashCode;
         public SymbolTable parent = null;
 
-        public void insert(IToken tok)
+        public void Insert(IToken tok)
         {
             var declaration = new SymbolTableDeclaration
             {
@@ -20,17 +20,17 @@ namespace Microsoft.Dafny
             declarations.Add(declaration);
         }
 
-        public void insert(SymbolTable table)
+        public void Insert(SymbolTable table)
         {
             subTables.Add(table);
         }
 
-        public SymbolTableDeclaration lookup(string name)
+        public SymbolTableDeclaration Lookup(string name)
         {
-            return lookup(name, this);
+            return Lookup(name, this);
         }
 
-        public SymbolTableDeclaration lookup(string name, SymbolTable table)
+        public SymbolTableDeclaration Lookup(string name, SymbolTable table)
         {
             foreach (SymbolTableDeclaration decl in table.declarations)
             {
@@ -45,10 +45,10 @@ namespace Microsoft.Dafny
                 return null;
             }
 
-            return lookup(name, table.parent);
+            return Lookup(name, table.parent);
         }
 
-        public SymbolTable lookupTable(int hashCode)
+        public SymbolTable LookupTable(int hashCode)
         {
             foreach (SymbolTable subTable in subTables)
             {

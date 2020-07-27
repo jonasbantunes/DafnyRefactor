@@ -22,24 +22,26 @@ namespace Microsoft.Dafny
 
         public static new int ThreadMain(string[] args)
         {
-            initProgram(args);
+            InitProgram(args);
             if (exitCode == (int)ExitValue.DAFNY_ERROR)
             {
                 return exitCode;
             }
-            applyRefactor();
+            ApplyRefactor();
             return exitCode;
         }
 
-        protected static void initProgram(string[] args)
+        protected static void InitProgram(string[] args)
         {
             Contract.Requires(cce.NonNullElements(args));
 
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
 
-            var dafnyFiles = new List<DafnyFile>();
-            dafnyFiles.Add(new DafnyFile(args[0]));
+            var dafnyFiles = new List<DafnyFile>
+            {
+                new DafnyFile(args[0])
+            };
 
             string err = Dafny.Main.Parse(dafnyFiles, "the program", reporter, out program);
             if (err != null)
@@ -48,10 +50,15 @@ namespace Microsoft.Dafny
             }
         }
 
-        protected static void applyRefactor()
+        protected static void ApplyRefactor()
         {
-            var refactor = new InlineRefactor(program, "Main", "x");
-            refactor.refactor();
+            // varLine = 13,
+            // varColumn = 9
+            // varLine = 2,
+            // varColumn = 7
+
+            var refactor = new InlineRefactor(program, 2, 7);
+            refactor.Refactor();
             Dafny.Main.MaybePrintProgram(program, "-", false);
         }
     }

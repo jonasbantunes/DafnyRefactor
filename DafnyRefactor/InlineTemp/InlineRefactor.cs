@@ -2,60 +2,39 @@
 {
     public class InlineRefactor
     {
-        public Program program;
-        public string method;
-        public string name;
+        protected readonly Program program;
+        protected readonly int varLine;
+        protected readonly int varColumn;
 
-        public InlineRefactor(Program program, string method, string name)
+        public InlineRefactor(Program program, int varLine, int varColumn)
         {
             this.program = program;
-            this.method = method;
-            this.name = name;
+            this.varLine = varLine;
+            this.varColumn = varColumn;
         }
 
-        public void refactor()
+        public void Refactor()
         {
-            var tableGenerator = new SymbolTableGenerator
-            {
-                program = program
-            };
-            tableGenerator.execute();
-            var symbolTable = tableGenerator.table;
+            var tableGenerator = new SymbolTableGenerator(program);
+            tableGenerator.Execute();
+            var symbolTable = tableGenerator.GeneratedTable;
 
-            var locateVariable = new LocateVariableStep()
-            {
-                program = program,
-                table = symbolTable,
-                varLine = 2,
-                varColumn = 7
-                // varLine = 13,
-                // varColumn = 9
-            };
-            locateVariable.execute();
-            SymbolTableDeclaration declaration = locateVariable.found;
+            var locateVariable = new LocateVariableStep(program, symbolTable, varLine, varColumn);
+            locateVariable.Execute();
+            SymbolTableDeclaration declaration = locateVariable.Found;
 
-            var inlineRetriever = new InlineRetrieveStep
-            {
-                program = program,
-                table = symbolTable,
-                declaration = declaration
-            };
-            inlineRetriever.execute();
-            var inVar = inlineRetriever.inlineVar;
+            var inlineRetriever = new InlineRetrieveStep(program, symbolTable, declaration);
+            inlineRetriever.Execute();
+            var inVar = inlineRetriever.InlineVar;
 
             if (inVar.isUpdated)
             {
                 return;
             }
 
-            var refactor = new InlineRefactorStep
-            {
-                program = program,
-                inlineVar = inVar,
-                table = symbolTable
-            };
+            var refactor = new InlineRefactorStep(program, symbolTable, inVar);
 
-            refactor.execute();
+            refactor.Execute();
         }
     }
 }

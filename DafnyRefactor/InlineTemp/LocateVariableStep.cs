@@ -1,49 +1,38 @@
-﻿using System;
-
-namespace Microsoft.Dafny
+﻿namespace Microsoft.Dafny
 {
-    public class LocateVariableStep : DafnyVisitor
+    public class LocateVariableStep : DafnyWithTableVisitor
     {
-        protected SymbolTable curTable;
-        public SymbolTable table { protected get; set; }
-        public int varLine { protected get; set; }
-        public int varColumn { protected get; set; }
-        public SymbolTableDeclaration found { get; protected set; }
+        // TODO: Analyse if varLine and varColumn should be an Location "struct"
+        protected int varLine;
+        protected int varColumn;
+        public SymbolTableDeclaration Found { get; protected set; }
 
-        public override void execute()
+        public LocateVariableStep(Program program, SymbolTable rootTable, int varLine, int varColumn) : base(program, rootTable)
         {
-            curTable = table;
-            next(program);
+            this.varLine = varLine;
+            this.varColumn = varColumn;
         }
 
-        protected override WhileStmt next(WhileStmt while_)
+        public override void Execute()
         {
-            curTable = curTable.lookupTable(while_.Tok.GetHashCode());
-
-            foreach (Statement stmt in while_.Body.Body)
-            {
-                next(stmt);
-            }
-
-            curTable = curTable.parent;
-
-            return while_;
+            curTable = rootTable;
+            Visit(program);
         }
 
-        protected override VarDeclStmt next(VarDeclStmt vds)
+        protected override VarDeclStmt Visit(VarDeclStmt vds)
         {
             foreach (var local in vds.Locals)
             {
-                if (isInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line, local.EndTok.col))
+                if (IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line, local.EndTok.col))
                 {
-                    found = curTable.lookup(local.Name);
+                    Found = curTable.Lookup(local.Name);
                 }
             }
 
             return vds;
         }
 
-        protected bool isInRange(int line, int column, int startLine, int starColumn, int endLine, int endColumn)
+        protected bool IsInRange(int line, int column, int startLine, int starColumn, int endLine, int endColumn)
         {
             if (startLine == line && starColumn <= column)
             {
