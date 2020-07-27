@@ -15,7 +15,31 @@
 
         public void refactor()
         {
-            var inlineRetriever = new InlineRetrieveStep(program, method, name);
+            var tableGenerator = new SymbolTableGenerator
+            {
+                program = program
+            };
+            tableGenerator.execute();
+            var symbolTable = tableGenerator.table;
+
+            var locateVariable = new LocateVariableStep()
+            {
+                program = program,
+                table = symbolTable,
+                varLine = 2,
+                varColumn = 7
+                // varLine = 13,
+                // varColumn = 9
+            };
+            locateVariable.execute();
+            SymbolTableDeclaration declaration = locateVariable.found;
+
+            var inlineRetriever = new InlineRetrieveStep
+            {
+                program = program,
+                table = symbolTable,
+                declaration = declaration
+            };
             inlineRetriever.execute();
             var inVar = inlineRetriever.inlineVar;
 
@@ -24,7 +48,13 @@
                 return;
             }
 
-            var refactor = new InlineRefactorStep(program, inVar);
+            var refactor = new InlineRefactorStep
+            {
+                program = program,
+                inlineVar = inVar,
+                table = symbolTable
+            };
+
             refactor.execute();
         }
     }

@@ -1,16 +1,10 @@
 ﻿namespace Microsoft.Dafny
 {
-    // TODO: Change to iterative approach instead of recursive
-    public class DafnyProgramVisitor
+    public class DafnyVisitor
     {
-        protected Program program;
+        public Program program { protected get; set; }
 
-        public DafnyProgramVisitor(Program program)
-        {
-            this.program = program;
-        }
-
-        public void execute()
+        public virtual void execute()
         {
             next(program);
         }

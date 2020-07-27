@@ -1,12 +1,29 @@
 ﻿namespace Microsoft.Dafny
 {
-    public class InlineRefactorStep : DafnyProgramVisitor
+    public class InlineRefactorStep : DafnyVisitor
     {
-        public InlineVar inlineVar { get; }
+        protected SymbolTable curTable;
+        public SymbolTable table;
+        public InlineVar inlineVar;
 
-        public InlineRefactorStep(Program program, InlineVar inlineVar) : base(program)
+        protected override WhileStmt next(WhileStmt while_)
         {
-            this.inlineVar = inlineVar;
+            curTable = curTable.lookupTable(while_.Tok.GetHashCode());
+
+            foreach (Statement stmt in while_.Body.Body)
+            {
+                next(stmt);
+            }
+
+            curTable = curTable.parent;
+
+            return while_;
+        }
+
+        public override void execute()
+        {
+            curTable = table;
+            base.execute();
         }
 
         protected override UpdateStmt next(UpdateStmt up)
@@ -33,7 +50,7 @@
         {
             var outExp = exp;
 
-            if (outExp is NameSegment nameSeg && nameSeg.Name == inlineVar.name)
+            if (outExp is NameSegment nameSeg && nameSeg.Name == inlineVar.name && curTable.lookup(nameSeg.Name).GetHashCode() == inlineVar.tableDeclaration.GetHashCode())
             {
                 outExp = inlineVar.expr;
             }

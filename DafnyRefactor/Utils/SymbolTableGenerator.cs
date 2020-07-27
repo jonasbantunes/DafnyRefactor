@@ -1,14 +1,15 @@
 ﻿namespace Microsoft.Dafny
 {
-    public class SymbolTableGenerator : DafnyProgramVisitor
+    public class SymbolTableGenerator : DafnyVisitor
     {
-        public SymbolTable table;
-        private SymbolTable curTable;
+        protected SymbolTable curTable;
+        public SymbolTable table { get; protected set; }
 
-        public SymbolTableGenerator(Program program) : base(program)
+        public override void execute()
         {
             table = new SymbolTable();
             curTable = table;
+            base.execute();
         }
 
         protected override VarDeclStmt next(VarDeclStmt vds)

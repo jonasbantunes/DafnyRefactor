@@ -2,9 +2,9 @@
 {
     public class InlineVar
     {
-        public string name = null;
-        public string method = null;
+        public string name => tableDeclaration.name;
         public Expression expr = null;
         public bool isUpdated = false;
+        public SymbolTableDeclaration tableDeclaration = null;
     }
 }

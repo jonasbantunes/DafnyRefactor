@@ -1,14 +1,33 @@
 ﻿namespace Microsoft.Dafny
 {
-    public class InlineRetrieveStep : DafnyProgramVisitor
+    public class InlineRetrieveStep : DafnyVisitor
     {
-        public InlineVar inlineVar { get; }
+        protected SymbolTable curTable;
+        public SymbolTableDeclaration declaration { protected get; set; }
+        public SymbolTable table { protected get; set; }
+        public InlineVar inlineVar { get; protected set; }
 
-        public InlineRetrieveStep(Program program, string method, string name) : base(program)
-        {
+        public override void execute()
+        { 
+            curTable = table;
             inlineVar = new InlineVar();
-            inlineVar.method = method;
-            inlineVar.name = name;
+            inlineVar.tableDeclaration = declaration;
+
+            base.execute();
+        }
+
+        protected override WhileStmt next(WhileStmt while_)
+        {
+            curTable = curTable.lookupTable(while_.Tok.GetHashCode());
+
+            foreach (Statement stmt in while_.Body.Body)
+            {
+                next(stmt);
+            }
+
+            curTable = curTable.parent;
+
+            return while_;
         }
 
         protected override VarDeclStmt next(VarDeclStmt vds)
@@ -17,7 +36,7 @@
             {
                 for (int i = 0; i < up.Lhss.Count; i++)
                 {
-                    if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == inlineVar.name)
+                    if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == inlineVar.name && curTable.lookup(agie.Name).GetHashCode() == inlineVar.tableDeclaration.GetHashCode())
                     {
                         ExprRhs erhs = (ExprRhs)up.Rhss[i];
                         inlineVar.expr = erhs.Expr;
@@ -32,7 +51,7 @@
         {
             for (int i = 0; i < up.Lhss.Count; i++)
             {
-                if (up.Lhss[i] is NameSegment nm && nm.Name == inlineVar.name)
+                if (up.Lhss[i] is NameSegment nm && nm.Name == inlineVar.name && curTable.lookup(nm.Name).GetHashCode() == inlineVar.tableDeclaration.GetHashCode())
                 {
                     if (inlineVar.expr == null && up.Rhss[i] is ExprRhs erhs)
                     {

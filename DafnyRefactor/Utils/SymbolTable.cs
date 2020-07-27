@@ -48,6 +48,18 @@ namespace Microsoft.Dafny
             return lookup(name, table.parent);
         }
 
+        public SymbolTable lookupTable(int hashCode)
+        {
+            foreach (SymbolTable subTable in subTables)
+            {
+                if (subTable.GetHashCode() == hashCode)
+                {
+                    return subTable;
+                }
+            }
+            return null;
+        }
+
         public override int GetHashCode()
         {
             return hashCode;
