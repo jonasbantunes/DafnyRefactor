@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Dafny
 {
+    // TODO: Add constructor
     public class SymbolTable
     {
         protected List<SymbolTableDeclaration> declarations = new List<SymbolTableDeclaration>();

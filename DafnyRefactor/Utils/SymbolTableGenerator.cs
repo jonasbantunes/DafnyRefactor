@@ -1,15 +1,16 @@
 ﻿namespace Microsoft.Dafny
 {
-    public class SymbolTableGenerator : DafnyVisitor
+    public class SymbolTableGenerator : DafnyWithTableVisitor
     {
-        protected SymbolTable curTable;
         public SymbolTable GeneratedTable { get; protected set; }
 
-        public SymbolTableGenerator(Program program) : base(program) { }
+        // TODO: find better alternative than insert "null"
+        public SymbolTableGenerator(Program program) : base(program, null) { }
 
         public override void Execute()
         {
             GeneratedTable = new SymbolTable();
+            rootTable = GeneratedTable;
             curTable = GeneratedTable;
             base.Execute();
         }
@@ -24,24 +25,16 @@
             return vds;
         }
 
-        protected override WhileStmt Visit(WhileStmt while_)
+        protected override BlockStmt Visit(BlockStmt block)
         {
             var subTable = new SymbolTable
             {
                 parent = curTable,
-                hashCode = while_.Tok.GetHashCode()
+                hashCode = block.Tok.GetHashCode()
             };
             curTable.Insert(subTable);
-            curTable = subTable;
 
-            foreach (Statement stmt in while_.Body.Body)
-            {
-                Visit(stmt);
-            }
-
-            curTable = curTable.parent;
-
-            return while_;
+            return base.Visit(block);
         }
     }
 }

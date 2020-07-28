@@ -3,7 +3,7 @@
     public class DafnyWithTableVisitor : DafnyVisitor
     {
         protected SymbolTable curTable;
-        protected readonly SymbolTable rootTable;
+        protected SymbolTable rootTable;
 
         public DafnyWithTableVisitor(Program program, SymbolTable rootTable) : base(program)
         {
@@ -16,17 +16,13 @@
             base.Execute();
         }
 
-        protected override WhileStmt Visit(WhileStmt while_)
+        protected override BlockStmt Visit(BlockStmt block)
         {
-            curTable = curTable.LookupTable(while_.Tok.GetHashCode());
-            foreach (Statement stmt in while_.Body.Body)
-            {
-                Visit(stmt);
-            }
+            curTable = curTable.LookupTable(block.Tok.GetHashCode());
+            var baseReturn =  base.Visit(block);
             curTable = curTable.parent;
 
-            return while_;
+            return baseReturn;
         }
-
     }
 }

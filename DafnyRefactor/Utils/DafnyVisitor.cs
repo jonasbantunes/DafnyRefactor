@@ -1,4 +1,8 @@
-﻿namespace Microsoft.Dafny
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+
+namespace Microsoft.Dafny
 {
     public class DafnyVisitor
     {
@@ -36,12 +40,7 @@
 
         protected virtual ClassDecl Visit(ClassDecl cd)
         {
-            for (int i = 0; i < cd.Members.Count; i++)
-            {
-                MemberDecl md = cd.Members[i];
-                cd.Members[i] = Visit(md);
-            }
-
+            Traverse(cd.Members);
             return cd;
         }
 
@@ -57,13 +56,22 @@
 
         protected virtual Method Visit(Method mt)
         {
-            for (int i = 0; i < mt.Body.Body.Count; i++)
-            {
-                Statement st = mt.Body.Body[i];
-                mt.Body.Body[i] = Visit(st);
-            }
+            Visit(mt.Body);
 
             return mt;
+        }
+
+        protected virtual WhileStmt Visit(WhileStmt while_)
+        {
+            Visit(while_.Body);
+
+            return while_;
+        }
+
+        protected virtual BlockStmt Visit(BlockStmt block)
+        {
+            Traverse(block.Body);
+            return block;
         }
 
         protected virtual Statement Visit(Statement stmt)
@@ -102,14 +110,26 @@
 
         protected virtual AssertStmt Visit(AssertStmt assert) { return assert; }
 
-        protected virtual WhileStmt Visit(WhileStmt while_)
+        protected virtual List<Statement> Traverse(List<Statement> body)
         {
-            foreach (Statement stmt in while_.Body.Body)
+            for (int i = 0; i < body.Count; i++)
             {
-                Visit(stmt);
+                Statement st = body[i];
+                body[i] = Visit(st);
             }
 
-            return while_;
+            return body;
+        }
+
+        protected virtual List<MemberDecl> Traverse(List<MemberDecl> members)
+        {
+            for (int i = 0; i < members.Count; i++)
+            {
+                MemberDecl md = members[i];
+                members[i] = Visit(md);
+            }
+
+            return members;
         }
     }
 }

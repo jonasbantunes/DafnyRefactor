@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Dafny
+﻿using System.Collections.Generic;
+
+namespace Microsoft.Dafny
 {
     public class RemoveRefactoredDeclarationStep : DafnyWithTableVisitor
     {
@@ -9,19 +11,19 @@
             this.declaration = declaration;
         }
 
-        protected override Method Visit(Method mt)
+        protected override List<Statement> Traverse(List<Statement> body)
         {
-            for (int i = mt.Body.Body.Count - 1; i >= 0; i--)
+            for (int i = body.Count - 1; i >= 0; i--)
             {
-                Statement st = mt.Body.Body[i];
-                mt.Body.Body[i] = Visit(st);
-                if (mt.Body.Body[i] == null)
+                Statement st = body[i];
+                body[i] = Visit(st);
+                if (body[i] == null)
                 {
-                    mt.Body.Body.RemoveAt(i);
+                    body.RemoveAt(i);
                 }
             }
 
-            return mt;
+            return body;
         }
 
         protected override VarDeclStmt Visit(VarDeclStmt vds)
@@ -30,7 +32,6 @@
             {
                 return null;
             }
-
 
             return vds;
         }
