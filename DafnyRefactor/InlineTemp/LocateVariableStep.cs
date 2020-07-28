@@ -5,7 +5,7 @@
         // TODO: Analyse if varLine and varColumn should be an Location "struct"
         protected int varLine;
         protected int varColumn;
-        public SymbolTableDeclaration Found { get; protected set; }
+        public SymbolTableDeclaration FoundDeclaration { get; protected set; }
 
         public LocateVariableStep(Program program, SymbolTable rootTable, int varLine, int varColumn) : base(program, rootTable)
         {
@@ -25,7 +25,7 @@
             {
                 if (IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line, local.EndTok.col))
                 {
-                    Found = curTable.Lookup(local.Name);
+                    FoundDeclaration = curTable.Lookup(local.Name);
                 }
             }
 

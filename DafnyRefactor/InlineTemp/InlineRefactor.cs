@@ -21,7 +21,11 @@
 
             var locateVariable = new LocateVariableStep(program, symbolTable, varLine, varColumn);
             locateVariable.Execute();
-            SymbolTableDeclaration declaration = locateVariable.Found;
+            SymbolTableDeclaration declaration = locateVariable.FoundDeclaration;
+            if (declaration == null)
+            {
+                return;
+            }
 
             var inlineRetriever = new InlineRetrieveStep(program, symbolTable, declaration);
             inlineRetriever.Execute();

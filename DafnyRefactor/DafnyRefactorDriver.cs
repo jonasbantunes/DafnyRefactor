@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Bpl = Microsoft.Boogie;
 
 namespace Microsoft.Dafny
 {
@@ -38,6 +39,8 @@ namespace Microsoft.Dafny
 
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
+            Bpl.CommandLineOptions.Clo.ShowEnv = Bpl.CommandLineOptions.ShowEnvironment.Never;
+            DafnyOptions.O.PrintMode = DafnyOptions.PrintModes.DllEmbed;
 
             var dafnyFiles = new List<DafnyFile>
             {
@@ -56,11 +59,15 @@ namespace Microsoft.Dafny
             switch (args[1])
             {
                 case "inline-temp":
+                    if (args.Length != 4)
+                    {
+                        return;
+                    }
                     int line = int.Parse(args[2]);
                     int column = int.Parse(args[3]);
                     var refactor = new InlineRefactor(program, line, column);
                     refactor.Refactor();
-                    Dafny.Main.MaybePrintProgram(program, "-", false);
+                    Dafny.Main.MaybePrintProgram(program, args[0], false);
                     break;
                 default:
                     return;
