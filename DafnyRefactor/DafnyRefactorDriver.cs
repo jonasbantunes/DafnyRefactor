@@ -61,16 +61,25 @@ namespace Microsoft.Dafny
                 case "inline-temp":
                     if (args.Length != 4)
                     {
+                        exitCode = (int)ExitValue.DAFNY_ERROR;
                         return;
                     }
+
                     int line = int.Parse(args[2]);
                     int column = int.Parse(args[3]);
                     var refactor = new InlineRefactor(program, line, column);
                     refactor.Refactor();
-                    Dafny.Main.MaybePrintProgram(program, args[0], false);
+                    exitCode = refactor.ExitCode;
                     break;
                 default:
+                    exitCode = (int)ExitValue.DAFNY_ERROR;
                     return;
+            }
+
+            if (exitCode == 0)
+            {
+                Dafny.Main.MaybePrintProgram(program, args[0], false);
+                Console.WriteLine("Refactor successfully applied");
             }
         }
     }
