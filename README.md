@@ -1,4 +1,6 @@
-# Dafny Refactor
+# Dafny Refactor (Unstable)
+
+⚠️ Warning: this utility is in very early stages. It probably will break your existing source code.
 
 Dafny Refactor is a utility for apply some refactors on dafny sources.
 
@@ -6,9 +8,9 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 
 - Windows 10 (tested on 2004 version, may work on previous versions)
 - Visual Studio 2019
-- NetFramework v4.5
+- .NET Framework 4.5
 
-## Installation
+## Building
 
 - Clone these projects:
     - [Boogie](https://github.com/boogie-org/boogie) (v2.4.2)
@@ -29,8 +31,27 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 ## Usage
 
 ```batch
-DafnyRefactor.exe [path-to-dafny-source]
+DafnyRefactor.exe [path-to-dafny-source] [refactor-type] [refactor-params]
 ```
+
+Currently, only _inline temp_ refactor is supported.
+
+### Inline temp
+
+```batch
+DafnyRefactor.exe [path-to-dafny-source] inline-temp [variable-line] [variable-column]
+```
+
+Example:
+
+```batch
+DafnyRefator.exe example.dfy inline-temp 2 7
+```
+
+Currently limitations:
+- `variable-line` and `variable-column` should point to variable declaration;
+- Only literal values are guaranteed to be correctly refactored;
+- Only single variable declarations are removed (ex.: `var x: int := 5;`);
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

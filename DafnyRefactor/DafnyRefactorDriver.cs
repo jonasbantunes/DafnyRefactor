@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Microsoft.Dafny
@@ -27,7 +28,7 @@ namespace Microsoft.Dafny
             {
                 return exitCode;
             }
-            ApplyRefactor();
+            ApplyRefactor(args);
             return exitCode;
         }
 
@@ -50,16 +51,20 @@ namespace Microsoft.Dafny
             }
         }
 
-        protected static void ApplyRefactor()
+        protected static void ApplyRefactor(string[] args)
         {
-            // varLine = 13,
-            // varColumn = 9
-            // varLine = 2,
-            // varColumn = 7
-
-            var refactor = new InlineRefactor(program, 2, 7);
-            refactor.Refactor();
-            Dafny.Main.MaybePrintProgram(program, "-", false);
+            switch (args[1])
+            {
+                case "inline-temp":
+                    int line = int.Parse(args[2]);
+                    int column = int.Parse(args[3]);
+                    var refactor = new InlineRefactor(program, line, column);
+                    refactor.Refactor();
+                    Dafny.Main.MaybePrintProgram(program, "-", false);
+                    break;
+                default:
+                    return;
+            }
         }
     }
 }
