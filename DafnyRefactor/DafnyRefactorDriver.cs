@@ -2,14 +2,51 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Bpl = Microsoft.Boogie;
+using CommandLine;
+using CommandLine.Text;
 
 namespace Microsoft.Dafny
 {
+    public interface IApplyOptions
+    {
+        string FilePath { get; set; }
+        bool Stdout { get; set; }
+    }
+
+    [Verb("apply-inlinetemp", HelpText = "Apply a refactor")]
+    public class ApplyInlineTempOptions : IApplyOptions
+    {
+        [Value(0, MetaValue = "filePath", Required = true)]
+        public string FilePath { get; set; }
+
+        [Value(1, MetaValue = "varLine", Required = true)]
+        public int VarLine { get; set; }
+
+        [Value(2, MetaValue = "varColumn", Required = true)]
+        public int VarColumn { get; set; }
+
+        [Option(Default = false, HelpText = "Redirect applied refactor to stdout")]
+        public bool Stdout { get; set; }
+
+        [Usage]
+        public static IEnumerable<Example> Examples
+        {
+            get
+            {
+                return new List<Example>()
+                {
+                    new Example("Apply an inline refator", new ApplyInlineTempOptions{ FilePath = "example.dfy", VarLine= 2, VarColumn =7 })
+                };
+            }
+        }
+    }
+
     public class DafnyRefactorDriver : DafnyDriver
     {
         protected static int exitCode = (int)ExitValue.VERIFIED;
         protected static Program program;
 
+        // TODO: Check if thread is needed
         public static new int Main(string[] args)
         {
             int ret = 0;
@@ -24,18 +61,52 @@ namespace Microsoft.Dafny
 
         public static new int ThreadMain(string[] args)
         {
-            InitProgram(args);
+            System.Type[] types = { typeof(ApplyInlineTempOptions) };
+            return CommandLine.Parser.Default.ParseArguments(args, types).MapResult(options => Run(options), errs => HandleParseError(errs));
+        }
+
+        public static int HandleParseError(IEnumerable<Error> errs)
+        {
+            if (errs.IsVersion())
+            {
+                Console.WriteLine("Version Request");
+                return 0;
+            }
+
+            if (errs.IsHelp())
+            {
+                Console.WriteLine("Help Request");
+                return 0;
+            }
+            Console.WriteLine("Parser Fail");
+            return (int)ExitValue.DAFNY_ERROR;
+        }
+
+        public static int Run(object obj)
+        {
+            switch (obj)
+            {
+                case IApplyOptions applyOptions:
+                    return Run(applyOptions);
+            }
+            return 0;
+        }
+
+        public static int Run(IApplyOptions options)
+        {
+            InitProgram(options.FilePath);
             if (exitCode == (int)ExitValue.DAFNY_ERROR)
             {
                 return exitCode;
             }
-            ApplyRefactor(args);
+            ApplyRefactor(options);
             return exitCode;
         }
 
-        protected static void InitProgram(string[] args)
+
+        protected static void InitProgram(string filePath)
         {
-            Contract.Requires(cce.NonNullElements(args));
+            //Contract.Requires(cce.NonNullElements(args));
 
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
@@ -44,7 +115,7 @@ namespace Microsoft.Dafny
 
             var dafnyFiles = new List<DafnyFile>
             {
-                new DafnyFile(args[0])
+                new DafnyFile(filePath)
             };
 
             string err = Dafny.Main.Parse(dafnyFiles, "the program", reporter, out program);
@@ -54,20 +125,12 @@ namespace Microsoft.Dafny
             }
         }
 
-        protected static void ApplyRefactor(string[] args)
+        protected static void ApplyRefactor(IApplyOptions options)
         {
-            switch (args[1])
+            switch (options)
             {
-                case "inline-temp":
-                    if (args.Length != 4)
-                    {
-                        exitCode = (int)ExitValue.DAFNY_ERROR;
-                        return;
-                    }
-
-                    int line = int.Parse(args[2]);
-                    int column = int.Parse(args[3]);
-                    var refactor = new InlineRefactor(program, line, column);
+                case ApplyInlineTempOptions inlineTempOptions:
+                    var refactor = new InlineRefactor(program, inlineTempOptions.VarLine, inlineTempOptions.VarColumn);
                     refactor.Refactor();
                     exitCode = refactor.ExitCode;
                     break;
@@ -78,7 +141,14 @@ namespace Microsoft.Dafny
 
             if (exitCode == 0)
             {
-                Dafny.Main.MaybePrintProgram(program, args[0], false);
+                if (options.Stdout)
+                {
+                    Dafny.Main.MaybePrintProgram(program, "-", false);
+                }
+                else
+                {
+                    Dafny.Main.MaybePrintProgram(program, options.FilePath, false);
+                }
                 Console.WriteLine("Refactor successfully applied");
             }
         }
