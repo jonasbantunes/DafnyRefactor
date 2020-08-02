@@ -13,7 +13,7 @@ namespace Microsoft.Dafny
         bool Stdout { get; set; }
     }
 
-    [Verb("apply-inlinetemp", HelpText = "Apply a refactor")]
+    [Verb("apply-inline-temp", HelpText = "Apply a refactor")]
     public class ApplyInlineTempOptions : IApplyOptions
     {
         [Value(0, MetaValue = "filePath", Required = true)]

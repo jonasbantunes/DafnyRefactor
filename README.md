@@ -31,7 +31,7 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 ## Usage
 
 ```batch
-DafnyRefactor.exe [path-to-dafny-source] [refactor-type] [refactor-params]
+DafnyRefactor.exe [refactor-type] [refactor-params*]
 ```
 
 Currently, only _inline temp_ refactor is supported.
@@ -39,13 +39,13 @@ Currently, only _inline temp_ refactor is supported.
 ### Inline temp
 
 ```batch
-DafnyRefactor.exe [path-to-dafny-source] inline-temp [variable-line] [variable-column]
+DafnyRefactor.exe apply-inline-temp [path-to-dafny-source] [variable-line] [variable-column]
 ```
 
 Example:
 
 ```batch
-DafnyRefator.exe example.dfy inline-temp 2 7
+DafnyRefator.exe apply inline-temp example.dfy 2 7
 ```
 
 Currently limitations:
