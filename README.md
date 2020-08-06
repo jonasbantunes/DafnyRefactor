@@ -1,4 +1,4 @@
-# Dafny Refactor (Unstable)
+# Dafny Refactor (Preview)
 
 ⚠️ Warning: this utility is in very early stages. It probably will break your existing source code.
 
@@ -8,7 +8,7 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 
 - Windows 10 (tested on 2004 version, may work on previous versions)
 - Visual Studio 2019
-- .NET Framework 4.5
+- .NET Framework 4.5.2
 
 ## Building
 

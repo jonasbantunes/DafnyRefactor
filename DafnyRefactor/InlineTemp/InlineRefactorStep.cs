@@ -35,6 +35,7 @@
             return newAssert;
         }
 
+        // TODO: Analyse if this should be a proper class
         protected Expression ApplyInlineTemp(Expression exp)
         {
             var outExp = exp;

@@ -29,7 +29,16 @@
                 }
             }
 
-            return vds;
+            return base.Visit(vds);
+        }
+
+        protected override NameSegment Visit(NameSegment nameSeg)
+        {
+            if (IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line, nameSeg.tok.col + nameSeg.tok.val.Length - 1))
+            {
+                FoundDeclaration = curTable.Lookup(nameSeg.Name);
+            }
+            return nameSeg;
         }
 
         protected bool IsInRange(int line, int column, int startLine, int starColumn, int endLine, int endColumn)
