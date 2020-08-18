@@ -106,8 +106,6 @@ namespace Microsoft.Dafny
 
         protected static void InitProgram(string filePath)
         {
-            //Contract.Requires(cce.NonNullElements(args));
-
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
             Bpl.CommandLineOptions.Clo.ShowEnv = Bpl.CommandLineOptions.ShowEnvironment.Never;
@@ -130,7 +128,7 @@ namespace Microsoft.Dafny
             switch (options)
             {
                 case ApplyInlineTempOptions inlineTempOptions:
-                    var refactor = new InlineRefactor(program, inlineTempOptions.VarLine, inlineTempOptions.VarColumn);
+                    var refactor = new InlineRefactor(inlineTempOptions, program, inlineTempOptions.VarLine, inlineTempOptions.VarColumn);
                     refactor.Refactor();
                     exitCode = refactor.ExitCode;
                     break;
@@ -141,14 +139,14 @@ namespace Microsoft.Dafny
 
             if (exitCode == 0)
             {
-                if (options.Stdout)
-                {
-                    Dafny.Main.MaybePrintProgram(program, "-", false);
-                }
-                else
-                {
-                    Dafny.Main.MaybePrintProgram(program, options.FilePath, false);
-                }
+                //if (options.Stdout)
+                //{
+                //    Dafny.Main.MaybePrintProgram(program, "-", false);
+                //}
+                //else
+                //{
+                //    Dafny.Main.MaybePrintProgram(program, options.FilePath, false);
+                //}
                 Console.WriteLine("Refactor successfully applied");
             }
         }

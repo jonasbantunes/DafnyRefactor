@@ -1,16 +1,20 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 
 namespace Microsoft.Dafny
 {
     public class InlineRefactor
     {
+        protected readonly ApplyInlineTempOptions options;
         protected readonly Program program;
         protected readonly int varLine;
         protected readonly int varColumn;
         public int ExitCode { get; protected set; } = 0;
 
-        public InlineRefactor(Program program, int varLine, int varColumn)
+        public InlineRefactor(ApplyInlineTempOptions options, Program program, int varLine, int varColumn)
         {
+            this.options = options;
             this.program = program;
             this.varLine = varLine;
             this.varColumn = varColumn;
@@ -42,11 +46,27 @@ namespace Microsoft.Dafny
                 ExitCode = 2;
                 return;
             }
-            var refactor = new InlineRefactorStep(program, symbolTable, inVar);
+            var refactor = new InlineRefactorStep(options.FilePath, program, symbolTable, inVar);
             refactor.Execute();
+            var replacedEdits = refactor.Edits;
 
             var remover = new RemoveRefactoredDeclarationStep(program, symbolTable, inVar.tableDeclaration);
             remover.Execute();
+            var removedEdits = remover.Edits;
+
+            // TODO: put this on a Step class
+            var edits = replacedEdits.Concat(removedEdits).ToList();
+            string source = File.ReadAllText(options.FilePath);
+            var sourceEditor = new SourceEditor(source, edits);
+            sourceEditor.Apply();
+            if (options.Stdout)
+            {
+                Console.WriteLine(sourceEditor.Source);
+            }
+            else
+            {
+                File.WriteAllText(options.FilePath, sourceEditor.Source);
+            }
         }
     }
 }
