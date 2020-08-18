@@ -6,7 +6,6 @@ namespace Microsoft.Dafny
 {
     public class InlineRefactorStep : DafnyWithTableVisitor
     {
-        protected string filePath;
         protected InlineVariable inlineVar;
         public List<SourceEdit> Edits { get; protected set; }
 
@@ -16,9 +15,8 @@ namespace Microsoft.Dafny
             base.Execute();
         }
 
-        public InlineRefactorStep(string filePath, Program program, SymbolTable rootTable, InlineVariable inlineVar) : base(program, rootTable)
+        public InlineRefactorStep(Program program, SymbolTable rootTable, InlineVariable inlineVar) : base(program, rootTable)
         {
-            this.filePath = filePath;
             this.inlineVar = inlineVar;
         }
 

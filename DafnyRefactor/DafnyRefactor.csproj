@@ -96,21 +96,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utils\DafnyProgramLoader.cs" />
+    <Compile Include="Utils\CommandLineOptions\ApplyInlineTempOptions.cs" />
+    <Compile Include="Utils\CommandLineOptions\IApplyOptions.cs" />
     <Compile Include="InlineTemp\InlineRefactor.cs" />
-    <Compile Include="InlineTemp\InlineRefactorStep.cs" />
-    <Compile Include="InlineTemp\InlineRetrieveStep.cs" />
+    <Compile Include="InlineTemp\Steps\InlineRefactorStep.cs" />
+    <Compile Include="InlineTemp\Steps\InlineRetrieveStep.cs" />
     <Compile Include="DafnyRefactorDriver.cs" />
-    <Compile Include="InlineTemp\InlineVariable.cs" />
-    <Compile Include="InlineTemp\LocateVariableStep.cs" />
-    <Compile Include="InlineTemp\RemoveRefactoredDeclarationStep.cs" />
+    <Compile Include="InlineTemp\Steps\InlineVariable.cs" />
+    <Compile Include="InlineTemp\Steps\LocateVariableStep.cs" />
+    <Compile Include="InlineTemp\Steps\RemoveRefactoredDeclarationStep.cs" />
+    <Compile Include="InlineTemp\Steps\SaveChangesStep.cs" />
     <Compile Include="Utils\SourceEdit\SourceEdit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\DafnyVisitor.cs" />
-    <Compile Include="Utils\DafnyWithTableVisitor.cs" />
+    <Compile Include="Utils\DafnyVisitor\DafnyVisitor.cs" />
+    <Compile Include="Utils\DafnyVisitor\DafnyWithTableVisitor.cs" />
     <Compile Include="Utils\SourceEdit\SourceEditor.cs" />
-    <Compile Include="Utils\SymbolTable.cs" />
-    <Compile Include="Utils\SymbolTableDeclaration.cs" />
-    <Compile Include="Utils\SymbolTableGenerator.cs" />
+    <Compile Include="Utils\SymbolTable\SymbolTable.cs" />
+    <Compile Include="Utils\SymbolTable\SymbolTableDeclaration.cs" />
+    <Compile Include="Utils\SymbolTable\SymbolTableGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

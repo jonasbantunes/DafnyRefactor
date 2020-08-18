@@ -45,13 +45,12 @@ DafnyRefactor.exe apply-inline-temp [path-to-dafny-source] [variable-line] [vari
 Example:
 
 ```batch
-DafnyRefator.exe apply inline-temp example.dfy 2 7
+DafnyRefator.exe apply-inline-temp example.dfy 2 7
 ```
 
 Currently limitations:
-- `variable-line` and `variable-column` should point to variable declaration;
-- Only literal values are guaranteed to be correctly refactored;
 - Only single variable declarations are removed (ex.: `var x: int := 5;`);
+- Only literal values are guaranteed to be correctly refactored;
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
