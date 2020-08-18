@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Dafny
+﻿using System;
+
+namespace Microsoft.Dafny
 {
     public class InlineRefactorStep : DafnyWithTableVisitor
     {
@@ -9,49 +11,14 @@
             this.inlineVar = inlineVar;
         }
 
-        public override void Execute()
+        protected override NameSegment Visit(NameSegment nameSeg)
         {
-            curTable = rootTable;
-            base.Execute();
-        }
-
-        protected override UpdateStmt Visit(UpdateStmt up)
-        {
-            for (int i = 0; i < up.Rhss.Count; i++)
+            if (nameSeg.Name == inlineVar.Name && curTable.Lookup(nameSeg.Name).GetHashCode() == inlineVar.tableDeclaration.GetHashCode())
             {
-                if (up.Rhss[i] is ExprRhs erhs && erhs.Expr != null)
-                {
-                    up.Rhss[i] = new ExprRhs(ApplyInlineTemp(erhs.Expr));
-                }
+                Console.WriteLine($"({nameSeg.tok.line}:{nameSeg.tok.col})~({nameSeg.tok.line}:{nameSeg.tok.col + (nameSeg.tok.val.Length)}) = {Printer.ExprToString(inlineVar.expr)}");
+                Console.WriteLine($"{nameSeg.tok.pos}~{nameSeg.tok.pos + nameSeg.tok.val.Length} = {Printer.ExprToString(inlineVar.expr)}");
             }
-
-            return up;
-        }
-
-        protected override AssertStmt Visit(AssertStmt assert)
-        {
-            var expr = ApplyInlineTemp(assert.Expr);
-            var newAssert = new AssertStmt(assert.Tok, assert.EndTok, expr, assert.Proof, assert.Label, assert.Attributes);
-            return newAssert;
-        }
-
-        // TODO: Analyse if this should be a proper class
-        protected Expression ApplyInlineTemp(Expression exp)
-        {
-            var outExp = exp;
-
-            if (outExp is NameSegment nameSeg && nameSeg.Name == inlineVar.Name && curTable.Lookup(nameSeg.Name).GetHashCode() == inlineVar.tableDeclaration.GetHashCode())
-            {
-                outExp = inlineVar.expr;
-            }
-            else if (outExp is BinaryExpr subExp)
-            {
-                var e0 = ApplyInlineTemp(subExp.E0);
-                var e1 = ApplyInlineTemp(subExp.E1);
-                outExp = new BinaryExpr(subExp.tok, subExp.Op, e0, e1);
-            }
-
-            return outExp;
+            return base.Visit(nameSeg);
         }
     }
 }

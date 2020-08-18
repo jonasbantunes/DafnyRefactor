@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 
 namespace Microsoft.Dafny
 {
@@ -91,7 +89,6 @@ namespace Microsoft.Dafny
             else if (exp is BinaryExpr binExp)
             {
                 Visit(binExp);
-                Visit(binExp);
             }
             else if (exp is NameSegment nameSeg)
             {
@@ -163,7 +160,11 @@ namespace Microsoft.Dafny
             return up;
         }
 
-        protected virtual AssertStmt Visit(AssertStmt assert) { return assert; }
+        protected virtual AssertStmt Visit(AssertStmt assert)
+        {
+            Visit(assert.Expr);
+            return assert;
+        }
 
         protected virtual AssignmentRhs Visit(AssignmentRhs rhs)
         {
@@ -183,10 +184,9 @@ namespace Microsoft.Dafny
 
         protected virtual List<Statement> Traverse(List<Statement> body)
         {
-            for (int i = 0; i < body.Count; i++)
+            foreach (Statement stmt in body)
             {
-                Statement st = body[i];
-                body[i] = Visit(st);
+                Visit(stmt);
             }
 
             return body;
@@ -194,10 +194,9 @@ namespace Microsoft.Dafny
 
         protected virtual List<MemberDecl> Traverse(List<MemberDecl> members)
         {
-            for (int i = 0; i < members.Count; i++)
+            foreach (MemberDecl decl in members)
             {
-                MemberDecl md = members[i];
-                members[i] = Visit(md);
+                Visit(decl);
             }
 
             return members;
@@ -205,9 +204,9 @@ namespace Microsoft.Dafny
 
         protected virtual List<AssignmentRhs> Traverse(List<AssignmentRhs> rhss)
         {
-            for (int i = 0; i < rhss.Count; i++)
+            foreach (AssignmentRhs rhs in rhss)
             {
-                rhss[i] = Visit(rhss[i]);
+                Visit(rhs);
             }
 
             return rhss;

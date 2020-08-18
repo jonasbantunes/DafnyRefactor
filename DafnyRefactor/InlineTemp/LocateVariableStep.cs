@@ -16,7 +16,7 @@
         public override void Execute()
         {
             curTable = rootTable;
-            Visit(program);
+            base.Execute();
         }
 
         protected override VarDeclStmt Visit(VarDeclStmt vds)
