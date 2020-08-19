@@ -20,7 +20,7 @@
         {
             curTable = curTable.LookupTable(block.Tok.GetHashCode());
             var baseReturn =  base.Visit(block);
-            curTable = curTable.parent;
+            curTable = curTable.Parent;
 
             return baseReturn;
         }

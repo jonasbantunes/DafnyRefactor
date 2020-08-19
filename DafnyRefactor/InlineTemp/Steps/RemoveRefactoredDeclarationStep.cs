@@ -20,7 +20,7 @@ namespace Microsoft.Dafny
 
         protected override VarDeclStmt Visit(VarDeclStmt vds)
         {
-            if (vds.Locals.Count == 1 && vds.Update?.Lhss?.Count == 1 && curTable.Lookup(vds.Locals[0].Name).GetHashCode() == declaration.GetHashCode())
+            if (vds.Locals.Count == 1 && vds.Update?.Lhss?.Count == 1 && curTable.LookupDeclaration(vds.Locals[0].Name).GetHashCode() == declaration.GetHashCode())
             {
                 Edits.Add(new SourceEdit(vds.Tok.pos, vds.EndTok.pos + 1, ""));
             }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Bpl = Microsoft.Boogie;
 
 namespace Microsoft.Dafny
 {
@@ -62,7 +60,7 @@ namespace Microsoft.Dafny
             var replacedEdits = refactor.Edits;
 
             /* STEP 6: REMOVE VARIABLE DECLARATION */
-            var remover = new RemoveRefactoredDeclarationStep(program, symbolTable, inVar.tableDeclaration);
+            var remover = new RemoveRefactoredDeclarationStep(program, symbolTable, inVar.TableDeclaration);
             remover.Execute();
             var removedEdits = remover.Edits;
 

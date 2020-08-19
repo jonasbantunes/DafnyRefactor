@@ -22,7 +22,7 @@ namespace Microsoft.Dafny
 
         protected override NameSegment Visit(NameSegment nameSeg)
         {
-            if (nameSeg.Name == inlineVar.Name && curTable.Lookup(nameSeg.Name).GetHashCode() == inlineVar.tableDeclaration.GetHashCode())
+            if (nameSeg.Name == inlineVar.Name && curTable.LookupDeclaration(nameSeg.Name).GetHashCode() == inlineVar.TableDeclaration.GetHashCode())
             {
                 Edits.Add(new SourceEdit(nameSeg.tok.pos, nameSeg.tok.pos + nameSeg.tok.val.Length, $"({Printer.ExprToString(inlineVar.expr)})"));
             }

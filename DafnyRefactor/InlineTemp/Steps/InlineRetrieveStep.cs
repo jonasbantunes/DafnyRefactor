@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Dafny
+﻿using System;
+
+namespace Microsoft.Dafny
 {
     public class InlineRetrieveStep : DafnyWithTableVisitor
     {
@@ -13,10 +15,7 @@
         public override void Execute()
         {
             curTable = rootTable;
-            InlineVar = new InlineVariable
-            {
-                tableDeclaration = declaration
-            };
+            InlineVar = new InlineVariable(declaration);
 
             base.Execute();
         }
@@ -27,7 +26,7 @@
             {
                 for (int i = 0; i < up.Lhss.Count; i++)
                 {
-                    if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == InlineVar.Name && curTable.Lookup(agie.Name).GetHashCode() == InlineVar.tableDeclaration.GetHashCode())
+                    if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == InlineVar.Name && curTable.LookupDeclaration(agie.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
                     {
                         ExprRhs erhs = (ExprRhs)up.Rhss[i];
                         InlineVar.expr = erhs.Expr;
@@ -42,7 +41,7 @@
         {
             for (int i = 0; i < up.Lhss.Count; i++)
             {
-                if (up.Lhss[i] is NameSegment nm && nm.Name == InlineVar.Name && curTable.Lookup(nm.Name).GetHashCode() == InlineVar.tableDeclaration.GetHashCode())
+                if (up.Lhss[i] is NameSegment nm && nm.Name == InlineVar.Name && curTable.LookupDeclaration(nm.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
                 {
                     if (InlineVar.expr == null && up.Rhss[i] is ExprRhs erhs)
                     {

@@ -76,6 +76,8 @@ namespace Microsoft.Dafny
         protected virtual IfStmt Visit(IfStmt ifStmt)
         {
             Visit(ifStmt.Guard);
+            Visit(ifStmt.Thn);
+            Visit(ifStmt.Els);
 
             return ifStmt;
         }

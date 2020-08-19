@@ -1,5 +1,4 @@
-﻿using Microsoft.Boogie;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Microsoft.Dafny
 {
@@ -8,45 +7,46 @@ namespace Microsoft.Dafny
     {
         protected List<SymbolTableDeclaration> declarations = new List<SymbolTableDeclaration>();
         protected List<SymbolTable> subTables = new List<SymbolTable>();
-        public int hashCode;
-        public SymbolTable parent = null;
+        public readonly BlockStmt blockStmt;
+        public SymbolTable Parent { get; protected set; }
 
-        public void Insert(IToken tok)
+        public SymbolTable(BlockStmt blockStmt = null, SymbolTable parent = null)
         {
-            var declaration = new SymbolTableDeclaration
-            {
-                name = tok.val,
-                hashCode = tok.GetHashCode()
-            };
+            Parent = parent;
+            this.blockStmt = blockStmt;
+        }
+
+        public void InsertDeclaration(SymbolTableDeclaration declaration)
+        {
             declarations.Add(declaration);
         }
 
-        public void Insert(SymbolTable table)
+        public void InsertTable(SymbolTable table)
         {
             subTables.Add(table);
         }
 
-        public SymbolTableDeclaration Lookup(string name)
+        public SymbolTableDeclaration LookupDeclaration(string name)
         {
-            return Lookup(name, this);
+            return LookupDeclaration(name, this);
         }
 
-        public SymbolTableDeclaration Lookup(string name, SymbolTable table)
+        protected SymbolTableDeclaration LookupDeclaration(string name, SymbolTable table)
         {
             foreach (SymbolTableDeclaration decl in table.declarations)
             {
-                if (decl.name == name)
+                if (decl.Name == name)
                 {
                     return decl;
                 }
             }
 
-            if (table.parent == null)
+            if (table.Parent == null)
             {
                 return null;
             }
 
-            return Lookup(name, table.parent);
+            return LookupDeclaration(name, table.Parent);
         }
 
         public SymbolTable LookupTable(int hashCode)
@@ -63,7 +63,7 @@ namespace Microsoft.Dafny
 
         public override int GetHashCode()
         {
-            return hashCode;
+            return blockStmt?.Tok.GetHashCode() ?? 0;
         }
 
     }

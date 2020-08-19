@@ -2,9 +2,14 @@
 {
     public class InlineVariable
     {
-        public string Name => tableDeclaration.name;
         public Expression expr = null;
         public bool isUpdated = false;
-        public SymbolTableDeclaration tableDeclaration = null;
+        public string Name => TableDeclaration.Name;
+        public SymbolTableDeclaration TableDeclaration { get; protected set; } = null;
+
+        public InlineVariable(SymbolTableDeclaration tableDeclaration)
+        {
+            TableDeclaration = tableDeclaration;
+        }
     }
 }

@@ -25,7 +25,7 @@
             {
                 if (IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line, local.EndTok.col))
                 {
-                    FoundDeclaration = curTable.Lookup(local.Name);
+                    FoundDeclaration = curTable.LookupDeclaration(local.Name);
                 }
             }
 
@@ -36,7 +36,7 @@
         {
             if (IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line, nameSeg.tok.col + nameSeg.tok.val.Length - 1))
             {
-                FoundDeclaration = curTable.Lookup(nameSeg.Name);
+                FoundDeclaration = curTable.LookupDeclaration(nameSeg.Name);
             }
             return nameSeg;
         }

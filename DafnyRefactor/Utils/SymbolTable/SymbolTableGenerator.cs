@@ -19,7 +19,8 @@
         {
             foreach (LocalVariable local in vds.Locals)
             {
-                curTable.Insert(local.Tok);
+                var declaration = new SymbolTableDeclaration(local, vds);
+                curTable.InsertDeclaration(declaration);
             }
 
             return vds;
@@ -27,12 +28,8 @@
 
         protected override BlockStmt Visit(BlockStmt block)
         {
-            var subTable = new SymbolTable
-            {
-                parent = curTable,
-                hashCode = block.Tok.GetHashCode()
-            };
-            curTable.Insert(subTable);
+            var subTable = new SymbolTable(block, curTable);
+            curTable.InsertTable(subTable);
 
             return base.Visit(block);
         }
