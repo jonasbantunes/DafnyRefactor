@@ -96,6 +96,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InlineTemp\Steps\InlineImmutabilityCheckStep.cs" />
     <Compile Include="Utils\DafnyProgramLoader.cs" />
     <Compile Include="Utils\CommandLineOptions\ApplyInlineTempOptions.cs" />
     <Compile Include="Utils\CommandLineOptions\IApplyOptions.cs" />
@@ -117,6 +118,10 @@
     <Compile Include="Utils\SymbolTable\SymbolTableGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\dafny\Binaries\DafnyPrelude.bpl">
+      <Link>DafnyPrelude.bpl</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -126,6 +131,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\dafny\Binaries\z3.exe">
+      <Link>z3.exe</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

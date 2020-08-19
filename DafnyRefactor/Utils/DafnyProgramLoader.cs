@@ -17,8 +17,6 @@ namespace Microsoft.Dafny
         {
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
-            Bpl.CommandLineOptions.Clo.ShowEnv = Bpl.CommandLineOptions.ShowEnvironment.Never;
-            DafnyOptions.O.PrintMode = DafnyOptions.PrintModes.DllEmbed;
 
             Program = null;
             var dafnyFiles = new List<DafnyFile>();

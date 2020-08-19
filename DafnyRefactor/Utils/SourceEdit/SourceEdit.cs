@@ -12,5 +12,12 @@
             this.endPos = endPos;
             this.content = content;
         }
+
+        public SourceEdit(int pos, string content)
+        {
+            startPos = pos;
+            endPos = pos;
+            this.content = content;
+        }
     }
 }

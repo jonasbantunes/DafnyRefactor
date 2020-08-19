@@ -32,7 +32,7 @@ namespace Microsoft.Dafny
             tableGenerator.Execute();
             var symbolTable = tableGenerator.GeneratedTable;
 
-            /* STEP 3: LOCATE INLINE VARIABLE*/
+            /* STEP 3: LOCATE VARIABLE*/
             var locateVariable = new LocateVariableStep(program, symbolTable, options.VarLine, options.VarColumn);
             locateVariable.Execute();
             SymbolTableDeclaration declaration = locateVariable.FoundDeclaration;
@@ -43,13 +43,24 @@ namespace Microsoft.Dafny
                 return;
             }
 
-            /* STEP 4: RETRIEVE INLINE VARIABLE INFO */
+            /* STEP 4: RETRIEVE VARIABLE INFO */
             var inlineRetriever = new InlineRetrieveStep(program, symbolTable, declaration);
             inlineRetriever.Execute();
+            var inlineEdits = inlineRetriever.Edits;
             var inVar = inlineRetriever.InlineVar;
             if (inVar.isUpdated)
             {
                 Console.Error.WriteLine($"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is not constant.");
+                ExitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
+                return;
+            }
+
+            /* STEP 5: CHECK IF VARIABLE IS CONSTANT */
+            var immutabilitChecker = new InlineImmutabilityCheckStep(options.FilePath, inlineEdits);
+            immutabilitChecker.Execute();
+            if (!immutabilitChecker.IsConstant)
+            {
+                Console.Error.WriteLine($"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is not constant according to theorem prover.");
                 ExitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
