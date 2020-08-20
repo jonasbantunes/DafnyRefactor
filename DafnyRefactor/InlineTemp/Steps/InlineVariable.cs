@@ -4,6 +4,7 @@
     {
         public Expression expr = null;
         public bool isUpdated = false;
+        public UpdateStmt initStmt = null;
         public string Name => TableDeclaration.Name;
         public SymbolTableDeclaration TableDeclaration { get; protected set; } = null;
 

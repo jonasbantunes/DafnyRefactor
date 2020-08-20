@@ -77,7 +77,7 @@ namespace Microsoft.Dafny
             var replacedEdits = refactor.Edits;
 
             /* STEP 7: REMOVE VARIABLE DECLARATION */
-            var remover = new RemoveRefactoredDeclarationStep(program, symbolTable, inVar.TableDeclaration);
+            var remover = new RemoveRefactoredDeclarationStep(program, symbolTable, inVar);
             remover.Execute();
             var removedEdits = remover.Edits;
 

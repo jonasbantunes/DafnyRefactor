@@ -49,7 +49,7 @@ DafnyRefator.exe apply-inline-temp example.dfy 2 7
 ```
 
 Currently limitations:
-- Only single variable declarations are removed (ex.: `var x: int := 5;`);
+- Declaration and initialization must be on same statement (ex.: `var x: int := 5;`);
 - Only non-object values are guaranteed to be correctly refactored;
 
 ## Contributing

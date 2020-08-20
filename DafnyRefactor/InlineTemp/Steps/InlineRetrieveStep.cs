@@ -32,6 +32,7 @@ namespace Microsoft.Dafny
                     {
                         ExprRhs erhs = (ExprRhs)up.Rhss[i];
                         InlineVar.expr = erhs.Expr;
+                        InlineVar.initStmt = up;
 
                         string ghostStmt = $"\n ghost var {$"{InlineVar.Name}___RefactorGhost"} := {InlineVar.Name};\n";
                         string ghostStmtExpr = $"\n ghost var {$"{InlineVar.Name}___RefactorGhostExpr"} := {Printer.ExprToString(InlineVar.expr)};\n";
@@ -57,6 +58,7 @@ namespace Microsoft.Dafny
                     if (InlineVar.expr == null && up.Rhss[i] is ExprRhs erhs)
                     {
                         InlineVar.expr = erhs.Expr;
+                        InlineVar.initStmt = up;
 
                         string ghostStmt = $"\n ghost var {$"{InlineVar.Name}___RefactorGhost"} := {InlineVar.Name};\n";
                         string ghostStmtExpr = $"\n ghost var {$"{InlineVar.Name}___RefactorGhostExpr"} := {Printer.ExprToString(InlineVar.expr)};\n";
