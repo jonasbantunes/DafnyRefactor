@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using CommandLine;
+﻿using CommandLine;
 using CommandLine.Text;
+using System.Collections.Generic;
 
 namespace Microsoft.Dafny
 {

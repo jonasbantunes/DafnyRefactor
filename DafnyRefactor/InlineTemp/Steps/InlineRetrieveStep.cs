@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Microsoft.Dafny
 {
@@ -34,7 +33,6 @@ namespace Microsoft.Dafny
                         ExprRhs erhs = (ExprRhs)up.Rhss[i];
                         InlineVar.expr = erhs.Expr;
 
-                        /* TEST START*/
                         string ghostStmt = $"\n ghost var {$"{InlineVar.Name}___RefactorGhost"} := {InlineVar.Name};\n";
                         string ghostStmtExpr = $"\n ghost var {$"{InlineVar.Name}___RefactorGhostExpr"} := {Printer.ExprToString(InlineVar.expr)};\n";
                         string assertStmt = $"\n assert {$"{InlineVar.Name}___RefactorGhost"} == {InlineVar.Name};\n";
@@ -43,7 +41,6 @@ namespace Microsoft.Dafny
                         Edits.Add(new SourceEdit(vds.EndTok.pos + 1, ghostStmtExpr));
                         Edits.Add(new SourceEdit(curTable.blockStmt.EndTok.pos, assertStmt));
                         Edits.Add(new SourceEdit(curTable.blockStmt.EndTok.pos, assertStmtExpr));
-                        /* TEST END */
                     }
                 }
             }
@@ -60,6 +57,15 @@ namespace Microsoft.Dafny
                     if (InlineVar.expr == null && up.Rhss[i] is ExprRhs erhs)
                     {
                         InlineVar.expr = erhs.Expr;
+
+                        string ghostStmt = $"\n ghost var {$"{InlineVar.Name}___RefactorGhost"} := {InlineVar.Name};\n";
+                        string ghostStmtExpr = $"\n ghost var {$"{InlineVar.Name}___RefactorGhostExpr"} := {Printer.ExprToString(InlineVar.expr)};\n";
+                        string assertStmt = $"\n assert {$"{InlineVar.Name}___RefactorGhost"} == {InlineVar.Name};\n";
+                        string assertStmtExpr = $"\n assert {$"{InlineVar.Name}___RefactorGhostExpr"} == {Printer.ExprToString(InlineVar.expr)};\n";
+                        Edits.Add(new SourceEdit(up.EndTok.pos + 1, ghostStmt));
+                        Edits.Add(new SourceEdit(up.EndTok.pos + 1, ghostStmtExpr));
+                        Edits.Add(new SourceEdit(curTable.blockStmt.EndTok.pos, assertStmt));
+                        Edits.Add(new SourceEdit(curTable.blockStmt.EndTok.pos, assertStmtExpr));
                     }
                     else
                     {

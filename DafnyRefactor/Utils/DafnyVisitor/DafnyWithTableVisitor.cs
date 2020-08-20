@@ -19,7 +19,7 @@
         protected override BlockStmt Visit(BlockStmt block)
         {
             curTable = curTable.LookupTable(block.Tok.GetHashCode());
-            var baseReturn =  base.Visit(block);
+            var baseReturn = base.Visit(block);
             curTable = curTable.Parent;
 
             return baseReturn;
