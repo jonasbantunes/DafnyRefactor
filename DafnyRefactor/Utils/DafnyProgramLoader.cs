@@ -17,6 +17,11 @@ namespace Microsoft.Dafny
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
 
+            if (!IsFileValid())
+            {
+                return;
+            }
+
             Program = null;
             var dafnyFiles = new List<DafnyFile>();
             try
@@ -34,6 +39,12 @@ namespace Microsoft.Dafny
             {
                 Program = tempProgram;
             }
+        }
+
+        protected bool IsFileValid()
+        {
+            int res = DafnyDriver.Main(new string[] { filePath, "/compile:0" });
+            return res == 0;
         }
     }
 }

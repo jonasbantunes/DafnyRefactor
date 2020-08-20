@@ -9,6 +9,7 @@ namespace Microsoft.Dafny
         protected readonly bool stdout;
         protected readonly List<SourceEdit> edits;
         protected readonly string filePath;
+        public bool ChangesInvalidateSource { get; protected set; } = false;
 
         public SaveChangesStep(string filePath, List<SourceEdit> edits, bool stdout)
         {
@@ -22,13 +23,24 @@ namespace Microsoft.Dafny
             string source = File.ReadAllText(filePath);
             var sourceEditor = new SourceEditor(source, edits);
             sourceEditor.Apply();
-            if (stdout)
+
+            // Check if source is still valid after changes
+            string tempPath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".dfy";
+            File.WriteAllText(tempPath, sourceEditor.Source);
+            var res = DafnyDriver.Main(new string[] { tempPath, "/compile:0" });
+            File.Delete(tempPath);
+            ChangesInvalidateSource = res != 0;
+
+            if (!ChangesInvalidateSource)
             {
-                Console.WriteLine(sourceEditor.Source);
-            }
-            else
-            {
-                File.WriteAllText(filePath, sourceEditor.Source);
+                if (stdout)
+                {
+                    Console.WriteLine(sourceEditor.Source);
+                }
+                else
+                {
+                    File.WriteAllText(filePath, sourceEditor.Source);
+                }
             }
         }
     }

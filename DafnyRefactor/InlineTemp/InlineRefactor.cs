@@ -85,6 +85,12 @@ namespace Microsoft.Dafny
             var edits = replacedEdits.Concat(removedEdits).ToList();
             var saveChanges = new SaveChangesStep(options.FilePath, edits, options.Stdout);
             saveChanges.Save();
+            if(saveChanges.ChangesInvalidateSource)
+            {
+                Console.Error.WriteLine($"Error: refactor invalidate source");
+                ExitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
+                return;
+            }
         }
     }
 }

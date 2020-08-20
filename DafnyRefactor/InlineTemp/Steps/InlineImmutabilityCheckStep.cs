@@ -25,7 +25,6 @@ namespace Microsoft.Dafny
 
             string tempPath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".dfy";
             File.WriteAllText(tempPath, sourceEditor.Source);
-            Console.WriteLine(tempPath);
 
             var res = DafnyDriver.Main(new string[] { tempPath, "/compile:0" });
             IsConstant = res == 0;
