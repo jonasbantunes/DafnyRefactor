@@ -1,0 +1,8 @@
+method Main() {
+  var a: int;
+  a := 3;
+  var y: int := 3;
+  var z: int := y + 3*(2 + 1);
+  y := 10;
+  assert z == 4*(2 + 1);
+}

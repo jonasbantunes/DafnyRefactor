@@ -6,21 +6,19 @@ namespace Microsoft.Dafny
 {
     public class SaveChangesStep
     {
-        protected readonly bool stdout;
+        protected readonly ApplyInlineTempOptions options;
         protected readonly List<SourceEdit> edits;
-        protected readonly string filePath;
         public bool ChangesInvalidateSource { get; protected set; } = false;
 
-        public SaveChangesStep(string filePath, List<SourceEdit> edits, bool stdout)
+        public SaveChangesStep(List<SourceEdit> edits, ApplyInlineTempOptions options)
         {
-            this.filePath = filePath;
             this.edits = edits;
-            this.stdout = stdout;
+            this.options = options;
         }
 
         public void Save()
         {
-            string source = File.ReadAllText(filePath);
+            string source = File.ReadAllText(options.FilePath);
             var sourceEditor = new SourceEditor(source, edits);
             sourceEditor.Apply();
 
@@ -33,13 +31,17 @@ namespace Microsoft.Dafny
 
             if (!ChangesInvalidateSource)
             {
-                if (stdout)
+                if (options.Stdout)
                 {
                     Console.WriteLine(sourceEditor.Source);
                 }
+                else if (options.Output != null)
+                {
+                    File.WriteAllText(options.Output, sourceEditor.Source);
+                }
                 else
                 {
-                    File.WriteAllText(filePath, sourceEditor.Source);
+                    File.WriteAllText(options.FilePath, sourceEditor.Source);
                 }
             }
         }

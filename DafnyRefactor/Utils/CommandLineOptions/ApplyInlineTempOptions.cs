@@ -19,6 +19,9 @@ namespace Microsoft.Dafny
         [Option(Default = false, HelpText = "Redirect applied refactor to stdout")]
         public bool Stdout { get; set; }
 
+        [Option('o', "output", Default = null, HelpText = "Redirect applied refactor to file")]
+        public string Output { get; set; }
+
         [Usage]
         public static IEnumerable<Example> Examples
         {

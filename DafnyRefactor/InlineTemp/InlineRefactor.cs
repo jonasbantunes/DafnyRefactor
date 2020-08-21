@@ -91,7 +91,7 @@ namespace Microsoft.Dafny
 
             /* STEP 8: SAVE CHANGES */
             var edits = replacedEdits.Concat(removedEdits).ToList();
-            var saveChanges = new SaveChangesStep(options.FilePath, edits, options.Stdout);
+            var saveChanges = new SaveChangesStep(edits, options);
             saveChanges.Save();
             if (saveChanges.ChangesInvalidateSource)
             {

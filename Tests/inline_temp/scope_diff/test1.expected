@@ -1,0 +1,10 @@
+method Main() {
+  
+  var z: int := 3 + 3*(2 + 1);
+  if ((2 + 1) == (2 + 1))
+  {
+    var x: int := 5;
+    x:= x + 1;
+  }
+  assert z == 4*(2 + 1);
+}
