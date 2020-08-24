@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using DafnyRefactor.InlineTemp.Steps;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.CommandLineOptions;
@@ -13,8 +11,6 @@ namespace DafnyRefactor.InlineTemp
     {
         protected readonly ApplyInlineTempOptions options;
         protected Program program;
-        protected TextWriter consoleOutput;
-        protected TextWriter consoleError;
         public int ExitCode { get; protected set; }
 
         public InlineRefactor(ApplyInlineTempOptions options)
@@ -24,18 +20,13 @@ namespace DafnyRefactor.InlineTemp
 
         public void Refactor()
         {
-            consoleOutput = Console.Out;
-            consoleError = Console.Error;
-            Console.SetOut(TextWriter.Null);
-            Console.SetError(TextWriter.Null);
-
             /* STEP 1: INITIALIZE PROGRAM */
             var programLoader = new DafnyProgramLoader(options.FilePath);
             programLoader.Load();
             program = programLoader.Program;
             if (program == null)
             {
-                consoleError.WriteLine($"Error: can't open {options.FilePath}");
+                DafnyRefactorDriver.consoleError.WriteLine($"Error: can't open {options.FilePath}");
                 ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
@@ -51,7 +42,7 @@ namespace DafnyRefactor.InlineTemp
             SymbolTableDeclaration declaration = locateVariable.FoundDeclaration;
             if (declaration == null)
             {
-                consoleError.WriteLine(
+                DafnyRefactorDriver.consoleError.WriteLine(
                     $"Error: can't locate variable on line {options.VarLine} and column {options.VarColumn}.");
                 ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
@@ -64,14 +55,14 @@ namespace DafnyRefactor.InlineTemp
             var inVar = inlineRetriever.InlineVar;
             if (inVar.expr == null)
             {
-                consoleError.WriteLine(
+                DafnyRefactorDriver.consoleError.WriteLine(
                     $"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is never initialized.");
                 ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
             else if (inVar.isUpdated)
             {
-                consoleError.WriteLine(
+                DafnyRefactorDriver.consoleError.WriteLine(
                     $"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is not constant.");
                 ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
@@ -82,7 +73,7 @@ namespace DafnyRefactor.InlineTemp
             immutabilitChecker.Execute();
             if (!immutabilitChecker.IsConstant)
             {
-                consoleError.WriteLine(
+                DafnyRefactorDriver.consoleError.WriteLine(
                     $"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is not constant according with theorem prover.");
                 ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
@@ -105,7 +96,7 @@ namespace DafnyRefactor.InlineTemp
 
             if (!saveChanges.ChangesInvalidateSource) return;
 
-            consoleError.WriteLine("Error: refactor invalidate source");
+            DafnyRefactorDriver.consoleError.WriteLine("Error: refactor invalidate source");
             ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
         }
     }

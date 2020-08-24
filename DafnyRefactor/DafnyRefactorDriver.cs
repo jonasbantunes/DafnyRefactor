@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CommandLine;
 using DafnyRefactor.InlineTemp;
 using DafnyRefactor.Utils.CommandLineOptions;
@@ -10,6 +12,8 @@ namespace DafnyRefactor
     public class DafnyRefactorDriver
     {
         protected static int exitCode = (int) DafnyDriver.ExitValue.VERIFIED;
+        public static TextWriter consoleOutput;
+        public static TextWriter consoleError;
 
         public static int Main(string[] args)
         {
@@ -17,15 +21,24 @@ namespace DafnyRefactor
             return CommandLine.Parser.Default.ParseArguments(args, types).MapResult(Run, HandleParseError);
         }
 
+        public static void SetupConsole()
+        {
+            consoleOutput = Console.Out;
+            consoleError = Console.Error;
+            Console.SetOut(TextWriter.Null);
+            Console.SetError(TextWriter.Null);
+        }
+
         public static int HandleParseError(IEnumerable<Error> errs)
         {
-            if (errs.IsVersion())
+            var errors = errs as Error[] ?? errs.ToArray();
+            if (errors.IsVersion())
             {
                 Console.WriteLine("Version Request");
                 return 0;
             }
 
-            if (errs.IsHelp())
+            if (errors.IsHelp())
             {
                 Console.WriteLine("Help Request");
                 return 0;
@@ -48,6 +61,8 @@ namespace DafnyRefactor
 
         public static int Run(IApplyOptions options)
         {
+            SetupConsole();
+
             switch (options)
             {
                 case ApplyInlineTempOptions inlineTempOptions:

@@ -18,12 +18,9 @@ namespace DafnyRefactor.Utils
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
 
-            if (!IsFileValid())
-            {
-                return;
-            }
-
             Program = null;
+            if (!IsFileValid()) return;
+
             var dafnyFiles = new List<DafnyFile>();
             try
             {
@@ -34,8 +31,7 @@ namespace DafnyRefactor.Utils
                 return;
             }
 
-
-            string err = Main.Parse(dafnyFiles, "the program", reporter, out Program tempProgram);
+            var err = Main.Parse(dafnyFiles, "the program", reporter, out var tempProgram);
             if (err == null)
             {
                 Program = tempProgram;
@@ -44,7 +40,7 @@ namespace DafnyRefactor.Utils
 
         protected bool IsFileValid()
         {
-            int res = DafnyDriver.Main(new[] { filePath, "/compile:0" });
+            var res = DafnyDriver.Main(new[] {filePath, "/compile:0"});
             return res == 0;
         }
     }

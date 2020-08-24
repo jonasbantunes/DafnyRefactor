@@ -11,6 +11,7 @@ namespace DafnyRefactor.InlineTemp.Steps
     {
         protected readonly ApplyInlineTempOptions options;
         protected readonly List<SourceEdit> edits;
+        protected SourceEditor sourceEditor;
         public bool ChangesInvalidateSource { get; protected set; }
 
         public SaveChangesStep(List<SourceEdit> edits, ApplyInlineTempOptions options)
@@ -21,31 +22,43 @@ namespace DafnyRefactor.InlineTemp.Steps
 
         public void Save()
         {
-            string source = File.ReadAllText(options.FilePath);
-            var sourceEditor = new SourceEditor(source, edits);
-            sourceEditor.Apply();
+            ApplyChanges();
+            VerifySourceProof();
+            if (ChangesInvalidateSource) return;
 
-            // Check if source is still valid after changes
-            string tempPath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".dfy";
+            SaveTo();
+        }
+
+        protected void ApplyChanges()
+        {
+            var source = File.ReadAllText(options.FilePath);
+            sourceEditor = new SourceEditor(source, edits);
+            sourceEditor.Apply();
+        }
+
+        protected void VerifySourceProof()
+        {
+            var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
             File.WriteAllText(tempPath, sourceEditor.Source);
             var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});
             File.Delete(tempPath);
-            ChangesInvalidateSource = res != 0;
 
-            if (!ChangesInvalidateSource)
+            ChangesInvalidateSource = res != 0;
+        }
+
+        protected void SaveTo()
+        {
+            if (options.Stdout)
             {
-                if (options.Stdout)
-                {
-                    Console.WriteLine(sourceEditor.Source);
-                }
-                else if (options.Output != null)
-                {
-                    File.WriteAllText(options.Output, sourceEditor.Source);
-                }
-                else
-                {
-                    File.WriteAllText(options.FilePath, sourceEditor.Source);
-                }
+                DafnyRefactorDriver.consoleOutput.WriteLine(sourceEditor.Source);
+            }
+            else if (options.Output != null)
+            {
+                File.WriteAllText(options.Output, sourceEditor.Source);
+            }
+            else
+            {
+                File.WriteAllText(options.FilePath, sourceEditor.Source);
             }
         }
     }
