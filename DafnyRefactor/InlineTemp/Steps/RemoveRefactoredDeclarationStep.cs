@@ -20,7 +20,7 @@ namespace Microsoft.Dafny
             base.Execute();
         }
 
-        protected override VarDeclStmt Visit(VarDeclStmt vds)
+        protected override void Visit(VarDeclStmt vds)
         {
             if (vds.Locals.Count == 1 && curTable.LookupDeclaration(vds.Locals[0].Name).GetHashCode() == inlineVar.TableDeclaration.GetHashCode())
             {
@@ -72,10 +72,10 @@ namespace Microsoft.Dafny
                 }
             }
 
-            return base.Visit(vds);
+            base.Visit(vds);
         }
 
-        protected override UpdateStmt Visit(UpdateStmt up)
+        protected override void Visit(UpdateStmt up)
         {
             if (up.Lhss.Count == 1 && up.Lhss[0] is NameSegment upNm && curTable.LookupDeclaration(upNm.Name).GetHashCode() == inlineVar.TableDeclaration.GetHashCode())
             {
@@ -102,7 +102,7 @@ namespace Microsoft.Dafny
                 }
             }
 
-            return base.Visit(up);
+            base.Visit(up);
         }
     }
 }

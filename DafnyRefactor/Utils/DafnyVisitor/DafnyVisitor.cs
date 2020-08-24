@@ -17,72 +17,59 @@ namespace Microsoft.Dafny
         }
 
         // TODO: Improve naming to differenciate between castings (also Visit), vertical (Visit) and horizontal (Traverse) iteration on tree and 
-        protected virtual Program Visit(Program prog)
+        protected virtual void Visit(Program prog)
         {
             foreach (TopLevelDecl tld in prog.DefaultModuleDef.TopLevelDecls)
             {
                 Visit(tld);
             }
-
-            return program;
         }
 
-        protected virtual TopLevelDecl Visit(TopLevelDecl tld)
+        protected virtual void Visit(TopLevelDecl tld)
         {
             if (tld is ClassDecl cd)
             {
                 Visit(cd);
             }
-
-            return tld;
         }
 
-        protected virtual ClassDecl Visit(ClassDecl cd)
+        protected virtual void Visit(ClassDecl cd)
         {
             Traverse(cd.Members);
-            return cd;
         }
 
-        protected virtual MemberDecl Visit(MemberDecl md)
+        protected virtual void Visit(MemberDecl md)
         {
             if (md is Method mt)
             {
-                return Visit(mt);
+                Visit(mt);
             }
 
-            return md;
         }
 
-        protected virtual Method Visit(Method mt)
+        protected virtual void Visit(Method mt)
         {
             Visit(mt.Body);
-
-            return mt;
         }
 
-        protected virtual WhileStmt Visit(WhileStmt while_)
+        protected virtual void Visit(WhileStmt while_)
         {
             Visit(while_.Body);
-
-            return while_;
         }
 
-        protected virtual BlockStmt Visit(BlockStmt block)
+        protected virtual void Visit(BlockStmt block)
         {
             Traverse(block.Body);
-            return block;
         }
 
-        protected virtual IfStmt Visit(IfStmt ifStmt)
+        protected virtual void Visit(IfStmt ifStmt)
         {
             Visit(ifStmt.Guard);
             Visit(ifStmt.Thn);
             Visit(ifStmt.Els);
-
-            return ifStmt;
         }
 
-        protected virtual Expression Visit(Expression exp)
+        protected virtual void Visit(Expression exp)
         {
             if (exp is ParensExpression parensExps)
             {
@@ -96,122 +83,98 @@ namespace Microsoft.Dafny
             {
                 Visit(nameSeg);
             }
-
-            return exp;
         }
 
-        protected virtual ParensExpression Visit(ParensExpression parensExp)
+        protected virtual void Visit(ParensExpression parensExp)
         {
             Visit(parensExp.E);
-            return parensExp;
         }
 
-        protected virtual BinaryExpr Visit(BinaryExpr binExp)
+        protected virtual void Visit(BinaryExpr binExp)
         {
             Visit(binExp.E0);
             Visit(binExp.E1);
-
-            return binExp;
         }
 
-        protected virtual NameSegment Visit(NameSegment nameSeg)
-        {
-            return nameSeg;
-        }
+        protected virtual void Visit(NameSegment nameSeg) { }
 
-        protected virtual Statement Visit(Statement stmt)
+        protected virtual void Visit(Statement stmt)
         {
             if (stmt is VarDeclStmt vds)
             {
-                return Visit(vds);
+                Visit(vds);
             }
             else if (stmt is UpdateStmt us)
             {
-                return Visit(us);
+                Visit(us);
             }
             else if (stmt is AssertStmt assert)
             {
-                return Visit(assert);
+                Visit(assert);
             }
             else if (stmt is WhileStmt while_)
             {
-                return Visit(while_);
+                Visit(while_);
             }
-
             else if (stmt is IfStmt ifStmt)
             {
-                return Visit(ifStmt);
+                Visit(ifStmt);
             }
-
-            return stmt;
         }
 
-        protected virtual VarDeclStmt Visit(VarDeclStmt vds)
+        protected virtual void Visit(VarDeclStmt vds)
         {
             if (vds.Update is UpdateStmt up)
             {
                 Visit(up);
             }
-
-            return vds;
         }
 
-        protected virtual UpdateStmt Visit(UpdateStmt up)
+        protected virtual void Visit(UpdateStmt up)
         {
             Traverse(up.Rhss);
-            return up;
         }
 
-        protected virtual AssertStmt Visit(AssertStmt assert)
+        protected virtual void Visit(AssertStmt assert)
         {
             Visit(assert.Expr);
-            return assert;
         }
 
-        protected virtual AssignmentRhs Visit(AssignmentRhs rhs)
+        protected virtual void Visit(AssignmentRhs rhs)
         {
             if (rhs is ExprRhs expRhs)
             {
-                return Visit(expRhs);
+                Visit(expRhs);
             }
-
-            return rhs;
         }
 
-        protected virtual ExprRhs Visit(ExprRhs expRhs)
+        protected virtual void Visit(ExprRhs expRhs)
         {
             Visit(expRhs.Expr);
-            return expRhs;
         }
 
-        protected virtual List<Statement> Traverse(List<Statement> body)
+        protected virtual void Traverse(List<Statement> body)
         {
             foreach (Statement stmt in body)
             {
                 Visit(stmt);
             }
-
-            return body;
         }
 
-        protected virtual List<MemberDecl> Traverse(List<MemberDecl> members)
+        protected virtual void Traverse(List<MemberDecl> members)
         {
             foreach (MemberDecl decl in members)
             {
                 Visit(decl);
             }
-
-            return members;
         }
 
-        protected virtual List<AssignmentRhs> Traverse(List<AssignmentRhs> rhss)
+        protected virtual void Traverse(List<AssignmentRhs> rhss)
         {
             foreach (AssignmentRhs rhs in rhss)
             {
                 Visit(rhs);
             }
-
-            return rhss;
         }
     }
 }

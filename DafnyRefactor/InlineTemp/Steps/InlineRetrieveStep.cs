@@ -22,7 +22,7 @@ namespace Microsoft.Dafny
             base.Execute();
         }
 
-        protected override VarDeclStmt Visit(VarDeclStmt vds)
+        protected override void Visit(VarDeclStmt vds)
         {
             if (vds.Update is UpdateStmt up)
             {
@@ -45,11 +45,9 @@ namespace Microsoft.Dafny
                     }
                 }
             }
-
-            return vds;
         }
 
-        protected override UpdateStmt Visit(UpdateStmt up)
+        protected override void Visit(UpdateStmt up)
         {
             for (int i = 0; i < up.Lhss.Count; i++)
             {
@@ -75,8 +73,6 @@ namespace Microsoft.Dafny
                     }
                 }
             }
-
-            return up;
         }
     }
 }

@@ -19,7 +19,7 @@
             base.Execute();
         }
 
-        protected override VarDeclStmt Visit(VarDeclStmt vds)
+        protected override void Visit(VarDeclStmt vds)
         {
             foreach (var local in vds.Locals)
             {
@@ -29,16 +29,15 @@
                 }
             }
 
-            return base.Visit(vds);
+            base.Visit(vds);
         }
 
-        protected override NameSegment Visit(NameSegment nameSeg)
+        protected override void Visit(NameSegment nameSeg)
         {
             if (IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line, nameSeg.tok.col + nameSeg.tok.val.Length - 1))
             {
                 FoundDeclaration = curTable.LookupDeclaration(nameSeg.Name);
             }
-            return nameSeg;
         }
 
         protected bool IsInRange(int line, int column, int startLine, int starColumn, int endLine, int endColumn)

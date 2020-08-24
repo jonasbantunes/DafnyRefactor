@@ -18,13 +18,14 @@ namespace Microsoft.Dafny
             this.inlineVar = inlineVar;
         }
 
-        protected override NameSegment Visit(NameSegment nameSeg)
+        protected override void Visit(NameSegment nameSeg)
         {
             if (nameSeg.Name == inlineVar.Name && curTable.LookupDeclaration(nameSeg.Name).GetHashCode() == inlineVar.TableDeclaration.GetHashCode())
             {
                 Edits.Add(new SourceEdit(nameSeg.tok.pos, nameSeg.tok.pos + nameSeg.tok.val.Length, $"({Printer.ExprToString(inlineVar.expr)})"));
             }
-            return base.Visit(nameSeg);
+
+            base.Visit(nameSeg);
         }
     }
 }

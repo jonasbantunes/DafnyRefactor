@@ -133,6 +133,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\dafny\Binaries\Z3-LICENSE.txt">
+      <Link>Z3-LICENSE.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\dafny\Binaries\z3.exe">
       <Link>z3.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

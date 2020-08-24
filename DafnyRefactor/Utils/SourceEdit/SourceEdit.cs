@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Dafny
+﻿using System;
+
+namespace Microsoft.Dafny
 {
     public class SourceEdit
     {
@@ -8,6 +10,11 @@
 
         public SourceEdit(int startPos, int endPos, string content)
         {
+            if (startPos > endPos)
+            {
+                throw new ArgumentOutOfRangeException("endPos", "Start position should be greater or equal than end position");
+            }
+
             this.startPos = startPos;
             this.endPos = endPos;
             this.content = content;

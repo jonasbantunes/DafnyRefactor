@@ -16,13 +16,11 @@
             base.Execute();
         }
 
-        protected override BlockStmt Visit(BlockStmt block)
+        protected override void Visit(BlockStmt block)
         {
             curTable = curTable.LookupTable(block.Tok.GetHashCode());
-            var baseReturn = base.Visit(block);
+            base.Visit(block);
             curTable = curTable.Parent;
-
-            return baseReturn;
         }
     }
 }

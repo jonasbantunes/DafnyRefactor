@@ -15,23 +15,21 @@
             base.Execute();
         }
 
-        protected override VarDeclStmt Visit(VarDeclStmt vds)
+        protected override void Visit(VarDeclStmt vds)
         {
             foreach (LocalVariable local in vds.Locals)
             {
                 var declaration = new SymbolTableDeclaration(local, vds);
                 curTable.InsertDeclaration(declaration);
             }
-
-            return vds;
         }
 
-        protected override BlockStmt Visit(BlockStmt block)
+        protected override void Visit(BlockStmt block)
         {
             var subTable = new SymbolTable(block, curTable);
             curTable.InsertTable(subTable);
 
-            return base.Visit(block);
+            base.Visit(block);
         }
     }
 }
