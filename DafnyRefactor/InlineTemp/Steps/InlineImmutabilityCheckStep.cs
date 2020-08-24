@@ -14,7 +14,6 @@ namespace Microsoft.Dafny
         {
             this.filePath = filePath;
             this.edits = edits;
-
         }
 
         public void Execute()

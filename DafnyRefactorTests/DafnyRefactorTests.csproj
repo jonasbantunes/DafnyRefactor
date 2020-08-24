@@ -31,6 +31,41 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dafny">
+      <HintPath>..\..\dafny\Binaries\Dafny.dll</HintPath>
+    </Reference>
+    <Reference Include="DafnyPipeline">
+      <HintPath>..\..\dafny\Binaries\DafnyPipeline.dll</HintPath>
+    </Reference>
+    <Reference Include="DafnyRuntime">
+      <HintPath>..\..\dafny\Binaries\DafnyRuntime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BoogieAbsInt">
+      <HintPath>..\..\boogie\Binaries\BoogieAbsInt.dll</HintPath>
+    </Reference>
+    <Reference Include="BoogieConcurrency">
+      <HintPath>..\..\boogie\Binaries\BoogieConcurrency.dll</HintPath>
+    </Reference>
+    <Reference Include="BoogieCore">
+      <HintPath>..\..\boogie\Binaries\BoogieCore.dll</HintPath>
+    </Reference>
+    <Reference Include="BoogieExecutionEngine">
+      <HintPath>..\..\boogie\Binaries\BoogieExecutionEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="BoogieParserHelper">
+      <HintPath>..\..\boogie\Binaries\BoogieParserHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Provers.SMTLib">
+      <HintPath>..\..\boogie\Binaries\Provers.SMTLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="BoogieVCGeneration">
+      <HintPath>..\..\boogie\Binaries\BoogieVCGeneration.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -54,7 +89,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="DafnyRefactorDriverTests.cs" />
+    <Compile Include="InlineTempTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +119,18 @@
       </ItemGroup>
     </When>
   </Choose>
+  <ItemGroup>
+    <None Include="..\..\dafny\Binaries\DafnyPrelude.bpl">
+      <Link>DafnyPrelude.bpl</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\dafny\Binaries\z3.exe">
+      <Link>z3.exe</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
