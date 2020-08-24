@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Dafny
+﻿namespace DafnyRefactor.Utils.CommandLineOptions
 {
     public interface IApplyOptions
     {

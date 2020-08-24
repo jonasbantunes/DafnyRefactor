@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Dafny;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.Utils.SymbolTable
 {
     // TODO: Add constructor
     public class SymbolTable
@@ -58,6 +59,7 @@ namespace Microsoft.Dafny
                     return subTable;
                 }
             }
+
             return null;
         }
 
@@ -65,6 +67,5 @@ namespace Microsoft.Dafny
         {
             return blockStmt?.Tok.GetHashCode() ?? 0;
         }
-
     }
 }

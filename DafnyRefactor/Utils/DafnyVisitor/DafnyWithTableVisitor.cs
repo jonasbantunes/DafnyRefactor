@@ -1,11 +1,13 @@
-﻿namespace Microsoft.Dafny
+﻿using Microsoft.Dafny;
+
+namespace DafnyRefactor.Utils.DafnyVisitor
 {
     public class DafnyWithTableVisitor : DafnyVisitor
     {
-        protected SymbolTable curTable;
-        protected SymbolTable rootTable;
+        protected SymbolTable.SymbolTable curTable;
+        protected SymbolTable.SymbolTable rootTable;
 
-        public DafnyWithTableVisitor(Program program, SymbolTable rootTable) : base(program)
+        public DafnyWithTableVisitor(Program program, SymbolTable.SymbolTable rootTable) : base(program)
         {
             this.rootTable = rootTable;
         }

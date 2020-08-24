@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Dafny;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.Utils.DafnyVisitor
 {
     public class DafnyVisitor
     {
@@ -44,7 +45,6 @@ namespace Microsoft.Dafny
             {
                 Visit(mt);
             }
-
         }
 
         protected virtual void Visit(Method mt)
@@ -52,9 +52,9 @@ namespace Microsoft.Dafny
             Visit(mt.Body);
         }
 
-        protected virtual void Visit(WhileStmt while_)
+        protected virtual void Visit(WhileStmt @while)
         {
-            Visit(while_.Body);
+            Visit(@while.Body);
         }
 
         protected virtual void Visit(BlockStmt block)
@@ -71,17 +71,17 @@ namespace Microsoft.Dafny
 
         protected virtual void Visit(Expression exp)
         {
-            if (exp is ParensExpression parensExps)
+            switch (exp)
             {
-                Visit(parensExps);
-            }
-            else if (exp is BinaryExpr binExp)
-            {
-                Visit(binExp);
-            }
-            else if (exp is NameSegment nameSeg)
-            {
-                Visit(nameSeg);
+                case ParensExpression parensExps:
+                    Visit(parensExps);
+                    break;
+                case BinaryExpr binExp:
+                    Visit(binExp);
+                    break;
+                case NameSegment nameSeg:
+                    Visit(nameSeg);
+                    break;
             }
         }
 
@@ -96,29 +96,29 @@ namespace Microsoft.Dafny
             Visit(binExp.E1);
         }
 
-        protected virtual void Visit(NameSegment nameSeg) { }
+        protected virtual void Visit(NameSegment nameSeg)
+        {
+        }
 
         protected virtual void Visit(Statement stmt)
         {
-            if (stmt is VarDeclStmt vds)
+            switch (stmt)
             {
-                Visit(vds);
-            }
-            else if (stmt is UpdateStmt us)
-            {
-                Visit(us);
-            }
-            else if (stmt is AssertStmt assert)
-            {
-                Visit(assert);
-            }
-            else if (stmt is WhileStmt while_)
-            {
-                Visit(while_);
-            }
-            else if (stmt is IfStmt ifStmt)
-            {
-                Visit(ifStmt);
+                case VarDeclStmt vds:
+                    Visit(vds);
+                    break;
+                case UpdateStmt us:
+                    Visit(us);
+                    break;
+                case AssertStmt assert:
+                    Visit(assert);
+                    break;
+                case WhileStmt @while:
+                    Visit(@while);
+                    break;
+                case IfStmt ifStmt:
+                    Visit(ifStmt);
+                    break;
             }
         }
 

@@ -1,11 +1,16 @@
-﻿namespace Microsoft.Dafny
+﻿using DafnyRefactor.Utils.DafnyVisitor;
+using Microsoft.Dafny;
+
+namespace DafnyRefactor.Utils.SymbolTable
 {
     public class SymbolTableGenerator : DafnyWithTableVisitor
     {
         public SymbolTable GeneratedTable { get; protected set; }
 
         // TODO: find better alternative than insert "null"
-        public SymbolTableGenerator(Program program) : base(program, null) { }
+        public SymbolTableGenerator(Program program) : base(program, null)
+        {
+        }
 
         public override void Execute()
         {

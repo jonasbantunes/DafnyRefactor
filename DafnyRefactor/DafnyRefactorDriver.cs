@@ -1,17 +1,20 @@
-﻿using CommandLine;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CommandLine;
+using DafnyRefactor.InlineTemp;
+using DafnyRefactor.Utils.CommandLineOptions;
+using Microsoft.Dafny;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor
 {
     public class DafnyRefactorDriver
     {
-        protected static int exitCode = (int)DafnyDriver.ExitValue.VERIFIED;
+        protected static int exitCode = (int) DafnyDriver.ExitValue.VERIFIED;
 
         public static int Main(string[] args)
         {
-            System.Type[] types = { typeof(ApplyInlineTempOptions) };
-            return CommandLine.Parser.Default.ParseArguments(args, types).MapResult(options => Run(options), errs => HandleParseError(errs));
+            System.Type[] types = {typeof(ApplyInlineTempOptions)};
+            return CommandLine.Parser.Default.ParseArguments(args, types).MapResult(Run, HandleParseError);
         }
 
         public static int HandleParseError(IEnumerable<Error> errs)
@@ -27,8 +30,9 @@ namespace Microsoft.Dafny
                 Console.WriteLine("Help Request");
                 return 0;
             }
+
             Console.WriteLine("Parser Fail");
-            return (int)DafnyDriver.ExitValue.DAFNY_ERROR;
+            return (int) DafnyDriver.ExitValue.DAFNY_ERROR;
         }
 
         public static int Run(object obj)
@@ -52,7 +56,7 @@ namespace Microsoft.Dafny
                     exitCode = refactor.ExitCode;
                     break;
                 default:
-                    exitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
+                    exitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                     break;
             }
 

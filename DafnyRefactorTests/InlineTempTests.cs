@@ -1,7 +1,8 @@
-﻿using NUnit.Framework;
-using System.IO;
+﻿using System.IO;
+using DafnyRefactor;
+using NUnit.Framework;
 
-namespace Microsoft.Dafny.Tests
+namespace DafnyRefactorTests
 {
     [TestFixture()]
     public class InlineTempTests
@@ -14,14 +15,15 @@ namespace Microsoft.Dafny.Tests
         protected string TestFilePath => $"{testFileDir}\\source.dfy";
         protected string TestOutputPath => $"{testFileDir}\\test{testNumber}.out";
         protected string TestExpectedPath => $"{testFileDir}\\test{testNumber}.expected";
-        protected string[] Args => new[] { "apply-inline-temp", TestFilePath, $"{line}", $"{column}", "-o", TestOutputPath };
+
+        protected string[] Args => new[]
+            {"apply-inline-temp", TestFilePath, $"{line}", $"{column}", "-o", TestOutputPath};
 
         [SetUp]
         protected void SetUp()
         {
             var testRunnerDir = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
             testDir = $"{testRunnerDir.Parent?.Parent?.Parent?.FullName}\\Tests\\inline_temp";
-
         }
 
         [Test()]

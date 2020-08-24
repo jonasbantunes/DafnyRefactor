@@ -1,22 +1,22 @@
-﻿namespace Microsoft.Dafny
+﻿using Microsoft.Dafny;
+
+namespace DafnyRefactor.Utils.SymbolTable
 {
     public class SymbolTableDeclaration
     {
-        protected int hashCode;
-        public LocalVariable LocalVariable { get; protected set; }
-        public VarDeclStmt VarDeclStmt { get; protected set; }
-        public string Name => LocalVariable.Name;
+        public readonly LocalVariable localVariable;
+        public readonly VarDeclStmt varDeclStmt;
+        public string Name => localVariable.Name;
 
         public SymbolTableDeclaration(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
-            LocalVariable = localVariable;
-            VarDeclStmt = varDeclStmt;
-            hashCode = localVariable.GetHashCode();
+            this.localVariable = localVariable;
+            this.varDeclStmt = varDeclStmt;
         }
 
         public override int GetHashCode()
         {
-            return hashCode;
+            return localVariable.GetHashCode();
         }
     }
 }

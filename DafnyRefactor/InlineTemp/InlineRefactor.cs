@@ -1,8 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using DafnyRefactor.InlineTemp.Steps;
+using DafnyRefactor.Utils;
+using DafnyRefactor.Utils.CommandLineOptions;
+using DafnyRefactor.Utils.SymbolTable;
+using Microsoft.Dafny;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.InlineTemp
 {
     public class InlineRefactor
     {
@@ -10,7 +15,7 @@ namespace Microsoft.Dafny
         protected Program program;
         protected TextWriter consoleOutput;
         protected TextWriter consoleError;
-        public int ExitCode { get; protected set; } = 0;
+        public int ExitCode { get; protected set; }
 
         public InlineRefactor(ApplyInlineTempOptions options)
         {
@@ -31,7 +36,7 @@ namespace Microsoft.Dafny
             if (program == null)
             {
                 consoleError.WriteLine($"Error: can't open {options.FilePath}");
-                ExitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
+                ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
 
@@ -46,8 +51,9 @@ namespace Microsoft.Dafny
             SymbolTableDeclaration declaration = locateVariable.FoundDeclaration;
             if (declaration == null)
             {
-                consoleError.WriteLine($"Error: can't locate variable on line {options.VarLine} and column {options.VarColumn}.");
-                ExitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
+                consoleError.WriteLine(
+                    $"Error: can't locate variable on line {options.VarLine} and column {options.VarColumn}.");
+                ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
 
@@ -58,14 +64,16 @@ namespace Microsoft.Dafny
             var inVar = inlineRetriever.InlineVar;
             if (inVar.expr == null)
             {
-                consoleError.WriteLine($"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is never initialized.");
-                ExitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
+                consoleError.WriteLine(
+                    $"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is never initialized.");
+                ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
             else if (inVar.isUpdated)
             {
-                consoleError.WriteLine($"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is not constant.");
-                ExitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
+                consoleError.WriteLine(
+                    $"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is not constant.");
+                ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
 
@@ -74,8 +82,9 @@ namespace Microsoft.Dafny
             immutabilitChecker.Execute();
             if (!immutabilitChecker.IsConstant)
             {
-                consoleError.WriteLine($"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is not constant according with theorem prover.");
-                ExitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
+                consoleError.WriteLine(
+                    $"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is not constant according with theorem prover.");
+                ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
 
@@ -93,12 +102,11 @@ namespace Microsoft.Dafny
             var edits = replacedEdits.Concat(removedEdits).ToList();
             var saveChanges = new SaveChangesStep(edits, options);
             saveChanges.Save();
-            if (saveChanges.ChangesInvalidateSource)
-            {
-                consoleError.WriteLine($"Error: refactor invalidate source");
-                ExitCode = (int)DafnyDriver.ExitValue.DAFNY_ERROR;
-                return;
-            }
+
+            if (!saveChanges.ChangesInvalidateSource) return;
+
+            consoleError.WriteLine("Error: refactor invalidate source");
+            ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
         }
     }
 }

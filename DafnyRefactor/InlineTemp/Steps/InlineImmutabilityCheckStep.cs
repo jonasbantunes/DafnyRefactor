@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DafnyRefactor.Utils.SourceEdit;
+using Microsoft.Dafny;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.InlineTemp.Steps
 {
     public class InlineImmutabilityCheckStep
     {
@@ -18,14 +20,14 @@ namespace Microsoft.Dafny
 
         public void Execute()
         {
-            string source = File.ReadAllText(filePath);
+            var source = File.ReadAllText(filePath);
             var sourceEditor = new SourceEditor(source, edits);
             sourceEditor.Apply();
 
-            string tempPath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".dfy";
+            var tempPath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".dfy";
             File.WriteAllText(tempPath, sourceEditor.Source);
 
-            var res = DafnyDriver.Main(new string[] { tempPath, "/compile:0" });
+            var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});
             IsConstant = res == 0;
             File.Delete(tempPath);
         }

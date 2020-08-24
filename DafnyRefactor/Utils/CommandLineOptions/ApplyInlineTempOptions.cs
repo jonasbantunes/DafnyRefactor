@@ -1,8 +1,8 @@
-﻿using CommandLine;
+﻿using System.Collections.Generic;
+using CommandLine;
 using CommandLine.Text;
-using System.Collections.Generic;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.Utils.CommandLineOptions
 {
     [Verb("apply-inline-temp", HelpText = "Apply a refactor")]
     public class ApplyInlineTempOptions : IApplyOptions
@@ -23,15 +23,11 @@ namespace Microsoft.Dafny
         public string Output { get; set; }
 
         [Usage]
-        public static IEnumerable<Example> Examples
-        {
-            get
+        public static IEnumerable<Example> Examples =>
+            new List<Example>()
             {
-                return new List<Example>()
-                {
-                    new Example("Apply an inline refator", new ApplyInlineTempOptions{ FilePath = "example.dfy", VarLine= 2, VarColumn =7 })
-                };
-            }
-        }
+                new Example("Apply an inline refator",
+                    new ApplyInlineTempOptions {FilePath = "example.dfy", VarLine = 2, VarColumn = 7})
+            };
     }
 }

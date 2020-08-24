@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.Utils.SourceEdit
 {
     public class SourceEdit
     {
@@ -12,7 +12,8 @@ namespace Microsoft.Dafny
         {
             if (startPos > endPos)
             {
-                throw new ArgumentOutOfRangeException("endPos", "Start position should be greater or equal than end position");
+                throw new ArgumentOutOfRangeException(nameof(endPos),
+                    "Start position should be greater or equal than end position");
             }
 
             this.startPos = startPos;

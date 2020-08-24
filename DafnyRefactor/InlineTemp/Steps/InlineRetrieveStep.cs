@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
+using DafnyRefactor.Utils.DafnyVisitor;
+using DafnyRefactor.Utils.SourceEdit;
+using DafnyRefactor.Utils.SymbolTable;
+using Microsoft.Dafny;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.InlineTemp.Steps
 {
     public class InlineRetrieveStep : DafnyWithTableVisitor
     {
@@ -8,7 +12,8 @@ namespace Microsoft.Dafny
         public InlineVariable InlineVar { get; protected set; }
         public List<SourceEdit> Edits { get; protected set; }
 
-        public InlineRetrieveStep(Program program, SymbolTable rootTable, SymbolTableDeclaration declaration) : base(program, rootTable)
+        public InlineRetrieveStep(Program program, SymbolTable rootTable, SymbolTableDeclaration declaration) : base(
+            program, rootTable)
         {
             this.declaration = declaration;
         }
@@ -24,44 +29,48 @@ namespace Microsoft.Dafny
 
         protected override void Visit(VarDeclStmt vds)
         {
-            if (vds.Update is UpdateStmt up)
+            if (!(vds.Update is UpdateStmt up)) return;
+            for (var i = 0; i < up.Lhss.Count; i++)
             {
-                for (int i = 0; i < up.Lhss.Count; i++)
+                if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == InlineVar.Name &&
+                    curTable.LookupDeclaration(agie.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
                 {
-                    if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == InlineVar.Name && curTable.LookupDeclaration(agie.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
-                    {
-                        ExprRhs erhs = (ExprRhs)up.Rhss[i];
-                        InlineVar.expr = erhs.Expr;
-                        InlineVar.initStmt = up;
+                    var erhs = (ExprRhs) up.Rhss[i];
+                    InlineVar.expr = erhs.Expr;
+                    InlineVar.initStmt = up;
 
-                        string ghostStmt = $"\n ghost var {$"{InlineVar.Name}___RefactorGhost"} := {InlineVar.Name};\n";
-                        string ghostStmtExpr = $"\n ghost var {$"{InlineVar.Name}___RefactorGhostExpr"} := {Printer.ExprToString(InlineVar.expr)};\n";
-                        string assertStmt = $"\n assert {$"{InlineVar.Name}___RefactorGhost"} == {InlineVar.Name};\n";
-                        string assertStmtExpr = $"\n assert {$"{InlineVar.Name}___RefactorGhostExpr"} == {Printer.ExprToString(InlineVar.expr)};\n";
-                        Edits.Add(new SourceEdit(vds.EndTok.pos + 1, ghostStmt));
-                        Edits.Add(new SourceEdit(vds.EndTok.pos + 1, ghostStmtExpr));
-                        Edits.Add(new SourceEdit(curTable.blockStmt.EndTok.pos, assertStmt));
-                        Edits.Add(new SourceEdit(curTable.blockStmt.EndTok.pos, assertStmtExpr));
-                    }
+                    var ghostStmt = $"\n ghost var {InlineVar.Name}___RefactorGhost := {InlineVar.Name};\n";
+                    var ghostStmtExpr =
+                        $"\n ghost var {InlineVar.Name}___RefactorGhostExpr := {Printer.ExprToString(InlineVar.expr)};\n";
+                    var assertStmt = $"\n assert {InlineVar.Name}___RefactorGhost == {InlineVar.Name};\n";
+                    var assertStmtExpr =
+                        $"\n assert {InlineVar.Name}___RefactorGhostExpr == {Printer.ExprToString(InlineVar.expr)};\n";
+                    Edits.Add(new SourceEdit(vds.EndTok.pos + 1, ghostStmt));
+                    Edits.Add(new SourceEdit(vds.EndTok.pos + 1, ghostStmtExpr));
+                    Edits.Add(new SourceEdit(curTable.blockStmt.EndTok.pos, assertStmt));
+                    Edits.Add(new SourceEdit(curTable.blockStmt.EndTok.pos, assertStmtExpr));
                 }
             }
         }
 
         protected override void Visit(UpdateStmt up)
         {
-            for (int i = 0; i < up.Lhss.Count; i++)
+            for (var i = 0; i < up.Lhss.Count; i++)
             {
-                if (up.Lhss[i] is NameSegment nm && nm.Name == InlineVar.Name && curTable.LookupDeclaration(nm.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
+                if (up.Lhss[i] is NameSegment nm && nm.Name == InlineVar.Name &&
+                    curTable.LookupDeclaration(nm.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
                 {
                     if (InlineVar.expr == null && up.Rhss[i] is ExprRhs erhs)
                     {
                         InlineVar.expr = erhs.Expr;
                         InlineVar.initStmt = up;
 
-                        string ghostStmt = $"\n ghost var {$"{InlineVar.Name}___RefactorGhost"} := {InlineVar.Name};\n";
-                        string ghostStmtExpr = $"\n ghost var {$"{InlineVar.Name}___RefactorGhostExpr"} := {Printer.ExprToString(InlineVar.expr)};\n";
-                        string assertStmt = $"\n assert {$"{InlineVar.Name}___RefactorGhost"} == {InlineVar.Name};\n";
-                        string assertStmtExpr = $"\n assert {$"{InlineVar.Name}___RefactorGhostExpr"} == {Printer.ExprToString(InlineVar.expr)};\n";
+                        var ghostStmt = $"\n ghost var {InlineVar.Name}___RefactorGhost := {InlineVar.Name};\n";
+                        var ghostStmtExpr =
+                            $"\n ghost var {InlineVar.Name}___RefactorGhostExpr := {Printer.ExprToString(InlineVar.expr)};\n";
+                        var assertStmt = $"\n assert {InlineVar.Name}___RefactorGhost == {InlineVar.Name};\n";
+                        var assertStmtExpr =
+                            $"\n assert {InlineVar.Name}___RefactorGhostExpr == {Printer.ExprToString(InlineVar.expr)};\n";
                         Edits.Add(new SourceEdit(up.EndTok.pos + 1, ghostStmt));
                         Edits.Add(new SourceEdit(up.EndTok.pos + 1, ghostStmtExpr));
                         Edits.Add(new SourceEdit(curTable.blockStmt.EndTok.pos, assertStmt));

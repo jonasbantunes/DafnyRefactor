@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Dafny;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.Utils
 {
     public class DafnyProgramLoader
     {
@@ -43,7 +44,7 @@ namespace Microsoft.Dafny
 
         protected bool IsFileValid()
         {
-            int res = DafnyDriver.Main(new string[] { filePath, "/compile:0" });
+            int res = DafnyDriver.Main(new[] { filePath, "/compile:0" });
             return res == 0;
         }
     }

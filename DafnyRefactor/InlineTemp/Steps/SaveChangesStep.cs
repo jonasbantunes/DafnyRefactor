@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DafnyRefactor.Utils.CommandLineOptions;
+using DafnyRefactor.Utils.SourceEdit;
+using Microsoft.Dafny;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.InlineTemp.Steps
 {
     public class SaveChangesStep
     {
         protected readonly ApplyInlineTempOptions options;
         protected readonly List<SourceEdit> edits;
-        public bool ChangesInvalidateSource { get; protected set; } = false;
+        public bool ChangesInvalidateSource { get; protected set; }
 
         public SaveChangesStep(List<SourceEdit> edits, ApplyInlineTempOptions options)
         {
@@ -25,7 +28,7 @@ namespace Microsoft.Dafny
             // Check if source is still valid after changes
             string tempPath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".dfy";
             File.WriteAllText(tempPath, sourceEditor.Source);
-            var res = DafnyDriver.Main(new string[] { tempPath, "/compile:0" });
+            var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});
             File.Delete(tempPath);
             ChangesInvalidateSource = res != 0;
 

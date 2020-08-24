@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace Microsoft.Dafny
+namespace DafnyRefactor.Utils.SourceEdit
 {
     public class SourceEditor
     {
@@ -24,6 +24,7 @@ namespace Microsoft.Dafny
                 sourceBuilder.Remove(edit.startPos, edit.endPos - edit.startPos);
                 sourceBuilder.Insert(edit.startPos, edit.content);
             }
+
             Source = sourceBuilder.ToString();
         }
     }

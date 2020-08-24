@@ -1,4 +1,8 @@
-﻿namespace Microsoft.Dafny
+﻿using DafnyRefactor.Utils.DafnyVisitor;
+using DafnyRefactor.Utils.SymbolTable;
+using Microsoft.Dafny;
+
+namespace DafnyRefactor.InlineTemp.Steps
 {
     public class LocateVariableStep : DafnyWithTableVisitor
     {
@@ -7,7 +11,8 @@
         protected int varColumn;
         public SymbolTableDeclaration FoundDeclaration { get; protected set; }
 
-        public LocateVariableStep(Program program, SymbolTable rootTable, int varLine, int varColumn) : base(program, rootTable)
+        public LocateVariableStep(Program program, SymbolTable rootTable, int varLine, int varColumn) : base(program,
+            rootTable)
         {
             this.varLine = varLine;
             this.varColumn = varColumn;
@@ -34,7 +39,8 @@
 
         protected override void Visit(NameSegment nameSeg)
         {
-            if (IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line, nameSeg.tok.col + nameSeg.tok.val.Length - 1))
+            if (IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line,
+                nameSeg.tok.col + nameSeg.tok.val.Length - 1))
             {
                 FoundDeclaration = curTable.LookupDeclaration(nameSeg.Name);
             }
