@@ -7,19 +7,21 @@ namespace DafnyRefactor.Utils.CommandLineOptions
     [Verb("apply-inline-temp", HelpText = "Apply a refactor")]
     public class ApplyInlineTempOptions : IApplyOptions
     {
-        [Value(0, MetaValue = "filePath", Required = true)]
+        [Option('f', "filePath", Group = "input", Default = null)]
         public string FilePath { get; set; }
 
-        [Value(1, MetaValue = "varLine", Required = true)]
-        public int VarLine { get; set; }
+        [Option(Group = "input", Default = null)]
+        public bool Stdin { get; set; }
 
-        [Value(2, MetaValue = "varColumn", Required = true)]
+        [Option('l', "line", Required = true)] public int VarLine { get; set; }
+
+        [Option('c', "column", Required = true)]
         public int VarColumn { get; set; }
 
-        [Option(Default = false, HelpText = "Redirect applied refactor to stdout")]
+        [Option(Group = "output", Default = false, HelpText = "Redirect applied refactor to stdout")]
         public bool Stdout { get; set; }
 
-        [Option('o', "output", Default = null, HelpText = "Redirect applied refactor to file")]
+        [Option('o', "output", Group = "output", Default = null, HelpText = "Redirect applied refactor to file")]
         public string Output { get; set; }
 
         [Usage]

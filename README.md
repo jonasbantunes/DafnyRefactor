@@ -39,13 +39,13 @@ Currently, only _inline temp_ refactor is supported.
 ### Inline temp
 
 ```batch
-DafnyRefactor.exe apply-inline-temp [path-to-dafny-source] [variable-line] [variable-column]
+DafnyRefactor.exe apply-inline-temp [options]
 ```
 
 Example:
 
 ```batch
-DafnyRefator.exe apply-inline-temp example.dfy 2 7
+DafnyRefator.exe apply-inline-temp -f example.dfy -l 2 -c 7
 ```
 
 Currently limitations:

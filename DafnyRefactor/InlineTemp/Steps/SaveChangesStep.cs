@@ -50,7 +50,7 @@ namespace DafnyRefactor.InlineTemp.Steps
         {
             if (options.Stdout)
             {
-                DafnyRefactorDriver.consoleOutput.WriteLine(sourceEditor.Source);
+                DafnyRefactorDriver.consoleOutput.Write(sourceEditor.Source);
             }
             else if (options.Output != null)
             {

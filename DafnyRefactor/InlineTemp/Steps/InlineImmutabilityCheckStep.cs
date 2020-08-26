@@ -24,7 +24,7 @@ namespace DafnyRefactor.InlineTemp.Steps
             var sourceEditor = new SourceEditor(source, edits);
             sourceEditor.Apply();
 
-            var tempPath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".dfy";
+            var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
             File.WriteAllText(tempPath, sourceEditor.Source);
 
             var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});

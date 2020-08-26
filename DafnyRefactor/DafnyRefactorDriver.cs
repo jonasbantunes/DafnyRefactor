@@ -67,7 +67,7 @@ namespace DafnyRefactor
             {
                 case ApplyInlineTempOptions inlineTempOptions:
                     var refactor = new InlineRefactor(inlineTempOptions);
-                    refactor.Refactor();
+                    refactor.Apply();
                     exitCode = refactor.ExitCode;
                     break;
                 default:

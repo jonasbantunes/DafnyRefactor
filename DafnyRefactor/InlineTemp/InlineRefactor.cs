@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text;
 using DafnyRefactor.InlineTemp.Steps;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.CommandLineOptions;
@@ -18,7 +21,38 @@ namespace DafnyRefactor.InlineTemp
             this.options = options;
         }
 
-        public void Refactor()
+        public void Apply()
+        {
+            if (options.Stdin)
+            {
+                RefactorFromStdin();
+            }
+            else
+            {
+                Refactor();
+            }
+        }
+
+        protected void RefactorFromStdin()
+        {
+            var stdinBuilder = new StringBuilder();
+            string s;
+            while ((s = Console.ReadLine()) != null)
+            {
+                stdinBuilder.Append((s));
+                stdinBuilder.Append(Environment.NewLine);
+            }
+
+            var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
+            File.WriteAllText(tempPath, stdinBuilder.ToString());
+
+            options.FilePath = tempPath;
+            Refactor();
+
+            File.Delete(tempPath);
+        }
+
+        protected void Refactor()
         {
             /* STEP 1: INITIALIZE PROGRAM */
             var programLoader = new DafnyProgramLoader(options.FilePath);
@@ -43,7 +77,7 @@ namespace DafnyRefactor.InlineTemp
             if (declaration == null)
             {
                 DafnyRefactorDriver.consoleError.WriteLine(
-                    $"Error: can't locate variable on line {options.VarLine} and column {options.VarColumn}.");
+                    $"Error: can't locate variable on line {options.VarLine}:{options.VarColumn}.");
                 ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
@@ -60,7 +94,8 @@ namespace DafnyRefactor.InlineTemp
                 ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                 return;
             }
-            else if (inVar.isUpdated)
+
+            if (inVar.isUpdated)
             {
                 DafnyRefactorDriver.consoleError.WriteLine(
                     $"Error: variable {inVar.Name} located on {options.VarLine}:{options.VarColumn} is not constant.");

@@ -17,7 +17,7 @@ namespace DafnyRefactorTests
         protected string TestExpectedPath => $"{testFileDir}\\test{testNumber}.expected";
 
         protected string[] Args => new[]
-            {"apply-inline-temp", TestFilePath, $"{line}", $"{column}", "-o", TestOutputPath};
+            {"apply-inline-temp", "-f", TestFilePath, "-l", $"{line}", "-c", $"{column}", "-o", TestOutputPath};
 
         [SetUp]
         protected void SetUp()
