@@ -1,18 +1,21 @@
-﻿using DafnyRefactor.Utils.DafnyVisitor;
+﻿using DafnyRefactor.InlineTemp.InlineTable;
+using DafnyRefactor.Utils.DafnyVisitor;
 using DafnyRefactor.Utils.SymbolTable;
 using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class LocateVariableStep : DafnyWithTableVisitor
+    public class LocateVariableStep : DafnyWithTableVisitor<InlineSymbol>
     {
         // TODO: Analyse if varLine and varColumn should be an Location "struct"
         protected int varLine;
         protected int varColumn;
-        public SymbolTableDeclaration FoundDeclaration { get; protected set; }
+        public InlineSymbol FoundDeclaration { get; protected set; }
 
-        public LocateVariableStep(Program program, SymbolTable rootTable, int varLine, int varColumn) : base(program,
-            rootTable)
+        public LocateVariableStep(Program program, SymbolTable<InlineSymbol> rootTable, int varLine, int varColumn) :
+            base(
+                program,
+                rootTable)
         {
             this.varLine = varLine;
             this.varColumn = varColumn;
@@ -24,7 +27,7 @@ namespace DafnyRefactor.InlineTemp.Steps
             {
                 if (IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line, local.EndTok.col))
                 {
-                    FoundDeclaration = curTable.LookupDeclaration(local.Name);
+                    FoundDeclaration = curTable.LookupSymbol(local.Name);
                 }
             }
 
@@ -36,7 +39,7 @@ namespace DafnyRefactor.InlineTemp.Steps
             if (IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line,
                 nameSeg.tok.col + nameSeg.tok.val.Length - 1))
             {
-                FoundDeclaration = curTable.LookupDeclaration(nameSeg.Name);
+                FoundDeclaration = curTable.LookupSymbol(nameSeg.Name);
             }
         }
 

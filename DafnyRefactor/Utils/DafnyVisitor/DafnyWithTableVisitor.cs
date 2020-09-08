@@ -1,13 +1,14 @@
-﻿using Microsoft.Dafny;
+﻿using DafnyRefactor.Utils.SymbolTable;
+using Microsoft.Dafny;
 
 namespace DafnyRefactor.Utils.DafnyVisitor
 {
-    public class DafnyWithTableVisitor : DafnyVisitor
+    public class DafnyWithTableVisitor<TSymbol> : DafnyVisitor where TSymbol: Symbol
     {
-        protected SymbolTable.SymbolTable curTable;
-        protected SymbolTable.SymbolTable rootTable;
+        protected SymbolTable<TSymbol> curTable;
+        protected SymbolTable<TSymbol> rootTable;
 
-        public DafnyWithTableVisitor(Program program, SymbolTable.SymbolTable rootTable) : base(program)
+        public DafnyWithTableVisitor(Program program, SymbolTable<TSymbol> rootTable) : base(program)
         {
             this.rootTable = rootTable;
         }

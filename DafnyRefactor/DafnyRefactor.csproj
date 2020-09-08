@@ -96,6 +96,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InlineTemp\InlineTable\InlineSymbol.cs" />
     <Compile Include="InlineTemp\Steps\InlineImmutabilityCheckStep.cs" />
     <Compile Include="Utils\DafnyProgramLoader.cs" />
     <Compile Include="Utils\CommandLineOptions\ApplyInlineTempOptions.cs" />
@@ -114,7 +115,7 @@
     <Compile Include="Utils\DafnyVisitor\DafnyWithTableVisitor.cs" />
     <Compile Include="Utils\SourceEdit\SourceEditor.cs" />
     <Compile Include="Utils\SymbolTable\SymbolTable.cs" />
-    <Compile Include="Utils\SymbolTable\SymbolTableDeclaration.cs" />
+    <Compile Include="Utils\SymbolTable\Symbol.cs" />
     <Compile Include="Utils\SymbolTable\SymbolTableGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -142,5 +143,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

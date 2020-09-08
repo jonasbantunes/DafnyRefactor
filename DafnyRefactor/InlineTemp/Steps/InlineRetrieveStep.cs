@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DafnyRefactor.InlineTemp.InlineTable;
 using DafnyRefactor.Utils.DafnyVisitor;
 using DafnyRefactor.Utils.SourceEdit;
 using DafnyRefactor.Utils.SymbolTable;
@@ -6,14 +7,15 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class InlineRetrieveStep : DafnyWithTableVisitor
+    public class InlineRetrieveStep : DafnyWithTableVisitor<InlineSymbol>
     {
-        protected SymbolTableDeclaration declaration;
+        protected InlineSymbol declaration;
         public InlineVariable InlineVar { get; protected set; }
         public List<SourceEdit> Edits { get; protected set; }
 
-        public InlineRetrieveStep(Program program, SymbolTable rootTable, SymbolTableDeclaration declaration) : base(
-            program, rootTable)
+        public InlineRetrieveStep(Program program, SymbolTable<InlineSymbol> rootTable, InlineSymbol declaration) :
+            base(
+                program, rootTable)
         {
             this.declaration = declaration;
         }
@@ -33,7 +35,7 @@ namespace DafnyRefactor.InlineTemp.Steps
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == InlineVar.Name &&
-                    curTable.LookupDeclaration(agie.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
+                    curTable.LookupSymbol(agie.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
                 {
                     var erhs = (ExprRhs) up.Rhss[i];
                     InlineVar.expr = erhs.Expr;
@@ -58,7 +60,7 @@ namespace DafnyRefactor.InlineTemp.Steps
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (up.Lhss[i] is NameSegment nm && nm.Name == InlineVar.Name &&
-                    curTable.LookupDeclaration(nm.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
+                    curTable.LookupSymbol(nm.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
                 {
                     if (InlineVar.expr == null && up.Rhss[i] is ExprRhs erhs)
                     {

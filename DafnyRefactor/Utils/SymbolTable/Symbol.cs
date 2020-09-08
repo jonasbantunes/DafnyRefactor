@@ -2,13 +2,13 @@
 
 namespace DafnyRefactor.Utils.SymbolTable
 {
-    public class SymbolTableDeclaration
+    public class Symbol
     {
         public readonly LocalVariable localVariable;
         public readonly VarDeclStmt varDeclStmt;
         public string Name => localVariable.Name;
 
-        public SymbolTableDeclaration(LocalVariable localVariable, VarDeclStmt varDeclStmt)
+        public Symbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
             this.localVariable = localVariable;
             this.varDeclStmt = varDeclStmt;
@@ -17,6 +17,11 @@ namespace DafnyRefactor.Utils.SymbolTable
         public override int GetHashCode()
         {
             return localVariable.GetHashCode();
+        }
+
+        public static Symbol CreateSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
+        {
+            return new Symbol(localVariable, varDeclStmt);
         }
     }
 }

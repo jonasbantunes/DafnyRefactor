@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using DafnyRefactor.InlineTemp.InlineTable;
 using DafnyRefactor.InlineTemp.Steps;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.CommandLineOptions;
@@ -66,14 +67,14 @@ namespace DafnyRefactor.InlineTemp
             }
 
             /* STEP 2: GENERATE SYMBOL TABLE */
-            var tableGenerator = new SymbolTableGenerator(program);
+            var tableGenerator = new SymbolTableGenerator<InlineSymbol>(program, InlineSymbol.CreateInlineSymbol);
             tableGenerator.Execute();
             var symbolTable = tableGenerator.GeneratedTable;
 
             /* STEP 3: LOCATE VARIABLE*/
             var locateVariable = new LocateVariableStep(program, symbolTable, options.VarLine, options.VarColumn);
             locateVariable.Execute();
-            SymbolTableDeclaration declaration = locateVariable.FoundDeclaration;
+            InlineSymbol declaration = locateVariable.FoundDeclaration;
             if (declaration == null)
             {
                 DafnyRefactorDriver.consoleError.WriteLine(

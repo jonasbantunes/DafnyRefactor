@@ -9,9 +9,9 @@ namespace DafnyRefactor.InlineTemp.Steps
         public bool isUpdated = false;
         public UpdateStmt initStmt = null;
         public string Name => TableDeclaration.Name;
-        public SymbolTableDeclaration TableDeclaration { get; protected set; }
+        public Symbol TableDeclaration { get; protected set; }
 
-        public InlineVariable(SymbolTableDeclaration tableDeclaration)
+        public InlineVariable(Symbol tableDeclaration)
         {
             TableDeclaration = tableDeclaration;
         }
