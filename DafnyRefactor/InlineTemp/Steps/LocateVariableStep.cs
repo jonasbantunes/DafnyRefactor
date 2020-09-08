@@ -18,12 +18,6 @@ namespace DafnyRefactor.InlineTemp.Steps
             this.varColumn = varColumn;
         }
 
-        public override void Execute()
-        {
-            curTable = rootTable;
-            base.Execute();
-        }
-
         protected override void Visit(VarDeclStmt vds)
         {
             foreach (var local in vds.Locals)

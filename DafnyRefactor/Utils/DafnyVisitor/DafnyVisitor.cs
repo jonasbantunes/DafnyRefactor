@@ -132,6 +132,7 @@ namespace DafnyRefactor.Utils.DafnyVisitor
 
         protected virtual void Visit(UpdateStmt up)
         {
+            Traverse(up.Lhss);
             Traverse(up.Rhss);
         }
 
@@ -151,6 +152,14 @@ namespace DafnyRefactor.Utils.DafnyVisitor
         protected virtual void Visit(ExprRhs expRhs)
         {
             Visit(expRhs.Expr);
+        }
+
+        protected virtual void Traverse(List<Expression> exprs)
+        {
+            foreach (var expr in exprs)
+            {
+                Visit(expr);
+            }
         }
 
         protected virtual void Traverse(List<Statement> body)

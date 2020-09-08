@@ -1,7 +1,0 @@
-method Main() {
-  var dummy, x, anotherDummy: int := 0, 2 + 1, 4;
-  var y: int := 3;
-  
-  y := 10;
-  assert (y + 3 * x) == 4*x;
-}

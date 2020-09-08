@@ -26,7 +26,7 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 ```
 
 - Build _Dafny_ project located on `dafny\Source\Dafny.sln`
-- Build _Dafny Refactor_ project located on `DafnyRefactor\DafnyRefactor\DafnyRefactor.sln`
+- Build _Dafny Refactor_ project located on `DafnyRefactor\DafnyRefactor.sln`
 
 ## Usage
 

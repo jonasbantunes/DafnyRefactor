@@ -11,17 +11,23 @@ namespace DafnyRefactor.InlineTemp.Steps
         protected InlineVariable inlineVar;
         public List<SourceEdit> Edits { get; protected set; }
 
+        public InlineRefactorStep(Program program, SymbolTable rootTable, InlineVariable inlineVar) : base(program,
+            rootTable)
+        {
+            this.inlineVar = inlineVar;
+        }
+
         public override void Execute()
         {
             Edits = new List<SourceEdit>();
             base.Execute();
         }
 
-        public InlineRefactorStep(Program program, SymbolTable rootTable, InlineVariable inlineVar) : base(program,
-            rootTable)
+        protected override void Visit(UpdateStmt up)
         {
-            this.inlineVar = inlineVar;
+            Traverse(up.Rhss);
         }
+
 
         protected override void Visit(NameSegment nameSeg)
         {

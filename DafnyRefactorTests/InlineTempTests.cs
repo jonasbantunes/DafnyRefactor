@@ -58,8 +58,8 @@ namespace DafnyRefactorTests
             line = 4;
             column = 7;
 
-            DafnyRefactorDriver.Main(Args);
-            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+            int exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
         }
 
 
