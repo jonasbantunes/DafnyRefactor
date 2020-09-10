@@ -16,7 +16,7 @@ namespace DafnyRefactor.InlineTemp.Steps
         {
             var visitor = new RemoveRefactoredDeclarationVisitor(state.program, state.symbolTable, state.inlineSymbol);
             visitor.Execute();
-            state.removeSourceEdits = visitor.Edits;
+            state.sourceEdits.AddRange(visitor.Edits);
             base.Handle(state);
         }
     }

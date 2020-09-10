@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.CommandLineOptions;
 using DafnyRefactor.Utils.SourceEdit;
 using Microsoft.Dafny;
 
@@ -13,8 +10,7 @@ namespace DafnyRefactor.InlineTemp.Steps
     {
         public override void Handle(InlineState state)
         {
-            var edits = state.replaceSourceEdits.Concat(state.removeSourceEdits).ToList();
-            var changer = new SaveChanges(edits, state.inlineOptions);
+            var changer = new SaveChanges(state);
             changer.Save();
 
             if (changer.ChangesInvalidateSource)
@@ -29,15 +25,13 @@ namespace DafnyRefactor.InlineTemp.Steps
 
     internal class SaveChanges
     {
-        protected readonly ApplyInlineTempOptions options;
-        protected readonly List<SourceEdit> edits;
+        protected readonly InlineState state;
         protected SourceEditor sourceEditor;
         public bool ChangesInvalidateSource { get; protected set; }
 
-        public SaveChanges(List<SourceEdit> edits, ApplyInlineTempOptions options)
+        public SaveChanges(InlineState state)
         {
-            this.edits = edits;
-            this.options = options;
+            this.state = state;
         }
 
         public void Save()
@@ -51,8 +45,8 @@ namespace DafnyRefactor.InlineTemp.Steps
 
         protected void ApplyChanges()
         {
-            var source = File.ReadAllText(options.FilePath);
-            sourceEditor = new SourceEditor(source, edits);
+            var source = File.ReadAllText(state.FilePath);
+            sourceEditor = new SourceEditor(source, state.sourceEdits);
             sourceEditor.Apply();
         }
 
@@ -68,17 +62,17 @@ namespace DafnyRefactor.InlineTemp.Steps
 
         protected void SaveTo()
         {
-            if (options.Stdout)
+            if (state.options.Stdout)
             {
                 DafnyRefactorDriver.consoleOutput.Write(sourceEditor.Source);
             }
-            else if (options.Output != null)
+            else if (state.options.Output != null)
             {
-                File.WriteAllText(options.Output, sourceEditor.Source);
+                File.WriteAllText(state.options.Output, sourceEditor.Source);
             }
             else
             {
-                File.WriteAllText(options.FilePath, sourceEditor.Source);
+                File.WriteAllText(state.FilePath, sourceEditor.Source);
             }
         }
     }

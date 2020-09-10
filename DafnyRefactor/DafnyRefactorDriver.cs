@@ -52,14 +52,14 @@ namespace DafnyRefactor
         {
             switch (obj)
             {
-                case IApplyOptions applyOptions:
+                case ApplyOptions applyOptions:
                     return Run(applyOptions);
             }
 
             return 0;
         }
 
-        public static int Run(IApplyOptions options)
+        public static int Run(ApplyOptions options)
         {
             SetupConsole();
 

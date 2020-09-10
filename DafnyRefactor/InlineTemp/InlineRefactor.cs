@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DafnyRefactor.InlineTemp.Steps;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.CommandLineOptions;
@@ -21,62 +19,36 @@ namespace DafnyRefactor.InlineTemp
 
         public void Apply()
         {
+            var state = new InlineState(options);
+
+            var steps = new List<RefactorStep<InlineState>>();
             if (options.Stdin)
             {
-                RefactorFromStdin();
+                steps.Add(new StdinLoader<InlineState>());
             }
-            else
+            steps.Add(new DafnyProgramLoader<InlineState>());
+            steps.Add(new GenerateTableStep());
+            steps.Add(new LocateVariableStep());
+            steps.Add(new InlineRetrieveStep());
+            steps.Add(new InlineImmutabilityCheckStep());
+            steps.Add(new InlineApplyStep());
+            steps.Add(new RemoveRefactoredDeclarationStep());
+            steps.Add(new SaveChangesStep());
+            if (options.Stdin)
             {
-                Refactor();
+                steps.Add(new StdinCleaner<InlineState>());
             }
-        }
-
-        // TODO: transform this in a optional step
-        protected void RefactorFromStdin()
-        {
-            var stdinBuilder = new StringBuilder();
-            string s;
-            while ((s = Console.ReadLine()) != null)
-            {
-                stdinBuilder.Append((s));
-                stdinBuilder.Append(Environment.NewLine);
-            }
-
-            var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
-            File.WriteAllText(tempPath, stdinBuilder.ToString());
-
-            options.FilePath = tempPath;
-            Refactor();
-
-            File.Delete(tempPath);
-        }
-
-        protected void Refactor()
-        {
-            var state = new InlineState(options);
-            var steps = new List<RefactorStep<InlineState>>
-            {
-                new DafnyProgramLoader<InlineState>(),
-                new GenerateTableStep(),
-                new LocateVariableStep(),
-                new InlineRetrieveStep(),
-                new InlineImmutabilityCheckStep(),
-                new InlineApplyStep(),
-                new RemoveRefactoredDeclarationStep(),
-                new SaveChangesStep()
-            };
 
             for (var i = 0; i < steps.Count - 1; i++)
             {
                 steps[i].next = steps[i + 1];
             }
-
-            steps[0].Handle(state);
+            steps.First().Handle(state);
             if (state.errors.Count > 0)
             {
                 foreach (var error in state.errors)
                 {
-                    DafnyRefactorDriver.consoleOutput.WriteLine(error);
+                    DafnyRefactorDriver.consoleError.WriteLine(error);
                 }
 
                 ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;

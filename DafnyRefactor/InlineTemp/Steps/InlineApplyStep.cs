@@ -14,7 +14,7 @@ namespace DafnyRefactor.InlineTemp.Steps
         {
             var visitor = new InlineApplyVisitor(state.program, state.symbolTable, state.inlineSymbol);
             visitor.Execute();
-            state.replaceSourceEdits = visitor.Edits;
+            state.sourceEdits.AddRange(visitor.Edits);
             base.Handle(state);
         }
     }

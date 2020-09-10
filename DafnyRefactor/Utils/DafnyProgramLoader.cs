@@ -29,7 +29,7 @@ namespace DafnyRefactor.Utils
             var dafnyFiles = new List<DafnyFile>();
             try
             {
-                dafnyFiles.Add(new DafnyFile(state.options.FilePath));
+                dafnyFiles.Add(new DafnyFile(state.FilePath));
             }
             catch (IllegalDafnyFile)
             {
@@ -46,7 +46,7 @@ namespace DafnyRefactor.Utils
 
         protected bool IsFileValid()
         {
-            var res = DafnyDriver.Main(new[] {state.options.FilePath, "/compile:0"});
+            var res = DafnyDriver.Main(new[] {state.FilePath, "/compile:0"});
             return res == 0;
         }
     }

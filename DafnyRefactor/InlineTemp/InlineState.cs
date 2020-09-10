@@ -15,12 +15,12 @@ namespace DafnyRefactor.InlineTemp
 
         // TODO: Check if this field is really neccessary
         public List<SourceEdit> immutabilitySourceEdits;
-        public List<SourceEdit> replaceSourceEdits;
-        public List<SourceEdit> removeSourceEdits;
+        public List<SourceEdit> sourceEdits;
 
         public InlineState(ApplyInlineTempOptions options) : base(options)
         {
             inlineOptions = options;
+            sourceEdits = new List<SourceEdit>();
         }
     }
 }

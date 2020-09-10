@@ -104,7 +104,7 @@
     <Compile Include="Utils\RefactorStep.cs" />
     <Compile Include="Utils\DafnyProgramLoader.cs" />
     <Compile Include="Utils\CommandLineOptions\ApplyInlineTempOptions.cs" />
-    <Compile Include="Utils\CommandLineOptions\IApplyOptions.cs" />
+    <Compile Include="Utils\CommandLineOptions\ApplyOptions.cs" />
     <Compile Include="InlineTemp\InlineRefactor.cs" />
     <Compile Include="InlineTemp\Steps\InlineApplyStep.cs" />
     <Compile Include="InlineTemp\Steps\InlineRetrieveStep.cs" />
@@ -117,6 +117,8 @@
     <Compile Include="Utils\DafnyVisitor\DafnyVisitor.cs" />
     <Compile Include="Utils\DafnyVisitor\DafnyWithTableVisitor.cs" />
     <Compile Include="Utils\SourceEdit\SourceEditor.cs" />
+    <Compile Include="Utils\StdinCleaner.cs" />
+    <Compile Include="Utils\StdinLoader.cs" />
     <Compile Include="Utils\SymbolTable\SymbolTable.cs" />
     <Compile Include="Utils\SymbolTable\Symbol.cs" />
     <Compile Include="Utils\SymbolTable\SymbolTableGenerator.cs" />

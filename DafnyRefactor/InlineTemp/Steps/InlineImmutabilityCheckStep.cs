@@ -11,7 +11,7 @@ namespace DafnyRefactor.InlineTemp.Steps
     {
         public override void Handle(InlineState state)
         {
-            var checker = new InlineImmutabilityCheck(state.inlineOptions.FilePath, state.immutabilitySourceEdits);
+            var checker = new InlineImmutabilityCheck(state.FilePath, state.immutabilitySourceEdits);
             checker.Execute();
             if (!checker.IsConstant)
             {

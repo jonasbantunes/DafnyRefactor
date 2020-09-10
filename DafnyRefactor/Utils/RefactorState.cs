@@ -8,12 +8,15 @@ namespace DafnyRefactor.Utils
     {
         public Program program;
         public List<string> errors;
-        public IApplyOptions options;
+        public ApplyOptions options;
+        public string tempFilePath;
 
-        public RefactorState(IApplyOptions options)
+        public string FilePath => options.Stdin ? tempFilePath : options.FilePath;
+
+        public RefactorState(ApplyOptions options)
         {
             this.options = options;
-            this.errors = new List<string>();
+            errors = new List<string>();
         }
     }
 }
