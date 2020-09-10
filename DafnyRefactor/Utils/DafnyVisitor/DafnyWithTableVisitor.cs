@@ -3,7 +3,7 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.Utils.DafnyVisitor
 {
-    public class DafnyWithTableVisitor<TSymbol> : DafnyVisitor where TSymbol: Symbol
+    public class DafnyWithTableVisitor<TSymbol> : DafnyVisitor where TSymbol : Symbol
     {
         protected SymbolTable<TSymbol> curTable;
         protected SymbolTable<TSymbol> rootTable;
@@ -21,9 +21,10 @@ namespace DafnyRefactor.Utils.DafnyVisitor
 
         protected override void Visit(BlockStmt block)
         {
+            var oldCurTable = curTable;
             curTable = curTable.LookupTable(block.Tok.GetHashCode());
             base.Visit(block);
-            curTable = curTable.Parent;
+            curTable = oldCurTable;
         }
     }
 }

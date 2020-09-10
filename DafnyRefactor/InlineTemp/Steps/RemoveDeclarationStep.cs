@@ -10,7 +10,7 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class RemoveRefactoredDeclarationStep : RefactorStep<InlineState>
+    public class RemoveDeclarationStep : RefactorStep<InlineState>
     {
         public override void Handle(InlineState state)
         {

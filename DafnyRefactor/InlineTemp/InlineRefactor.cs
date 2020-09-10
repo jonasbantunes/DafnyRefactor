@@ -26,13 +26,14 @@ namespace DafnyRefactor.InlineTemp
             {
                 steps.Add(new StdinLoader<InlineState>());
             }
-            steps.Add(new DafnyProgramLoader<InlineState>());
+
+            steps.Add(new LoadProgramStep<InlineState>());
             steps.Add(new GenerateTableStep());
             steps.Add(new LocateVariableStep());
-            steps.Add(new InlineRetrieveStep());
-            steps.Add(new InlineImmutabilityCheckStep());
-            steps.Add(new InlineApplyStep());
-            steps.Add(new RemoveRefactoredDeclarationStep());
+            steps.Add(new CheckImmutabilityStep());
+            //steps.Add(new ProveImmutabilityStep());
+            steps.Add(new ReplaceVariableStep());
+            steps.Add(new RemoveDeclarationStep());
             steps.Add(new SaveChangesStep());
             if (options.Stdin)
             {
@@ -43,6 +44,7 @@ namespace DafnyRefactor.InlineTemp
             {
                 steps[i].next = steps[i + 1];
             }
+
             steps.First().Handle(state);
             if (state.errors.Count > 0)
             {

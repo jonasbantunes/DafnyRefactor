@@ -3,7 +3,7 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.Utils
 {
-    public class DafnyProgramLoader<TState> : RefactorStep<TState> where TState : RefactorState
+    public class LoadProgramStep<TState> : RefactorStep<TState> where TState : RefactorState
     {
         protected TState state;
 

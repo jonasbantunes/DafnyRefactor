@@ -8,7 +8,7 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class InlineApplyStep : RefactorStep<InlineState>
+    public class ReplaceVariableStep : RefactorStep<InlineState>
     {
         public override void Handle(InlineState state)
         {

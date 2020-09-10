@@ -7,7 +7,7 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class InlineImmutabilityCheckStep : RefactorStep<InlineState>
+    public class ProveImmutabilityStep : RefactorStep<InlineState>
     {
         public override void Handle(InlineState state)
         {

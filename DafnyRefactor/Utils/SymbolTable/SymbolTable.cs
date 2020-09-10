@@ -6,20 +6,20 @@ namespace DafnyRefactor.Utils.SymbolTable
     // TODO: Add constructor
     public class SymbolTable<TSymbol> where TSymbol : Symbol
     {
-        protected List<TSymbol> declarations = new List<TSymbol>();
+        protected List<TSymbol> symbols = new List<TSymbol>();
         protected List<SymbolTable<TSymbol>> subTables = new List<SymbolTable<TSymbol>>();
-        public readonly BlockStmt blockStmt;
-        public SymbolTable<TSymbol> Parent { get; protected set; }
+        protected SymbolTable<TSymbol> parent;
+        protected readonly BlockStmt blockStmt;
 
         public SymbolTable(BlockStmt blockStmt = null, SymbolTable<TSymbol> parent = null)
         {
-            Parent = parent;
+            this.parent = parent;
             this.blockStmt = blockStmt;
         }
 
         public void InsertSymbol(TSymbol declaration)
         {
-            declarations.Add(declaration);
+            symbols.Add(declaration);
         }
 
         public void InsertTable(SymbolTable<TSymbol> table)
@@ -34,7 +34,7 @@ namespace DafnyRefactor.Utils.SymbolTable
 
         protected TSymbol LookupSymbol(string name, SymbolTable<TSymbol> table)
         {
-            foreach (TSymbol decl in table.declarations)
+            foreach (var decl in table.symbols)
             {
                 if (decl.Name == name)
                 {
@@ -42,17 +42,17 @@ namespace DafnyRefactor.Utils.SymbolTable
                 }
             }
 
-            if (table.Parent == null)
+            if (table.parent == null)
             {
                 return null;
             }
 
-            return LookupSymbol(name, table.Parent);
+            return LookupSymbol(name, table.parent);
         }
 
         public SymbolTable<TSymbol> LookupTable(int hashCode)
         {
-            foreach (SymbolTable<TSymbol> subTable in subTables)
+            foreach (var subTable in subTables)
             {
                 if (subTable.GetHashCode() == hashCode)
                 {
