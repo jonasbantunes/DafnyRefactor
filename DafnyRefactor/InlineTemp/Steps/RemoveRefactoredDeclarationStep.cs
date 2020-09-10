@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using DafnyRefactor.InlineTemp.InlineTable;
+using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.DafnyVisitor;
 using DafnyRefactor.Utils.SourceEdit;
 using DafnyRefactor.Utils.SymbolTable;
@@ -9,13 +10,24 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class RemoveRefactoredDeclarationStep : DafnyWithTableVisitor<InlineSymbol>
+    public class RemoveRefactoredDeclarationStep : RefactorStep<InlineState>
     {
-        protected InlineVariable inlineVar;
+        public override void Handle(InlineState state)
+        {
+            var visitor = new RemoveRefactoredDeclarationVisitor(state.program, state.symbolTable, state.inlineSymbol);
+            visitor.Execute();
+            state.removeSourceEdits = visitor.Edits;
+            base.Handle(state);
+        }
+    }
+
+    internal class RemoveRefactoredDeclarationVisitor : DafnyWithTableVisitor<InlineSymbol>
+    {
+        protected InlineSymbol inlineVar;
         public List<SourceEdit> Edits { get; protected set; }
 
-        public RemoveRefactoredDeclarationStep(Program program, SymbolTable<InlineSymbol> rootTable,
-            InlineVariable inlineVar)
+        public RemoveRefactoredDeclarationVisitor(Program program, SymbolTable<InlineSymbol> rootTable,
+            InlineSymbol inlineVar)
             : base(
                 program, rootTable)
         {
@@ -31,7 +43,7 @@ namespace DafnyRefactor.InlineTemp.Steps
         protected override void Visit(VarDeclStmt vds)
         {
             if (vds.Locals.Count == 1 && curTable.LookupSymbol(vds.Locals[0].Name).GetHashCode() ==
-                inlineVar.TableDeclaration.GetHashCode())
+                inlineVar.GetHashCode())
             {
                 Edits.Add(new SourceEdit(vds.Tok.pos, vds.EndTok.pos + 1, ""));
             }
@@ -43,7 +55,7 @@ namespace DafnyRefactor.InlineTemp.Steps
                 {
                     if (vds.Locals[i].Name == inlineVar.Name &&
                         curTable.LookupSymbol(vds.Locals[i].Name).GetHashCode() ==
-                        inlineVar.TableDeclaration.GetHashCode())
+                        inlineVar.GetHashCode())
                     {
                         newVds.Locals.RemoveAt(i);
 
@@ -67,7 +79,7 @@ namespace DafnyRefactor.InlineTemp.Steps
                     {
                         if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == inlineVar.Name &&
                             curTable.LookupSymbol(agie.Name).GetHashCode() ==
-                            inlineVar.TableDeclaration.GetHashCode())
+                            inlineVar.GetHashCode())
                         {
                             newUpdate.Lhss.RemoveAt(i);
                             newUpdate.Rhss.RemoveAt(i);
@@ -90,7 +102,7 @@ namespace DafnyRefactor.InlineTemp.Steps
         protected override void Visit(UpdateStmt up)
         {
             if (up.Lhss.Count == 1 && up.Lhss[0] is NameSegment upNm &&
-                curTable.LookupSymbol(upNm.Name).GetHashCode() == inlineVar.TableDeclaration.GetHashCode())
+                curTable.LookupSymbol(upNm.Name).GetHashCode() == inlineVar.GetHashCode())
             {
                 Edits.Add(new SourceEdit(upNm.tok.pos, up.EndTok.pos + 1, ""));
             }
@@ -101,7 +113,7 @@ namespace DafnyRefactor.InlineTemp.Steps
                 for (int i = up.Lhss.Count - 1; i >= 0; i--)
                 {
                     if (up.Lhss[i] is NameSegment nm && nm.Name == inlineVar.Name &&
-                        curTable.LookupSymbol(nm.Name).GetHashCode() == inlineVar.TableDeclaration.GetHashCode())
+                        curTable.LookupSymbol(nm.Name).GetHashCode() == inlineVar.GetHashCode())
                     {
                         newUpdate.Lhss.RemoveAt(i);
                         newUpdate.Rhss.RemoveAt(i);

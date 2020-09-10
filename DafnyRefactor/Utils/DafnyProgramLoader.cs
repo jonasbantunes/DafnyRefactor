@@ -3,44 +3,50 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.Utils
 {
-    public class DafnyProgramLoader
+    public class DafnyProgramLoader<TState> : RefactorStep<TState> where TState : RefactorState
     {
-        protected string filePath;
-        public Program Program { get; protected set; }
+        protected TState state;
 
-        public DafnyProgramLoader(string filePath)
+        public override void Handle(TState state)
         {
-            this.filePath = filePath;
+            this.state = state;
+            Load();
+            base.Handle(state);
         }
 
-        public void Load()
+        protected void Load()
         {
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
 
-            Program = null;
-            if (!IsFileValid()) return;
+            state.program = null;
+            if (!IsFileValid())
+            {
+                state.errors.Add("Program is invalid");
+                return;
+            }
 
             var dafnyFiles = new List<DafnyFile>();
             try
             {
-                dafnyFiles.Add(new DafnyFile(filePath));
+                dafnyFiles.Add(new DafnyFile(state.options.FilePath));
             }
             catch (IllegalDafnyFile)
             {
+                state.errors.Add("Program is invalid");
                 return;
             }
 
             var err = Main.Parse(dafnyFiles, "the program", reporter, out var tempProgram);
             if (err == null)
             {
-                Program = tempProgram;
+                state.program = tempProgram;
             }
         }
 
         protected bool IsFileValid()
         {
-            var res = DafnyDriver.Main(new[] {filePath, "/compile:0"});
+            var res = DafnyDriver.Main(new[] {state.options.FilePath, "/compile:0"});
             return res == 0;
         }
     }

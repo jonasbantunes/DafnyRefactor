@@ -1,18 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.SourceEdit;
 using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class InlineImmutabilityCheckStep
+    public class InlineImmutabilityCheckStep : RefactorStep<InlineState>
+    {
+        public override void Handle(InlineState state)
+        {
+            var checker = new InlineImmutabilityCheck(state.inlineOptions.FilePath, state.immutabilitySourceEdits);
+            checker.Execute();
+            if (!checker.IsConstant)
+            {
+                state.errors.Add(
+                    $"Error: variable {state.inlineSymbol.Name} located on {state.inlineOptions.VarLine}:{state.inlineOptions.VarColumn} is not constant according with theorem prover.");
+                return;
+            }
+
+            base.Handle(state);
+        }
+    }
+
+    internal class InlineImmutabilityCheck
     {
         protected string filePath;
         protected List<SourceEdit> edits;
         public bool IsConstant { get; protected set; }
 
-        public InlineImmutabilityCheckStep(string filePath, List<SourceEdit> edits)
+        public InlineImmutabilityCheck(string filePath, List<SourceEdit> edits)
         {
             this.filePath = filePath;
             this.edits = edits;

@@ -27,9 +27,6 @@ namespace DafnyRefactor.Utils.SymbolTable
         {
             foreach (LocalVariable local in vds.Locals)
             {
-                // TODO: Change to lambda function
-                // var declaration = new Symbol(local, vds);
-                // curTable.InsertSymbol(declaration as TSymbol);
                 var declaration = symbolCreatorFunc(local, vds);
                 curTable.InsertSymbol(declaration);
             }

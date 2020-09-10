@@ -1,20 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.CommandLineOptions;
 using DafnyRefactor.Utils.SourceEdit;
 using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class SaveChangesStep
+    public class SaveChangesStep : RefactorStep<InlineState>
+    {
+        public override void Handle(InlineState state)
+        {
+            var edits = state.replaceSourceEdits.Concat(state.removeSourceEdits).ToList();
+            var changer = new SaveChanges(edits, state.inlineOptions);
+            changer.Save();
+
+            if (changer.ChangesInvalidateSource)
+            {
+                state.errors.Add("Error: refactor invalidate source");
+                return;
+            }
+
+            base.Handle(state);
+        }
+    }
+
+    internal class SaveChanges
     {
         protected readonly ApplyInlineTempOptions options;
         protected readonly List<SourceEdit> edits;
         protected SourceEditor sourceEditor;
         public bool ChangesInvalidateSource { get; protected set; }
 
-        public SaveChangesStep(List<SourceEdit> edits, ApplyInlineTempOptions options)
+        public SaveChanges(List<SourceEdit> edits, ApplyInlineTempOptions options)
         {
             this.edits = edits;
             this.options = options;

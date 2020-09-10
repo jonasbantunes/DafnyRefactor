@@ -7,6 +7,8 @@ namespace DafnyRefactor.InlineTemp.InlineTable
     {
         public bool isUpdated = false;
         public Expression expr;
+        // TODO: Give a better name
+        public UpdateStmt initStmt = null;
 
         public InlineSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt) : base(localVariable, varDeclStmt)
         {

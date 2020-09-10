@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DafnyRefactor.InlineTemp.InlineTable;
+using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.DafnyVisitor;
 using DafnyRefactor.Utils.SourceEdit;
 using DafnyRefactor.Utils.SymbolTable;
@@ -7,13 +8,41 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class InlineRetrieveStep : DafnyWithTableVisitor<InlineSymbol>
+    public class InlineRetrieveStep : RefactorStep<InlineState>
+    {
+        public override void Handle(InlineState state)
+        {
+            var visitor = new InlineRetrieveVisitor(state.program, state.symbolTable, state.inlineSymbol);
+            visitor.Execute();
+            var inVar = visitor.InlineVar;
+            if (inVar.expr == null)
+            {
+                state.errors.Add(
+                    $"Error: variable {inVar.Name} located on {state.inlineOptions.VarLine}:{state.inlineOptions.VarColumn} is never initialized.");
+                return;
+            }
+
+            if (inVar.isUpdated)
+            {
+                state.errors.Add(
+                    $"Error: variable {inVar.Name} located on {state.inlineOptions.VarLine}:{state.inlineOptions.VarColumn} is not constant.");
+                return;
+            }
+
+            state.inlineSymbol = inVar;
+            state.immutabilitySourceEdits = visitor.Edits;
+
+            base.Handle(state);
+        }
+    }
+
+    internal class InlineRetrieveVisitor : DafnyWithTableVisitor<InlineSymbol>
     {
         protected InlineSymbol declaration;
-        public InlineVariable InlineVar { get; protected set; }
+        public InlineSymbol InlineVar { get; protected set; }
         public List<SourceEdit> Edits { get; protected set; }
 
-        public InlineRetrieveStep(Program program, SymbolTable<InlineSymbol> rootTable, InlineSymbol declaration) :
+        public InlineRetrieveVisitor(Program program, SymbolTable<InlineSymbol> rootTable, InlineSymbol declaration) :
             base(
                 program, rootTable)
         {
@@ -23,7 +52,8 @@ namespace DafnyRefactor.InlineTemp.Steps
         public override void Execute()
         {
             curTable = rootTable;
-            InlineVar = new InlineVariable(declaration);
+            // TODO: Check if a full copy is neccessary
+            InlineVar = new InlineSymbol(declaration.localVariable, declaration.varDeclStmt);
             Edits = new List<SourceEdit>();
 
             base.Execute();
@@ -35,7 +65,7 @@ namespace DafnyRefactor.InlineTemp.Steps
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == InlineVar.Name &&
-                    curTable.LookupSymbol(agie.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
+                    curTable.LookupSymbol(agie.Name).GetHashCode() == InlineVar.GetHashCode())
                 {
                     var erhs = (ExprRhs) up.Rhss[i];
                     InlineVar.expr = erhs.Expr;
@@ -60,7 +90,7 @@ namespace DafnyRefactor.InlineTemp.Steps
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (up.Lhss[i] is NameSegment nm && nm.Name == InlineVar.Name &&
-                    curTable.LookupSymbol(nm.Name).GetHashCode() == InlineVar.TableDeclaration.GetHashCode())
+                    curTable.LookupSymbol(nm.Name).GetHashCode() == InlineVar.GetHashCode())
                 {
                     if (InlineVar.expr == null && up.Rhss[i] is ExprRhs erhs)
                     {
