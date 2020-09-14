@@ -12,9 +12,6 @@ namespace DafnyRefactor.InlineTemp
         public SymbolTable<InlineSymbol> symbolTable;
         public ApplyInlineTempOptions inlineOptions;
         public InlineSymbol inlineSymbol;
-
-        // TODO: Check if this field is really neccessary
-        public List<SourceEdit> immutabilitySourceEdits;
         public List<SourceEdit> sourceEdits;
 
         public InlineState(ApplyInlineTempOptions options) : base(options)

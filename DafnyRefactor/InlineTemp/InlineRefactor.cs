@@ -31,7 +31,7 @@ namespace DafnyRefactor.InlineTemp
             steps.Add(new GenerateTableStep());
             steps.Add(new LocateVariableStep());
             steps.Add(new CheckImmutabilityStep());
-            //steps.Add(new ProveImmutabilityStep());
+            steps.Add(new ProveImmutabilityStep());
             steps.Add(new ReplaceVariableStep());
             steps.Add(new RemoveDeclarationStep());
             steps.Add(new SaveChangesStep());

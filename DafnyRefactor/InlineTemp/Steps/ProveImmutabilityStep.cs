@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DafnyRefactor.InlineTemp.InlineTable;
 using DafnyRefactor.Utils;
+using DafnyRefactor.Utils.DafnyVisitor;
 using DafnyRefactor.Utils.SourceEdit;
+using DafnyRefactor.Utils.SymbolTable;
 using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
@@ -11,7 +14,10 @@ namespace DafnyRefactor.InlineTemp.Steps
     {
         public override void Handle(InlineState state)
         {
-            var checker = new InlineImmutabilityCheck(state.FilePath, state.immutabilitySourceEdits);
+            var addAssertives = new AddAssertivesVisitor(state.program, state.symbolTable, state.inlineSymbol);
+            addAssertives.Execute();
+
+            var checker = new InlineImmutabilityCheck(state.FilePath, addAssertives.Edits);
             checker.Execute();
             if (!checker.IsConstant)
             {
@@ -48,6 +54,54 @@ namespace DafnyRefactor.InlineTemp.Steps
             var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});
             IsConstant = res == 0;
             File.Delete(tempPath);
+        }
+    }
+
+    internal class AddAssertivesVisitor : DafnyWithTableVisitor<InlineSymbol>
+    {
+        protected Statement nearestStmt;
+        protected InlineSymbol inlineSymbol;
+        public List<SourceEdit> Edits { get; protected set; }
+
+
+        public AddAssertivesVisitor(Program program, SymbolTable<InlineSymbol> rootTable, InlineSymbol inlineSymbol) :
+            base(program, rootTable)
+        {
+            this.inlineSymbol = inlineSymbol;
+        }
+
+        public override void Execute()
+        {
+            Edits = new List<SourceEdit>();
+            var ghostStmtExpr =
+                $"\n ghost var {inlineSymbol.Name}___RefactorGhostExpr := {Printer.ExprToString(inlineSymbol.expr)};\n";
+            Edits.Add(new SourceEdit(inlineSymbol.initStmt.EndTok.pos + 1, ghostStmtExpr));
+            base.Execute();
+        }
+
+        protected override void Visit(Statement stmt)
+        {
+            var oldNearestStmt = nearestStmt;
+            nearestStmt = stmt;
+            base.Visit(stmt);
+            nearestStmt = oldNearestStmt;
+        }
+
+        protected override void Visit(UpdateStmt up)
+        {
+            Traverse(up.Rhss);
+        }
+
+        protected override void Visit(NameSegment nameSeg)
+        {
+            if (curTable.LookupSymbol(nameSeg.Name).GetHashCode() == inlineSymbol.GetHashCode())
+            {
+                var assertStmtExpr =
+                    $"\n assert {inlineSymbol.Name}___RefactorGhostExpr == {Printer.ExprToString(inlineSymbol.expr)};\n";
+                Edits.Add(new SourceEdit(nearestStmt.Tok.pos, assertStmtExpr));
+            }
+
+            base.Visit(nameSeg);
         }
     }
 }
