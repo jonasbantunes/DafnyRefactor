@@ -57,25 +57,26 @@ namespace DafnyRefactor.InlineTemp.Steps
         }
     }
 
-    internal class AddAssertivesVisitor : DafnyWithTableVisitor<InlineSymbol>
+    internal class AddAssertivesVisitor : DafnyVisitor
     {
         protected Statement nearestStmt;
-        protected InlineSymbol inlineSymbol;
+        protected IInlineSymbol inlineSymbol;
+        protected ISymbolTable rootTable;
         public List<SourceEdit> Edits { get; protected set; }
 
 
-        public AddAssertivesVisitor(Program program, SymbolTable<InlineSymbol> rootTable, InlineSymbol inlineSymbol) :
-            base(program, rootTable)
+        public AddAssertivesVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineSymbol) : base(program)
         {
             this.inlineSymbol = inlineSymbol;
+            this.rootTable = rootTable;
         }
 
         public override void Execute()
         {
             Edits = new List<SourceEdit>();
             var ghostStmtExpr =
-                $"\n ghost var {inlineSymbol.Name}___RefactorGhostExpr := {Printer.ExprToString(inlineSymbol.expr)};\n";
-            Edits.Add(new SourceEdit(inlineSymbol.initStmt.EndTok.pos + 1, ghostStmtExpr));
+                $"\n ghost var {inlineSymbol.Name}___RefactorGhostExpr := {Printer.ExprToString(inlineSymbol.Expr)};\n";
+            Edits.Add(new SourceEdit(inlineSymbol.InitStmt.EndTok.pos + 1, ghostStmtExpr));
             base.Execute();
         }
 
@@ -94,10 +95,12 @@ namespace DafnyRefactor.InlineTemp.Steps
 
         protected override void Visit(NameSegment nameSeg)
         {
+            // TODO: Avoid this repetition on source code
+            var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
             if (curTable.LookupSymbol(nameSeg.Name).GetHashCode() == inlineSymbol.GetHashCode())
             {
                 var assertStmtExpr =
-                    $"\n assert {inlineSymbol.Name}___RefactorGhostExpr == {Printer.ExprToString(inlineSymbol.expr)};\n";
+                    $"\n assert {inlineSymbol.Name}___RefactorGhostExpr == {Printer.ExprToString(inlineSymbol.Expr)};\n";
                 Edits.Add(new SourceEdit(nearestStmt.Tok.pos, assertStmtExpr));
             }
 

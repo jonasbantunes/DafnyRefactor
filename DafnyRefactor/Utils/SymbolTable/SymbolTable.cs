@@ -3,38 +3,56 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.Utils.SymbolTable
 {
-    // TODO: Add constructor
-    public class SymbolTable<TSymbol> where TSymbol : Symbol
+    public interface ISymbolTable
     {
-        protected List<TSymbol> symbols = new List<TSymbol>();
-        protected List<SymbolTable<TSymbol>> subTables = new List<SymbolTable<TSymbol>>();
-        protected SymbolTable<TSymbol> parent;
+        ISymbolTable Parent { get; }
+        BlockStmt BlockStmt { get; }
+        List<ISymbol> Symbols { get; }
+
+        void InsertSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt);
+        void InsertTable(BlockStmt block);
+        ISymbol LookupSymbol(string name);
+        ISymbolTable LookupTable(int hashCode);
+        ISymbolTable FindTable(int hashCode);
+    }
+
+    public class SymbolTable : ISymbolTable
+    {
+        protected List<ISymbol> symbols = new List<ISymbol>();
+        protected List<ISymbolTable> subTables = new List<ISymbolTable>();
+        protected ISymbolTable parent;
         protected readonly BlockStmt blockStmt;
 
-        public SymbolTable(BlockStmt blockStmt = null, SymbolTable<TSymbol> parent = null)
+        public SymbolTable(BlockStmt blockStmt = null, ISymbolTable parent = null)
         {
             this.parent = parent;
             this.blockStmt = blockStmt;
         }
 
-        public void InsertSymbol(TSymbol declaration)
+        public ISymbolTable Parent => parent;
+        public BlockStmt BlockStmt => blockStmt;
+        public List<ISymbol> Symbols => symbols;
+
+        public void InsertSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
-            symbols.Add(declaration);
+            var symbol = new Symbol(localVariable, varDeclStmt);
+            symbols.Add(symbol);
         }
 
-        public void InsertTable(SymbolTable<TSymbol> table)
+        public void InsertTable(BlockStmt block)
         {
+            var table = new SymbolTable(block, this);
             subTables.Add(table);
         }
 
-        public TSymbol LookupSymbol(string name)
+        public ISymbol LookupSymbol(string name)
         {
             return LookupSymbol(name, this);
         }
 
-        protected TSymbol LookupSymbol(string name, SymbolTable<TSymbol> table)
+        protected ISymbol LookupSymbol(string name, ISymbolTable table)
         {
-            foreach (var decl in table.symbols)
+            foreach (var decl in table.Symbols)
             {
                 if (decl.Name == name)
                 {
@@ -42,21 +60,43 @@ namespace DafnyRefactor.Utils.SymbolTable
                 }
             }
 
-            if (table.parent == null)
+            if (table.Parent == null)
             {
                 return null;
             }
 
-            return LookupSymbol(name, table.parent);
+            return LookupSymbol(name, table.Parent);
         }
 
-        public SymbolTable<TSymbol> LookupTable(int hashCode)
+        public ISymbolTable LookupTable(int hashCode)
         {
             foreach (var subTable in subTables)
             {
                 if (subTable.GetHashCode() == hashCode)
                 {
                     return subTable;
+                }
+            }
+
+            return null;
+        }
+
+        public ISymbolTable FindTable(int hashCode)
+        {
+            foreach (var subTable in subTables)
+            {
+                if (subTable.GetHashCode() == hashCode)
+                {
+                    return subTable;
+                }
+            }
+
+            foreach (var subTable in subTables)
+            {
+                var result = subTable.FindTable(hashCode);
+                if (result != null)
+                {
+                    return result;
                 }
             }
 

@@ -6,6 +6,7 @@ namespace DafnyRefactor.Utils.DafnyVisitor
     public class DafnyVisitor
     {
         protected readonly Program program;
+        protected BlockStmt nearestBlockStmt;
 
         public DafnyVisitor(Program program)
         {
@@ -59,7 +60,11 @@ namespace DafnyRefactor.Utils.DafnyVisitor
 
         protected virtual void Visit(BlockStmt block)
         {
+            // TODO: Improve stack of variabless
+            var oldNearest = nearestBlockStmt;
+            nearestBlockStmt = block;
             Traverse(block.Body);
+            nearestBlockStmt = oldNearest;
         }
 
         protected virtual void Visit(IfStmt ifStmt)

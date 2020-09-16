@@ -3,15 +3,15 @@ using DafnyRefactor.InlineTemp.InlineTable;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.CommandLineOptions;
 using DafnyRefactor.Utils.SourceEdit;
-using DafnyRefactor.Utils.SymbolTable;
 
 namespace DafnyRefactor.InlineTemp
 {
     public class InlineState : RefactorState
     {
-        public SymbolTable<InlineSymbol> symbolTable;
+        // public ISymbolTable symbolTable;
+        public IInlineTable symbolTable;
         public ApplyInlineTempOptions inlineOptions;
-        public InlineSymbol inlineSymbol;
+        public IInlineSymbol inlineSymbol;
         public List<SourceEdit> sourceEdits;
 
         public InlineState(ApplyInlineTempOptions options) : base(options)

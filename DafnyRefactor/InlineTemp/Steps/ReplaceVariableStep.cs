@@ -19,16 +19,17 @@ namespace DafnyRefactor.InlineTemp.Steps
         }
     }
 
-    internal class InlineApplyVisitor : DafnyWithTableVisitor<InlineSymbol>
+    internal class InlineApplyVisitor : DafnyVisitor
     {
-        protected InlineSymbol inlineVar;
+        protected IInlineSymbol inlineVar;
+        protected ISymbolTable rootTable;
         public List<SourceEdit> Edits { get; protected set; }
 
-        public InlineApplyVisitor(Program program, SymbolTable<InlineSymbol> rootTable, InlineSymbol inlineVar) :
-            base(program,
-                rootTable)
+        public InlineApplyVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar) :
+            base(program)
         {
             this.inlineVar = inlineVar;
+            this.rootTable = rootTable;
         }
 
         public override void Execute()
@@ -45,11 +46,13 @@ namespace DafnyRefactor.InlineTemp.Steps
 
         protected override void Visit(NameSegment nameSeg)
         {
+            // TODO: Avoid this repetition on source code
+            var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
             if (nameSeg.Name == inlineVar.Name && curTable.LookupSymbol(nameSeg.Name).GetHashCode() ==
                 inlineVar.GetHashCode())
             {
                 Edits.Add(new SourceEdit(nameSeg.tok.pos, nameSeg.tok.pos + nameSeg.tok.val.Length,
-                    $"({Printer.ExprToString(inlineVar.expr)})"));
+                    $"({Printer.ExprToString(inlineVar.Expr)})"));
             }
 
             base.Visit(nameSeg);

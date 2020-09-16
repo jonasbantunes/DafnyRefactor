@@ -1,7 +1,6 @@
 ﻿using DafnyRefactor.InlineTemp.InlineTable;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.DafnyVisitor;
-using DafnyRefactor.Utils.SymbolTable;
 using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
@@ -12,14 +11,14 @@ namespace DafnyRefactor.InlineTemp.Steps
         {
             var visitor = new InlineRetrieveVisitor(state.program, state.symbolTable);
             visitor.Execute();
-            if (state.inlineSymbol.expr == null)
+            if (state.inlineSymbol.Expr == null)
             {
                 state.errors.Add(
                     $"Error: variable {state.inlineSymbol.Name} located on {state.inlineOptions.VarLine}:{state.inlineOptions.VarColumn} is never initialized.");
                 return;
             }
 
-            if (state.inlineSymbol.isUpdated)
+            if (state.inlineSymbol.IsUpdated)
             {
                 state.errors.Add(
                     $"Error: variable {state.inlineSymbol.Name} located on {state.inlineOptions.VarLine}:{state.inlineOptions.VarColumn} is not constant.");
@@ -30,12 +29,13 @@ namespace DafnyRefactor.InlineTemp.Steps
         }
     }
 
-    internal class InlineRetrieveVisitor : DafnyWithTableVisitor<InlineSymbol>
+    internal class InlineRetrieveVisitor : DafnyVisitor
     {
-        public InlineRetrieveVisitor(Program program, SymbolTable<InlineSymbol> rootTable) :
-            base(
-                program, rootTable)
+        protected IInlineTable rootTable;
+
+        public InlineRetrieveVisitor(Program program, IInlineTable rootTable) : base(program)
         {
+            this.rootTable = rootTable;
         }
 
         protected override void Visit(VarDeclStmt vds)
@@ -44,11 +44,13 @@ namespace DafnyRefactor.InlineTemp.Steps
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (!(up.Lhss[i] is AutoGhostIdentifierExpr agie)) continue;
-                var symbol = curTable.LookupSymbol(agie.Name);
+                // TODO: Avoid this repetition on source code
+                var curTable = rootTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
+                var symbol = curTable.LookupInlineSymbol(agie.Name);
                 if (symbol == null) continue;
                 var erhs = (ExprRhs) up.Rhss[i];
-                symbol.expr = erhs.Expr;
-                symbol.initStmt = up;
+                symbol.Expr = erhs.Expr;
+                symbol.InitStmt = up;
             }
         }
 
@@ -57,15 +59,16 @@ namespace DafnyRefactor.InlineTemp.Steps
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (!(up.Lhss[i] is NameSegment nm)) continue;
-                var symbol = curTable.LookupSymbol(nm.Name);
-                if (symbol.expr == null && up.Rhss[i] is ExprRhs erhs)
+                var curTable = rootTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
+                var symbol = curTable.LookupInlineSymbol(nm.Name);
+                if (symbol.Expr == null && up.Rhss[i] is ExprRhs erhs)
                 {
-                    symbol.expr = erhs.Expr;
-                    symbol.initStmt = up;
+                    symbol.Expr = erhs.Expr;
+                    symbol.InitStmt = up;
                 }
                 else
                 {
-                    symbol.isUpdated = true;
+                    symbol.IsUpdated = true;
                 }
             }
         }

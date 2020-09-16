@@ -3,12 +3,23 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.InlineTable
 {
-    public class InlineSymbol : Symbol
+    public interface IInlineSymbol : ISymbol
     {
-        public bool isUpdated = false;
-        public Expression expr;
+        bool IsUpdated { get; set; }
+        Expression Expr { get; set; }
+        UpdateStmt InitStmt { get; set; }
+
+        bool IsConstant();
+    }
+
+    public class InlineSymbol : Symbol, IInlineSymbol
+    {
+        public bool IsUpdated { get; set; } = false;
+
+        public Expression Expr { get; set; }
+
         // TODO: Give a better name
-        public UpdateStmt initStmt = null;
+        public UpdateStmt InitStmt { get; set; } = null;
 
         public InlineSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt) : base(localVariable, varDeclStmt)
         {
@@ -16,7 +27,7 @@ namespace DafnyRefactor.InlineTemp.InlineTable
 
         public bool IsConstant()
         {
-            return (expr != null) && !isUpdated;
+            return (Expr != null) && !IsUpdated;
         }
 
         public static InlineSymbol CreateInlineSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)

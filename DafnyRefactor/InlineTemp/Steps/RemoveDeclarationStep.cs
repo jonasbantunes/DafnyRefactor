@@ -21,17 +21,17 @@ namespace DafnyRefactor.InlineTemp.Steps
         }
     }
 
-    internal class RemoveRefactoredDeclarationVisitor : DafnyWithTableVisitor<InlineSymbol>
+    internal class RemoveRefactoredDeclarationVisitor : DafnyVisitor
     {
-        protected InlineSymbol inlineVar;
+        protected IInlineSymbol inlineVar;
+        protected ISymbolTable rootTable;
         public List<SourceEdit> Edits { get; protected set; }
 
-        public RemoveRefactoredDeclarationVisitor(Program program, SymbolTable<InlineSymbol> rootTable,
-            InlineSymbol inlineVar)
-            : base(
-                program, rootTable)
+        public RemoveRefactoredDeclarationVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar) :
+            base(program)
         {
             this.inlineVar = inlineVar;
+            this.rootTable = rootTable;
         }
 
         public override void Execute()
@@ -42,6 +42,8 @@ namespace DafnyRefactor.InlineTemp.Steps
 
         protected override void Visit(VarDeclStmt vds)
         {
+            // TODO: Avoid this repetition on source code
+            var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
             if (vds.Locals.Count == 1 && curTable.LookupSymbol(vds.Locals[0].Name).GetHashCode() ==
                 inlineVar.GetHashCode())
             {
@@ -101,6 +103,8 @@ namespace DafnyRefactor.InlineTemp.Steps
 
         protected override void Visit(UpdateStmt up)
         {
+            // TODO: Avoid this repetition on source code
+            var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
             if (up.Lhss.Count == 1 && up.Lhss[0] is NameSegment upNm &&
                 curTable.LookupSymbol(upNm.Name).GetHashCode() == inlineVar.GetHashCode())
             {

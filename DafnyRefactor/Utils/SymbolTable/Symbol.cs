@@ -2,11 +2,21 @@
 
 namespace DafnyRefactor.Utils.SymbolTable
 {
-    public class Symbol
+    public interface ISymbol
     {
-        public readonly LocalVariable localVariable;
-        public readonly VarDeclStmt varDeclStmt;
-        public string Name => localVariable.Name;
+        LocalVariable LocalVariable { get; }
+        VarDeclStmt VarDeclStmt { get; }
+        string Name { get; }
+    }
+
+    public class Symbol : ISymbol
+    {
+        protected readonly LocalVariable localVariable;
+        protected VarDeclStmt varDeclStmt;
+
+        public LocalVariable LocalVariable => localVariable;
+        public VarDeclStmt VarDeclStmt => varDeclStmt;
+        public string Name => LocalVariable.Name;
 
         public Symbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
@@ -16,7 +26,8 @@ namespace DafnyRefactor.Utils.SymbolTable
 
         public override int GetHashCode()
         {
-            return localVariable.GetHashCode();
+            // TODO: Check if is better to use localVariable or localVariable.Tok
+            return LocalVariable?.GetHashCode() ?? 0;
         }
 
         public static Symbol CreateSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)

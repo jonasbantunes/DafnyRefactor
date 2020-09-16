@@ -1,7 +1,6 @@
 ﻿using DafnyRefactor.InlineTemp.InlineTable;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.DafnyVisitor;
-using DafnyRefactor.Utils.SymbolTable;
 using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
@@ -26,20 +25,20 @@ namespace DafnyRefactor.InlineTemp.Steps
         }
     }
 
-    internal class LocateVariableVisitor : DafnyWithTableVisitor<InlineSymbol>
+    internal class LocateVariableVisitor : DafnyVisitor
     {
         // TODO: Analyse if varLine and varColumn should be an Location "struct"
         protected int varLine;
         protected int varColumn;
-        public InlineSymbol FoundDeclaration { get; protected set; }
+        protected IInlineTable rootTable;
+        public IInlineSymbol FoundDeclaration { get; protected set; }
 
-        public LocateVariableVisitor(Program program, SymbolTable<InlineSymbol> rootTable, int varLine, int varColumn) :
-            base(
-                program,
-                rootTable)
+        public LocateVariableVisitor(Program program, IInlineTable rootTable, int varLine, int varColumn) :
+            base(program)
         {
             this.varLine = varLine;
             this.varColumn = varColumn;
+            this.rootTable = rootTable;
         }
 
         protected override void Visit(VarDeclStmt vds)
@@ -48,7 +47,9 @@ namespace DafnyRefactor.InlineTemp.Steps
             {
                 if (IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line, local.EndTok.col))
                 {
-                    FoundDeclaration = curTable.LookupSymbol(local.Name);
+                    // TODO: Avoid this repetition on source code
+                    var curTable = rootTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
+                    FoundDeclaration = curTable.LookupInlineSymbol(local.Name);
                 }
             }
 
@@ -60,7 +61,9 @@ namespace DafnyRefactor.InlineTemp.Steps
             if (IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line,
                 nameSeg.tok.col + nameSeg.tok.val.Length - 1))
             {
-                FoundDeclaration = curTable.LookupSymbol(nameSeg.Name);
+                // TODO: Avoid this repetition on source code
+                var curTable = rootTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
+                FoundDeclaration = curTable.LookupInlineSymbol(nameSeg.Name);
             }
         }
 
