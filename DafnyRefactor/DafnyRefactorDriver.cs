@@ -6,6 +6,8 @@ using CommandLine;
 using DafnyRefactor.InlineTemp;
 using DafnyRefactor.Utils.CommandLineOptions;
 using Microsoft.Dafny;
+using Parser = CommandLine.Parser;
+using Type = System.Type;
 
 namespace DafnyRefactor
 {
@@ -17,8 +19,8 @@ namespace DafnyRefactor
 
         public static int Main(string[] args)
         {
-            System.Type[] types = {typeof(ApplyInlineTempOptions)};
-            return CommandLine.Parser.Default.ParseArguments(args, types).MapResult(Run, HandleParseError);
+            Type[] types = {typeof(ApplyInlineTempOptions)};
+            return Parser.Default.ParseArguments(args, types).MapResult(Run, HandleParseError);
         }
 
         public static void SetupConsole()

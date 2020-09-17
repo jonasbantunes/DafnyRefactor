@@ -15,16 +15,10 @@ namespace DafnyRefactor.InlineTemp.InlineTable
 
     public class InlineTable : IInlineTable
     {
-        protected List<IInlineSymbol> symbols = new List<IInlineSymbol>();
-        protected List<IInlineTable> subTables = new List<IInlineTable>();
-        protected IInlineTable parent;
         protected readonly BlockStmt blockStmt;
-
-        public ISymbolTable Parent => parent;
-        public IInlineTable InlineParent => parent;
-        public BlockStmt BlockStmt => blockStmt;
-        public List<ISymbol> Symbols => new List<ISymbol>(symbols);
-        public List<IInlineSymbol> InlineSymbols => symbols;
+        protected IInlineTable parent;
+        protected List<IInlineTable> subTables = new List<IInlineTable>();
+        protected List<IInlineSymbol> symbols = new List<IInlineSymbol>();
 
         public InlineTable()
         {
@@ -35,6 +29,12 @@ namespace DafnyRefactor.InlineTemp.InlineTable
             this.parent = parent;
             this.blockStmt = blockStmt;
         }
+
+        public ISymbolTable Parent => parent;
+        public IInlineTable InlineParent => parent;
+        public BlockStmt BlockStmt => blockStmt;
+        public List<ISymbol> Symbols => new List<ISymbol>(symbols);
+        public List<IInlineSymbol> InlineSymbols => symbols;
 
         public void InsertSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
@@ -51,24 +51,6 @@ namespace DafnyRefactor.InlineTemp.InlineTable
         public ISymbol LookupSymbol(string name)
         {
             return LookupSymbol(name, this);
-        }
-
-        protected ISymbol LookupSymbol(string name, IInlineTable table)
-        {
-            foreach (var decl in table.Symbols)
-            {
-                if (decl.Name == name)
-                {
-                    return decl;
-                }
-            }
-
-            if (table.Parent == null)
-            {
-                return null;
-            }
-
-            return LookupSymbol(name, table.InlineParent);
         }
 
         public ISymbolTable FindTable(int hashCode)
@@ -101,13 +83,39 @@ namespace DafnyRefactor.InlineTemp.InlineTable
 
         public ISymbolTable LookupTable(int hashCode)
         {
-            throw new System.NotImplementedException();
+            foreach (var subTable in subTables)
+            {
+                if (subTable.GetHashCode() == hashCode)
+                {
+                    return subTable;
+                }
+            }
+
+            return null;
         }
 
         public IInlineTable FindInlineTable(int hashCode)
         {
             // TODO: Find better way to implice type
             return FindTable(hashCode) as IInlineTable;
+        }
+
+        protected ISymbol LookupSymbol(string name, IInlineTable table)
+        {
+            foreach (var decl in table.Symbols)
+            {
+                if (decl.Name == name)
+                {
+                    return decl;
+                }
+            }
+
+            if (table.Parent == null)
+            {
+                return null;
+            }
+
+            return LookupSymbol(name, table.InlineParent);
         }
 
         public override int GetHashCode()

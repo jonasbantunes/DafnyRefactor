@@ -14,15 +14,15 @@ namespace DafnyRefactor.Utils.SymbolTable
         protected readonly LocalVariable localVariable;
         protected VarDeclStmt varDeclStmt;
 
-        public LocalVariable LocalVariable => localVariable;
-        public VarDeclStmt VarDeclStmt => varDeclStmt;
-        public string Name => LocalVariable.Name;
-
         public Symbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
             this.localVariable = localVariable;
             this.varDeclStmt = varDeclStmt;
         }
+
+        public LocalVariable LocalVariable => localVariable;
+        public VarDeclStmt VarDeclStmt => varDeclStmt;
+        public string Name => LocalVariable.Name;
 
         public override int GetHashCode()
         {

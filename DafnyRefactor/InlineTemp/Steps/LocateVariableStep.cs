@@ -27,11 +27,12 @@ namespace DafnyRefactor.InlineTemp.Steps
 
     internal class LocateVariableVisitor : DafnyVisitor
     {
+        protected IInlineTable rootTable;
+
+        protected int varColumn;
+
         // TODO: Analyse if varLine and varColumn should be an Location "struct"
         protected int varLine;
-        protected int varColumn;
-        protected IInlineTable rootTable;
-        public IInlineSymbol FoundDeclaration { get; protected set; }
 
         public LocateVariableVisitor(Program program, IInlineTable rootTable, int varLine, int varColumn) :
             base(program)
@@ -40,6 +41,8 @@ namespace DafnyRefactor.InlineTemp.Steps
             this.varColumn = varColumn;
             this.rootTable = rootTable;
         }
+
+        public IInlineSymbol FoundDeclaration { get; protected set; }
 
         protected override void Visit(VarDeclStmt vds)
         {
@@ -71,7 +74,7 @@ namespace DafnyRefactor.InlineTemp.Steps
         {
             if (startLine == line && starColumn <= column)
             {
-                if (startLine < line && line < endLine || (line == endLine && column <= endColumn))
+                if (startLine < line && line < endLine || line == endLine && column <= endColumn)
                 {
                     return true;
                 }

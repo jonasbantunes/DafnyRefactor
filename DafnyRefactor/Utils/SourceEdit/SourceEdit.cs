@@ -4,9 +4,9 @@ namespace DafnyRefactor.Utils.SourceEdit
 {
     public class SourceEdit
     {
-        public int startPos;
-        public int endPos;
         public string content;
+        public int endPos;
+        public int startPos;
 
         public SourceEdit(int startPos, int endPos, string content)
         {

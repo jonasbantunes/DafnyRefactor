@@ -25,7 +25,6 @@ namespace DafnyRefactor.InlineTemp.Steps
     {
         protected IInlineSymbol inlineVar;
         protected ISymbolTable rootTable;
-        public List<SourceEdit> Edits { get; protected set; }
 
         public RemoveRefactoredDeclarationVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar) :
             base(program)
@@ -33,6 +32,8 @@ namespace DafnyRefactor.InlineTemp.Steps
             this.inlineVar = inlineVar;
             this.rootTable = rootTable;
         }
+
+        public List<SourceEdit> Edits { get; protected set; }
 
         public override void Execute()
         {
@@ -53,7 +54,7 @@ namespace DafnyRefactor.InlineTemp.Steps
             {
                 var newVds = new VarDeclStmt(vds.Tok, vds.EndTok, vds.Locals.ToList(), null);
 
-                for (int i = vds.Locals.Count - 1; i >= 0; i--)
+                for (var i = vds.Locals.Count - 1; i >= 0; i--)
                 {
                     if (vds.Locals[i].Name == inlineVar.Name &&
                         curTable.LookupSymbol(vds.Locals[i].Name).GetHashCode() ==
@@ -77,7 +78,7 @@ namespace DafnyRefactor.InlineTemp.Steps
                     var newUpdate = new UpdateStmt(up.Tok, up.EndTok, up.Lhss.ToList(), up.Rhss.ToList());
                     var newVds = new VarDeclStmt(vds.Tok, vds.EndTok, vds.Locals.ToList(), newUpdate);
 
-                    for (int i = up.Lhss.Count - 1; i >= 0; i--)
+                    for (var i = up.Lhss.Count - 1; i >= 0; i--)
                     {
                         if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == inlineVar.Name &&
                             curTable.LookupSymbol(agie.Name).GetHashCode() ==
@@ -114,7 +115,7 @@ namespace DafnyRefactor.InlineTemp.Steps
             {
                 var newUpdate = new UpdateStmt(up.Tok, up.EndTok, up.Lhss.ToList(), up.Rhss.ToList());
 
-                for (int i = up.Lhss.Count - 1; i >= 0; i--)
+                for (var i = up.Lhss.Count - 1; i >= 0; i--)
                 {
                     if (up.Lhss[i] is NameSegment nm && nm.Name == inlineVar.Name &&
                         curTable.LookupSymbol(nm.Name).GetHashCode() == inlineVar.GetHashCode())

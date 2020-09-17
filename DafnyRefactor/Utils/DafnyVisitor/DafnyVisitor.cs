@@ -21,7 +21,7 @@ namespace DafnyRefactor.Utils.DafnyVisitor
         // TODO: Improve naming to differenciate between castings (also Visit), vertical (Visit) and horizontal (Traverse) iteration on tree and 
         protected virtual void Visit(Program prog)
         {
-            foreach (TopLevelDecl tld in prog.DefaultModuleDef.TopLevelDecls)
+            foreach (var tld in prog.DefaultModuleDef.TopLevelDecls)
             {
                 Visit(tld);
             }
@@ -169,7 +169,7 @@ namespace DafnyRefactor.Utils.DafnyVisitor
 
         protected virtual void Traverse(List<Statement> body)
         {
-            foreach (Statement stmt in body)
+            foreach (var stmt in body)
             {
                 Visit(stmt);
             }
@@ -177,7 +177,7 @@ namespace DafnyRefactor.Utils.DafnyVisitor
 
         protected virtual void Traverse(List<MemberDecl> members)
         {
-            foreach (MemberDecl decl in members)
+            foreach (var decl in members)
             {
                 Visit(decl);
             }
@@ -185,7 +185,7 @@ namespace DafnyRefactor.Utils.DafnyVisitor
 
         protected virtual void Traverse(List<AssignmentRhs> rhss)
         {
-            foreach (AssignmentRhs rhs in rhss)
+            foreach (var rhs in rhss)
             {
                 Visit(rhs);
             }

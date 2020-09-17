@@ -18,10 +18,10 @@ namespace DafnyRefactor.Utils.SymbolTable
 
     public class SymbolTable : ISymbolTable
     {
-        protected List<ISymbol> symbols = new List<ISymbol>();
-        protected List<ISymbolTable> subTables = new List<ISymbolTable>();
-        protected ISymbolTable parent;
         protected readonly BlockStmt blockStmt;
+        protected ISymbolTable parent;
+        protected List<ISymbolTable> subTables = new List<ISymbolTable>();
+        protected List<ISymbol> symbols = new List<ISymbol>();
 
         public SymbolTable(BlockStmt blockStmt = null, ISymbolTable parent = null)
         {
@@ -48,24 +48,6 @@ namespace DafnyRefactor.Utils.SymbolTable
         public ISymbol LookupSymbol(string name)
         {
             return LookupSymbol(name, this);
-        }
-
-        protected ISymbol LookupSymbol(string name, ISymbolTable table)
-        {
-            foreach (var decl in table.Symbols)
-            {
-                if (decl.Name == name)
-                {
-                    return decl;
-                }
-            }
-
-            if (table.Parent == null)
-            {
-                return null;
-            }
-
-            return LookupSymbol(name, table.Parent);
         }
 
         public ISymbolTable LookupTable(int hashCode)
@@ -101,6 +83,24 @@ namespace DafnyRefactor.Utils.SymbolTable
             }
 
             return null;
+        }
+
+        protected ISymbol LookupSymbol(string name, ISymbolTable table)
+        {
+            foreach (var decl in table.Symbols)
+            {
+                if (decl.Name == name)
+                {
+                    return decl;
+                }
+            }
+
+            if (table.Parent == null)
+            {
+                return null;
+            }
+
+            return LookupSymbol(name, table.Parent);
         }
 
         public override int GetHashCode()

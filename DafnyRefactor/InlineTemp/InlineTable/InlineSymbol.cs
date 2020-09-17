@@ -14,6 +14,10 @@ namespace DafnyRefactor.InlineTemp.InlineTable
 
     public class InlineSymbol : Symbol, IInlineSymbol
     {
+        public InlineSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt) : base(localVariable, varDeclStmt)
+        {
+        }
+
         public bool IsUpdated { get; set; } = false;
 
         public Expression Expr { get; set; }
@@ -21,13 +25,9 @@ namespace DafnyRefactor.InlineTemp.InlineTable
         // TODO: Give a better name
         public UpdateStmt InitStmt { get; set; } = null;
 
-        public InlineSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt) : base(localVariable, varDeclStmt)
-        {
-        }
-
         public bool IsConstant()
         {
-            return (Expr != null) && !IsUpdated;
+            return Expr != null && !IsUpdated;
         }
 
         public static InlineSymbol CreateInlineSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)

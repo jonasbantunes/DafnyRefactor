@@ -8,11 +8,13 @@ namespace DafnyRefactor.InlineTemp
 {
     public class InlineState : RefactorState
     {
-        // public ISymbolTable symbolTable;
-        public IInlineTable symbolTable;
         public ApplyInlineTempOptions inlineOptions;
         public IInlineSymbol inlineSymbol;
+
         public List<SourceEdit> sourceEdits;
+
+        // public ISymbolTable symbolTable;
+        public IInlineTable symbolTable;
 
         public InlineState(ApplyInlineTempOptions options) : base(options)
         {

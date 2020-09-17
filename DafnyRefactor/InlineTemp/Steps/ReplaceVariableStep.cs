@@ -23,7 +23,6 @@ namespace DafnyRefactor.InlineTemp.Steps
     {
         protected IInlineSymbol inlineVar;
         protected ISymbolTable rootTable;
-        public List<SourceEdit> Edits { get; protected set; }
 
         public InlineApplyVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar) :
             base(program)
@@ -31,6 +30,8 @@ namespace DafnyRefactor.InlineTemp.Steps
             this.inlineVar = inlineVar;
             this.rootTable = rootTable;
         }
+
+        public List<SourceEdit> Edits { get; protected set; }
 
         public override void Execute()
         {

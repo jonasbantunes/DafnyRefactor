@@ -6,17 +6,17 @@ namespace DafnyRefactor.Utils
 {
     public class RefactorState
     {
-        public Program program;
         public List<string> errors;
         public ApplyOptions options;
+        public Program program;
         public string tempFilePath;
-
-        public string FilePath => options.Stdin ? tempFilePath : options.FilePath;
 
         public RefactorState(ApplyOptions options)
         {
             this.options = options;
             errors = new List<string>();
         }
+
+        public string FilePath => options.Stdin ? tempFilePath : options.FilePath;
     }
 }

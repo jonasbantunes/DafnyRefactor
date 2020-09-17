@@ -32,15 +32,16 @@ namespace DafnyRefactor.InlineTemp.Steps
 
     internal class InlineImmutabilityCheck
     {
-        protected string filePath;
         protected List<SourceEdit> edits;
-        public bool IsConstant { get; protected set; }
+        protected string filePath;
 
         public InlineImmutabilityCheck(string filePath, List<SourceEdit> edits)
         {
             this.filePath = filePath;
             this.edits = edits;
         }
+
+        public bool IsConstant { get; protected set; }
 
         public void Execute()
         {
@@ -59,10 +60,9 @@ namespace DafnyRefactor.InlineTemp.Steps
 
     internal class AddAssertivesVisitor : DafnyVisitor
     {
-        protected Statement nearestStmt;
         protected IInlineSymbol inlineSymbol;
+        protected Statement nearestStmt;
         protected ISymbolTable rootTable;
-        public List<SourceEdit> Edits { get; protected set; }
 
 
         public AddAssertivesVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineSymbol) : base(program)
@@ -70,6 +70,8 @@ namespace DafnyRefactor.InlineTemp.Steps
             this.inlineSymbol = inlineSymbol;
             this.rootTable = rootTable;
         }
+
+        public List<SourceEdit> Edits { get; protected set; }
 
         public override void Execute()
         {

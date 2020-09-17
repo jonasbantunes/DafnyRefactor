@@ -10,12 +10,13 @@ namespace DafnyRefactor.InlineTemp
     public class InlineRefactor
     {
         protected readonly ApplyInlineTempOptions options;
-        public int ExitCode { get; protected set; }
 
         public InlineRefactor(ApplyInlineTempOptions options)
         {
             this.options = options;
         }
+
+        public int ExitCode { get; protected set; }
 
         public void Apply()
         {

@@ -4,12 +4,12 @@ namespace DafnyRefactor.Utils.SymbolTable
 {
     public class SymbolTableGenerator<TSymbolTable> : DafnyVisitor.DafnyVisitor where TSymbolTable : ISymbolTable, new()
     {
-        public TSymbolTable GeneratedTable { get; protected set; }
-
         public SymbolTableGenerator(Program program) :
             base(program)
         {
         }
+
+        public TSymbolTable GeneratedTable { get; protected set; }
 
         public override void Execute()
         {

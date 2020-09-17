@@ -27,12 +27,13 @@ namespace DafnyRefactor.InlineTemp.Steps
     {
         protected readonly InlineState state;
         protected SourceEditor sourceEditor;
-        public bool ChangesInvalidateSource { get; protected set; }
 
         public SaveChanges(InlineState state)
         {
             this.state = state;
         }
+
+        public bool ChangesInvalidateSource { get; protected set; }
 
         public void Save()
         {
