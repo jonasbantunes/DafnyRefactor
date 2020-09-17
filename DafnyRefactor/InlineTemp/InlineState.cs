@@ -3,23 +3,37 @@ using DafnyRefactor.InlineTemp.InlineTable;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.CommandLineOptions;
 using DafnyRefactor.Utils.SourceEdit;
+using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp
 {
-    public class InlineState : RefactorState
+    public interface IInlineState : IRefactorState
     {
-        public ApplyInlineTempOptions inlineOptions;
-        public IInlineSymbol inlineSymbol;
+        ApplyInlineTempOptions InlineOptions { get; }
+        IInlineSymbol InlineSymbol { get; set; }
+        List<SourceEdit> SourceEdits { get; }
+        IInlineTable SymbolTable { get; set; }
+    }
 
-        public List<SourceEdit> sourceEdits;
+    public class InlineState : IInlineState
+    {
+        protected ApplyInlineTempOptions options;
 
-        // public ISymbolTable symbolTable;
-        public IInlineTable symbolTable;
-
-        public InlineState(ApplyInlineTempOptions options) : base(options)
+        public InlineState(ApplyInlineTempOptions options)
         {
-            inlineOptions = options;
-            sourceEdits = new List<SourceEdit>();
+            this.options = options;
+            SourceEdits = new List<SourceEdit>();
+            Errors = new List<string>();
         }
+
+        public ApplyInlineTempOptions InlineOptions => options;
+        public IInlineSymbol InlineSymbol { get; set; }
+        public List<SourceEdit> SourceEdits { get; }
+        public IInlineTable SymbolTable { get; set; }
+        public List<string> Errors { get; }
+        public ApplyOptions Options => options;
+        public Program Program { get; set; }
+        public string TempFilePath { get; set; }
+        public string FilePath => Options.Stdin ? TempFilePath : Options.FilePath;
     }
 }

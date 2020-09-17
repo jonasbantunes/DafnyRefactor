@@ -5,23 +5,23 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class CheckImmutabilityStep : RefactorStep<InlineState>
+    public class CheckImmutabilityStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
-        public override void Handle(InlineState state)
+        public override void Handle(TState state)
         {
-            var visitor = new InlineRetrieveVisitor(state.program, state.symbolTable);
+            var visitor = new InlineRetrieveVisitor(state.Program, state.SymbolTable);
             visitor.Execute();
-            if (state.inlineSymbol.Expr == null)
+            if (state.InlineSymbol.Expr == null)
             {
-                state.errors.Add(
-                    $"Error: variable {state.inlineSymbol.Name} located on {state.inlineOptions.VarLine}:{state.inlineOptions.VarColumn} is never initialized.");
+                state.Errors.Add(
+                    $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is never initialized.");
                 return;
             }
 
-            if (state.inlineSymbol.IsUpdated)
+            if (state.InlineSymbol.IsUpdated)
             {
-                state.errors.Add(
-                    $"Error: variable {state.inlineSymbol.Name} located on {state.inlineOptions.VarLine}:{state.inlineOptions.VarColumn} is not constant.");
+                state.Errors.Add(
+                    $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant.");
                 return;
             }
 

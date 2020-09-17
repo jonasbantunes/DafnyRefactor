@@ -6,16 +6,16 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class SaveChangesStep : RefactorStep<InlineState>
+    public class SaveChangesStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
-        public override void Handle(InlineState state)
+        public override void Handle(TState state)
         {
             var changer = new SaveChanges(state);
             changer.Save();
 
             if (changer.ChangesInvalidateSource)
             {
-                state.errors.Add("Error: refactor invalidate source");
+                state.Errors.Add("Error: refactor invalidate source");
                 return;
             }
 
@@ -25,10 +25,10 @@ namespace DafnyRefactor.InlineTemp.Steps
 
     internal class SaveChanges
     {
-        protected readonly InlineState state;
+        protected readonly IInlineState state;
         protected SourceEditor sourceEditor;
 
-        public SaveChanges(InlineState state)
+        public SaveChanges(IInlineState state)
         {
             this.state = state;
         }
@@ -47,7 +47,7 @@ namespace DafnyRefactor.InlineTemp.Steps
         protected void ApplyChanges()
         {
             var source = File.ReadAllText(state.FilePath);
-            sourceEditor = new SourceEditor(source, state.sourceEdits);
+            sourceEditor = new SourceEditor(source, state.SourceEdits);
             sourceEditor.Apply();
         }
 
@@ -63,13 +63,13 @@ namespace DafnyRefactor.InlineTemp.Steps
 
         protected void SaveTo()
         {
-            if (state.options.Stdout)
+            if (state.Options.Stdout)
             {
                 DafnyRefactorDriver.consoleOutput.Write(sourceEditor.Source);
             }
-            else if (state.options.Output != null)
+            else if (state.Options.Output != null)
             {
-                File.WriteAllText(state.options.Output, sourceEditor.Source);
+                File.WriteAllText(state.Options.Output, sourceEditor.Source);
             }
             else
             {

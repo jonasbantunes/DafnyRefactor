@@ -5,21 +5,21 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class LocateVariableStep : RefactorStep<InlineState>
+    public class LocateVariableStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
-        public override void Handle(InlineState state)
+        public override void Handle(TState state)
         {
-            var visitor = new LocateVariableVisitor(state.program, state.symbolTable, state.inlineOptions.VarLine,
-                state.inlineOptions.VarColumn);
+            var visitor = new LocateVariableVisitor(state.Program, state.SymbolTable, state.InlineOptions.VarLine,
+                state.InlineOptions.VarColumn);
             visitor.Execute();
             if (visitor.FoundDeclaration == null)
             {
-                state.errors.Add(
-                    $"Error: can't locate variable on line {state.inlineOptions.VarLine}:{state.inlineOptions.VarColumn}.");
+                state.Errors.Add(
+                    $"Error: can't locate variable on line {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn}.");
                 return;
             }
 
-            state.inlineSymbol = visitor.FoundDeclaration;
+            state.InlineSymbol = visitor.FoundDeclaration;
 
             base.Handle(state);
         }

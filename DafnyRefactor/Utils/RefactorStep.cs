@@ -1,12 +1,12 @@
 ﻿namespace DafnyRefactor.Utils
 {
-    public class RefactorStep<TState> where TState : RefactorState
+    public class RefactorStep<TRefactorState> where TRefactorState : IRefactorState
     {
-        public RefactorStep<TState> next;
+        public RefactorStep<TRefactorState> next;
 
-        public virtual void Handle(TState state)
+        public virtual void Handle(TRefactorState state)
         {
-            if (state.errors.Count > 0) return;
+            if (state.Errors.Count > 0) return;
             next?.Handle(state);
         }
     }

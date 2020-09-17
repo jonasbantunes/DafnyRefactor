@@ -3,7 +3,7 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.Utils
 {
-    public class LoadProgramStep<TState> : RefactorStep<TState> where TState : RefactorState
+    public class LoadProgramStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {
         protected TState state;
 
@@ -19,10 +19,10 @@ namespace DafnyRefactor.Utils
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
 
-            state.program = null;
+            state.Program = null;
             if (!IsFileValid())
             {
-                state.errors.Add("Program is invalid");
+                state.Errors.Add("Program is invalid");
                 return;
             }
 
@@ -33,14 +33,14 @@ namespace DafnyRefactor.Utils
             }
             catch (IllegalDafnyFile)
             {
-                state.errors.Add("Program is invalid");
+                state.Errors.Add("Program is invalid");
                 return;
             }
 
             var err = Main.Parse(dafnyFiles, "the program", reporter, out var tempProgram);
             if (err == null)
             {
-                state.program = tempProgram;
+                state.Program = tempProgram;
             }
         }
 

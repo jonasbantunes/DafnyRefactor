@@ -3,15 +3,15 @@ using DafnyRefactor.Utils.SymbolTable;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class GenerateTableStep : RefactorStep<InlineState>
+    public class GenerateTableStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
-        public override void Handle(InlineState state)
+        public override void Handle(TState state)
         {
             // TODO: improve code
             var tableGenerator =
-                new SymbolTableGenerator<InlineTable.InlineTable>(state.program);
+                new SymbolTableGenerator<InlineTable.InlineTable>(state.Program);
             tableGenerator.Execute();
-            state.symbolTable = tableGenerator.GeneratedTable;
+            state.SymbolTable = tableGenerator.GeneratedTable;
             base.Handle(state);
         }
     }

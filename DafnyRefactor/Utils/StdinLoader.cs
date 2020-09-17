@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DafnyRefactor.Utils
 {
-    public class StdinLoader<TState> : RefactorStep<TState> where TState : RefactorState
+    public class StdinLoader<TState> : RefactorStep<TState> where TState : IRefactorState
     {
         public override void Handle(TState state)
         {
@@ -19,7 +19,7 @@ namespace DafnyRefactor.Utils
             var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
             File.WriteAllText(tempPath, stdinBuilder.ToString());
 
-            state.tempFilePath = tempPath;
+            state.TempFilePath = tempPath;
 
             base.Handle(state);
         }

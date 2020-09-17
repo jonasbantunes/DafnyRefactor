@@ -10,19 +10,19 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class ProveImmutabilityStep : RefactorStep<InlineState>
+    public class ProveImmutabilityStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
-        public override void Handle(InlineState state)
+        public override void Handle(TState state)
         {
-            var addAssertives = new AddAssertivesVisitor(state.program, state.symbolTable, state.inlineSymbol);
+            var addAssertives = new AddAssertivesVisitor(state.Program, state.SymbolTable, state.InlineSymbol);
             addAssertives.Execute();
 
             var checker = new InlineImmutabilityCheck(state.FilePath, addAssertives.Edits);
             checker.Execute();
             if (!checker.IsConstant)
             {
-                state.errors.Add(
-                    $"Error: variable {state.inlineSymbol.Name} located on {state.inlineOptions.VarLine}:{state.inlineOptions.VarColumn} is not constant according with theorem prover.");
+                state.Errors.Add(
+                    $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
                 return;
             }
 

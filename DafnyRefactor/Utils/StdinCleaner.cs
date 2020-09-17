@@ -2,11 +2,11 @@
 
 namespace DafnyRefactor.Utils
 {
-    public class StdinCleaner<TState> : RefactorStep<TState> where TState : RefactorState
+    public class StdinCleaner<TState> : RefactorStep<TState> where TState : IRefactorState
     {
         public override void Handle(TState state)
         {
-            File.Delete(state.tempFilePath);
+            File.Delete(state.TempFilePath);
             base.Handle(state);
         }
     }

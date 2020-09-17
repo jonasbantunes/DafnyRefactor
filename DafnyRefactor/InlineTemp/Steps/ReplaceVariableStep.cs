@@ -8,13 +8,13 @@ using Microsoft.Dafny;
 
 namespace DafnyRefactor.InlineTemp.Steps
 {
-    public class ReplaceVariableStep : RefactorStep<InlineState>
+    public class ReplaceVariableStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
-        public override void Handle(InlineState state)
+        public override void Handle(TState state)
         {
-            var visitor = new InlineApplyVisitor(state.program, state.symbolTable, state.inlineSymbol);
+            var visitor = new InlineApplyVisitor(state.Program, state.SymbolTable, state.InlineSymbol);
             visitor.Execute();
-            state.sourceEdits.AddRange(visitor.Edits);
+            state.SourceEdits.AddRange(visitor.Edits);
             base.Handle(state);
         }
     }

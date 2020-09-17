@@ -29,13 +29,13 @@ namespace DafnyRefactor.InlineTemp
             }
 
             steps.Add(new LoadProgramStep<InlineState>());
-            steps.Add(new GenerateTableStep());
-            steps.Add(new LocateVariableStep());
-            steps.Add(new CheckImmutabilityStep());
-            steps.Add(new ProveImmutabilityStep());
-            steps.Add(new ReplaceVariableStep());
-            steps.Add(new RemoveDeclarationStep());
-            steps.Add(new SaveChangesStep());
+            steps.Add(new GenerateTableStep<InlineState>());
+            steps.Add(new LocateVariableStep<InlineState>());
+            steps.Add(new CheckImmutabilityStep<InlineState>());
+            steps.Add(new ProveImmutabilityStep<InlineState>());
+            steps.Add(new ReplaceVariableStep<InlineState>());
+            steps.Add(new RemoveDeclarationStep<InlineState>());
+            steps.Add(new SaveChangesStep<InlineState>());
             if (options.Stdin)
             {
                 steps.Add(new StdinCleaner<InlineState>());
@@ -47,9 +47,9 @@ namespace DafnyRefactor.InlineTemp
             }
 
             steps.First().Handle(state);
-            if (state.errors.Count > 0)
+            if (state.Errors.Count > 0)
             {
-                foreach (var error in state.errors)
+                foreach (var error in state.Errors)
                 {
                     DafnyRefactorDriver.consoleError.WriteLine(error);
                 }

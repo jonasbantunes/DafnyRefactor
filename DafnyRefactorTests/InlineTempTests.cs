@@ -4,9 +4,16 @@ using NUnit.Framework;
 
 namespace DafnyRefactorTests
 {
-    [TestFixture()]
+    [TestFixture]
     public class InlineTempTests
     {
+        [SetUp]
+        protected void SetUp()
+        {
+            var testRunnerDir = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+            testDir = $"{testRunnerDir.Parent?.Parent?.Parent?.FullName}\\Tests\\inline_temp";
+        }
+
         protected string testDir;
         protected string testFileDir;
         protected int testNumber;
@@ -19,14 +26,7 @@ namespace DafnyRefactorTests
         protected string[] Args => new[]
             {"apply-inline-temp", "-f", TestFilePath, "-l", $"{line}", "-c", $"{column}", "-o", TestOutputPath};
 
-        [SetUp]
-        protected void SetUp()
-        {
-            var testRunnerDir = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-            testDir = $"{testRunnerDir.Parent?.Parent?.Parent?.FullName}\\Tests\\inline_temp";
-        }
-
-        [Test()]
+        [Test]
         public void MultiDeclT1()
         {
             testFileDir = $"{testDir}\\multi_decl";
@@ -38,7 +38,7 @@ namespace DafnyRefactorTests
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
         }
 
-        [Test()]
+        [Test]
         public void MultiDeclT2()
         {
             testFileDir = $"{testDir}\\multi_decl";
@@ -46,11 +46,11 @@ namespace DafnyRefactorTests
             line = 3;
             column = 7;
 
-            int exitCode = DafnyRefactorDriver.Main(Args);
+            var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
         }
 
-        [Test()]
+        [Test]
         public void MultiDeclT3()
         {
             testFileDir = $"{testDir}\\multi_decl";
@@ -58,12 +58,12 @@ namespace DafnyRefactorTests
             line = 4;
             column = 7;
 
-            int exitCode = DafnyRefactorDriver.Main(Args);
+            var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
         }
 
 
-        [Test()]
+        [Test]
         public void MutableExprT1()
         {
             testFileDir = $"{testDir}\\mutable_expr";
@@ -75,7 +75,7 @@ namespace DafnyRefactorTests
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
         }
 
-        [Test()]
+        [Test]
         public void MutableExprT2()
         {
             testFileDir = $"{testDir}\\mutable_expr";
@@ -83,11 +83,11 @@ namespace DafnyRefactorTests
             line = 3;
             column = 7;
 
-            int exitCode = DafnyRefactorDriver.Main(Args);
+            var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
         }
 
-        [Test()]
+        [Test]
         public void MutableExprT3()
         {
             testFileDir = $"{testDir}\\mutable_expr";
@@ -95,11 +95,11 @@ namespace DafnyRefactorTests
             line = 4;
             column = 7;
 
-            int exitCode = DafnyRefactorDriver.Main(Args);
+            var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
         }
 
-        [Test()]
+        [Test]
         public void ScopeDiffT1()
         {
             testFileDir = $"{testDir}\\scope_diff";
@@ -111,7 +111,7 @@ namespace DafnyRefactorTests
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
         }
 
-        [Test()]
+        [Test]
         public void ScopeDiffT2()
         {
             testFileDir = $"{testDir}\\scope_diff";
@@ -123,7 +123,7 @@ namespace DafnyRefactorTests
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
         }
 
-        [Test()]
+        [Test]
         public void ScopeDiffT3()
         {
             testFileDir = $"{testDir}\\scope_diff";
@@ -131,11 +131,11 @@ namespace DafnyRefactorTests
             line = 7;
             column = 9;
 
-            int exitCode = DafnyRefactorDriver.Main(Args);
+            var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
         }
 
-        [Test()]
+        [Test]
         public void SeparateDeclAssignT1()
         {
             testFileDir = $"{testDir}\\separate_decl_assign";
@@ -147,7 +147,7 @@ namespace DafnyRefactorTests
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
         }
 
-        [Test()]
+        [Test]
         public void SeparateDeclAssignT2()
         {
             testFileDir = $"{testDir}\\separate_decl_assign";
@@ -155,11 +155,11 @@ namespace DafnyRefactorTests
             line = 4;
             column = 7;
 
-            int exitCode = DafnyRefactorDriver.Main(Args);
+            var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
         }
 
-        [Test()]
+        [Test]
         public void SeparateDeclAssignT3()
         {
             testFileDir = $"{testDir}\\separate_decl_assign";
@@ -167,11 +167,11 @@ namespace DafnyRefactorTests
             line = 7;
             column = 10;
 
-            int exitCode = DafnyRefactorDriver.Main(Args);
+            var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
         }
 
-        [Test()]
+        [Test]
         public void SeparateDeclAssignT4()
         {
             testFileDir = $"{testDir}\\separate_decl_assign";
@@ -183,7 +183,7 @@ namespace DafnyRefactorTests
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
         }
 
-        [Test()]
+        [Test]
         public void SeparateDeclAssignT5()
         {
             testFileDir = $"{testDir}\\separate_decl_assign";
@@ -191,7 +191,7 @@ namespace DafnyRefactorTests
             line = 4;
             column = 10;
 
-            int exitCode = DafnyRefactorDriver.Main(Args);
+            var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
         }
     }
