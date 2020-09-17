@@ -11,6 +11,7 @@ namespace DafnyRefactor.Utils
         Program Program { get; set; }
         string TempFilePath { get; set; }
         string FilePath { get; }
+        List<int> StmtDivisors { get; set; }
     }
 
     public class RefactorState : IRefactorState
@@ -28,5 +29,6 @@ namespace DafnyRefactor.Utils
         public Program Program { get; set; }
         public string TempFilePath { get; set; }
         public string FilePath => Options.Stdin ? TempFilePath : Options.FilePath;
+        public List<int> StmtDivisors { get; set; }
     }
 }

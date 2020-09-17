@@ -35,5 +35,6 @@ namespace DafnyRefactor.InlineTemp
         public Program Program { get; set; }
         public string TempFilePath { get; set; }
         public string FilePath => Options.Stdin ? TempFilePath : Options.FilePath;
+        public List<int> StmtDivisors { get; set; }
     }
 }

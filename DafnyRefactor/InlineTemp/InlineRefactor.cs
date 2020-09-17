@@ -29,6 +29,7 @@ namespace DafnyRefactor.InlineTemp
             }
 
             steps.Add(new LoadProgramStep<InlineState>());
+            steps.Add(new ParseStmtDivisorsStep<InlineState>());
             steps.Add(new GenerateTableStep<InlineState>());
             steps.Add(new LocateVariableStep<InlineState>());
             steps.Add(new CheckImmutabilityStep<InlineState>());

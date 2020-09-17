@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DafnyRefactor.InlineTemp.InlineTable;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.DafnyVisitor;
@@ -14,13 +15,16 @@ namespace DafnyRefactor.InlineTemp.Steps
     {
         public override void Handle(TState state)
         {
-            var addAssertives = new AddAssertivesVisitor(state.Program, state.SymbolTable, state.InlineSymbol);
+            var addAssertives = new AddAssertivesVisitor(state.Program, state.SymbolTable, state.InlineSymbol,
+                state.StmtDivisors);
             addAssertives.Execute();
 
             var checker = new InlineImmutabilityCheck(state.FilePath, addAssertives.Edits);
             checker.Execute();
+
             if (!checker.IsConstant)
             {
+                // TODO: Don't access list directly
                 state.Errors.Add(
                     $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
                 return;
@@ -63,12 +67,15 @@ namespace DafnyRefactor.InlineTemp.Steps
         protected IInlineSymbol inlineSymbol;
         protected Statement nearestStmt;
         protected ISymbolTable rootTable;
+        protected List<int> stmtDivisors;
 
 
-        public AddAssertivesVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineSymbol) : base(program)
+        public AddAssertivesVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineSymbol,
+            List<int> stmtDivisors) : base(program)
         {
             this.inlineSymbol = inlineSymbol;
             this.rootTable = rootTable;
+            this.stmtDivisors = stmtDivisors;
         }
 
         public List<SourceEdit> Edits { get; protected set; }
@@ -101,23 +108,30 @@ namespace DafnyRefactor.InlineTemp.Steps
             var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
             if (curTable.LookupSymbol(nameSeg.Name).GetHashCode() == inlineSymbol.GetHashCode())
             {
+                var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
+                if (findIndex <= 1) return;
+
                 var assertStmtExpr =
                     $"\n assert {inlineSymbol.Name}___RefactorGhostExpr == {Printer.ExprToString(inlineSymbol.Expr)};\n";
-                Edits.Add(new SourceEdit(CalcStartPos(nearestStmt), assertStmtExpr));
+                Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
             }
 
             base.Visit(nameSeg);
         }
 
-        // TODO: Put this in a better place
-        protected int CalcStartPos(Statement stmt)
+        protected override void Visit(ExprDotName exprDotName)
         {
-            if (stmt is CallStmt callStmt)
+            if (nearestStmt is AssignStmt)
             {
-                return callStmt.MethodSelect.tok.pos;
+                var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
+                if (findIndex <= 1) return;
+
+                var assertStmtExpr =
+                    $"\n assert {Printer.ExprToString(exprDotName.Lhs)} == {Printer.ExprToString(exprDotName.Lhs)};\n";
+                Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
             }
 
-            return stmt.Tok.pos;
+            base.Visit(exprDotName);
         }
     }
 }

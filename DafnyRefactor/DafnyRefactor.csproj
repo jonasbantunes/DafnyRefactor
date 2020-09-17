@@ -101,6 +101,7 @@
     <Compile Include="InlineTemp\InlineTable\InlineTable.cs" />
     <Compile Include="InlineTemp\Steps\GenerateTableStep.cs" />
     <Compile Include="InlineTemp\Steps\ProveImmutabilityStep.cs" />
+    <Compile Include="Utils\ParseStmtDivisors.cs" />
     <Compile Include="Utils\RefactorState.cs" />
     <Compile Include="Utils\RefactorStep.cs" />
     <Compile Include="Utils\LoadProgramStep.cs" />
