@@ -1,4 +1,5 @@
-﻿using DafnyRefactor.InlineTemp.InlineTable;
+﻿using System.Linq;
+using DafnyRefactor.InlineTemp.InlineTable;
 using DafnyRefactor.Utils;
 using DafnyRefactor.Utils.DafnyVisitor;
 using Microsoft.Dafny;
@@ -48,8 +49,11 @@ namespace DafnyRefactor.InlineTemp.Steps
                 var curTable = rootTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
                 var symbol = curTable.LookupInlineSymbol(agie.Name);
                 if (symbol == null) continue;
-                var erhs = (ExprRhs) up.Rhss[i];
-                symbol.Expr = erhs.Expr;
+                // TODO: Analyse if commented lines are equivalent with new implementation
+                //var erhs = (ExprRhs) up.Rhss[i];
+                //symbol.Expr = erhs.Expr;
+                var assign = up.Rhss[i];
+                symbol.Expr = assign.SubExpressions.FirstOrDefault();
                 symbol.InitStmt = up;
             }
         }

@@ -103,10 +103,21 @@ namespace DafnyRefactor.InlineTemp.Steps
             {
                 var assertStmtExpr =
                     $"\n assert {inlineSymbol.Name}___RefactorGhostExpr == {Printer.ExprToString(inlineSymbol.Expr)};\n";
-                Edits.Add(new SourceEdit(nearestStmt.Tok.pos, assertStmtExpr));
+                Edits.Add(new SourceEdit(CalcStartPos(nearestStmt), assertStmtExpr));
             }
 
             base.Visit(nameSeg);
+        }
+
+        // TODO: Put this in a better place
+        protected int CalcStartPos(Statement stmt)
+        {
+            if (stmt is CallStmt callStmt)
+            {
+                return callStmt.MethodSelect.tok.pos;
+            }
+
+            return stmt.Tok.pos;
         }
     }
 }

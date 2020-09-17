@@ -27,6 +27,19 @@ namespace DafnyRefactorTests
             {"apply-inline-temp", "-f", TestFilePath, "-l", $"{line}", "-c", $"{column}", "-o", TestOutputPath};
 
         [Test]
+        public void LinkedListT1()
+        {
+            testFileDir = $"{testDir}\\linked_list";
+            testNumber = 1;
+            line = 31;
+            column = 9;
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(0, exitCode);
+            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
+
+        [Test]
         public void MultiDeclT1()
         {
             testFileDir = $"{testDir}\\multi_decl";

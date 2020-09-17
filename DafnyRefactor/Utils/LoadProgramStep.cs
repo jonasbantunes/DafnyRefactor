@@ -37,7 +37,7 @@ namespace DafnyRefactor.Utils
                 return;
             }
 
-            var err = Main.Parse(dafnyFiles, "the program", reporter, out var tempProgram);
+            var err = Main.ParseCheck(dafnyFiles, "the program", reporter, out var tempProgram);
             if (err == null)
             {
                 state.Program = tempProgram;

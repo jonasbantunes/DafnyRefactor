@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Dafny;
 
 namespace DafnyRefactor.Utils.DafnyVisitor
@@ -87,6 +88,9 @@ namespace DafnyRefactor.Utils.DafnyVisitor
                 case NameSegment nameSeg:
                     Visit(nameSeg);
                     break;
+                case ExprDotName exprDotName:
+                    Visit(exprDotName);
+                    break;
             }
         }
 
@@ -105,8 +109,14 @@ namespace DafnyRefactor.Utils.DafnyVisitor
         {
         }
 
+        protected virtual void Visit(ExprDotName exprDotName)
+        {
+        }
+
         protected virtual void Visit(Statement stmt)
         {
+            if (stmt == null) return;
+
             switch (stmt)
             {
                 case VarDeclStmt vds:
@@ -125,6 +135,9 @@ namespace DafnyRefactor.Utils.DafnyVisitor
                     Visit(ifStmt);
                     break;
             }
+
+            Traverse(stmt.SubExpressions?.ToList());
+            Traverse(stmt.SubStatements?.ToList());
         }
 
         protected virtual void Visit(VarDeclStmt vds)

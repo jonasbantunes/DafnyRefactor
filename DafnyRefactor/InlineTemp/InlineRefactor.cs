@@ -55,7 +55,10 @@ namespace DafnyRefactor.InlineTemp
                 }
 
                 ExitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
+                return;
             }
+
+            ExitCode = (int) DafnyDriver.ExitValue.VERIFIED;
         }
     }
 }
