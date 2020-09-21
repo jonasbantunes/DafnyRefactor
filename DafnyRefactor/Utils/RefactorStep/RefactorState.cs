@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using DafnyRefactor.Utils.CommandLineOptions;
 using Microsoft.Dafny;
 
-namespace DafnyRefactor.Utils
+namespace Microsoft.DafnyRefactor.Utils
 {
     public interface IRefactorState
     {

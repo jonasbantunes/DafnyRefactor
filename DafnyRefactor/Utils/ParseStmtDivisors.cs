@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Dafny;
 
-namespace DafnyRefactor.Utils
+namespace Microsoft.DafnyRefactor.Utils
 {
     public class ParseStmtDivisorsStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {
@@ -15,13 +15,13 @@ namespace DafnyRefactor.Utils
         }
     }
 
-    internal class ParseStmtDivisors : DafnyVisitor.DafnyVisitor
+    internal class ParseStmtDivisors : DafnyVisitor
     {
-        public SortedSet<int> StmtDivisors { get; protected set; }
-
         public ParseStmtDivisors(Program program) : base(program)
         {
         }
+
+        public SortedSet<int> StmtDivisors { get; protected set; }
 
         public override void Execute()
         {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Dafny;
 
-namespace DafnyRefactor.Utils.SymbolTable
+namespace Microsoft.DafnyRefactor.Utils
 {
     public interface ISymbol
     {

@@ -2,7 +2,7 @@
 using CommandLine;
 using CommandLine.Text;
 
-namespace DafnyRefactor.Utils.CommandLineOptions
+namespace Microsoft.DafnyRefactor.Utils
 {
     [Verb("apply-inline-temp", HelpText = "Apply a refactor")]
     public class ApplyInlineTempOptions : ApplyOptions

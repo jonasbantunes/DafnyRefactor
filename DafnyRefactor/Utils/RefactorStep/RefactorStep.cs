@@ -1,4 +1,4 @@
-﻿namespace DafnyRefactor.Utils
+﻿namespace Microsoft.DafnyRefactor.Utils
 {
     public class RefactorStep<TRefactorState> where TRefactorState : IRefactorState
     {

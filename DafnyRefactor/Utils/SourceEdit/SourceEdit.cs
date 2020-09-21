@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DafnyRefactor.Utils.SourceEdit
+namespace Microsoft.DafnyRefactor.Utils
 {
     public class SourceEdit
     {

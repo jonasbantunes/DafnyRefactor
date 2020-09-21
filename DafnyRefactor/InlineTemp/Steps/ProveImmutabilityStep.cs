@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using DafnyRefactor.InlineTemp.InlineTable;
-using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.DafnyVisitor;
-using DafnyRefactor.Utils.SourceEdit;
-using DafnyRefactor.Utils.SymbolTable;
 using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp.Steps
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public class ProveImmutabilityStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
@@ -31,34 +26,6 @@ namespace DafnyRefactor.InlineTemp.Steps
             }
 
             base.Handle(state);
-        }
-    }
-
-    internal class InlineImmutabilityCheck
-    {
-        protected List<SourceEdit> edits;
-        protected string filePath;
-
-        public InlineImmutabilityCheck(string filePath, List<SourceEdit> edits)
-        {
-            this.filePath = filePath;
-            this.edits = edits;
-        }
-
-        public bool IsConstant { get; protected set; }
-
-        public void Execute()
-        {
-            var source = File.ReadAllText(filePath);
-            var sourceEditor = new SourceEditor(source, edits);
-            sourceEditor.Apply();
-
-            var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
-            File.WriteAllText(tempPath, sourceEditor.Source);
-
-            var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});
-            IsConstant = res == 0;
-            File.Delete(tempPath);
         }
     }
 
@@ -117,6 +84,34 @@ namespace DafnyRefactor.InlineTemp.Steps
             }
 
             base.Visit(nameSeg);
+        }
+    }
+
+    internal class InlineImmutabilityCheck
+    {
+        protected List<SourceEdit> edits;
+        protected string filePath;
+
+        public InlineImmutabilityCheck(string filePath, List<SourceEdit> edits)
+        {
+            this.filePath = filePath;
+            this.edits = edits;
+        }
+
+        public bool IsConstant { get; protected set; }
+
+        public void Execute()
+        {
+            var source = File.ReadAllText(filePath);
+            var sourceEditor = new SourceEditor(source, edits);
+            sourceEditor.Apply();
+
+            var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
+            File.WriteAllText(tempPath, sourceEditor.Source);
+
+            var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});
+            IsConstant = res == 0;
+            File.Delete(tempPath);
         }
     }
 }

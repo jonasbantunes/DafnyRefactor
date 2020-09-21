@@ -1,14 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DafnyRefactor.InlineTemp.InlineTable;
-using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.DafnyVisitor;
-using DafnyRefactor.Utils.SourceEdit;
-using DafnyRefactor.Utils.SymbolTable;
 using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp.Steps
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public class RemoveDeclarationStep<TState> : RefactorStep<TState> where TState : IInlineState
     {

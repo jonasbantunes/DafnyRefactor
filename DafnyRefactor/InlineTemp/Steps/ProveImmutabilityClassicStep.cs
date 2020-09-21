@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DafnyRefactor.InlineTemp.InlineTable;
-using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.DafnyVisitor;
-using DafnyRefactor.Utils.SourceEdit;
 using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp.Steps
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public class ProveImmutabilityClassicStep<TInlineState> : RefactorStep<TInlineState>
         where TInlineState : IInlineState
@@ -46,13 +43,14 @@ namespace DafnyRefactor.InlineTemp.Steps
     {
         protected IInlineSymbol inlineSymbol;
         protected IInlineTable inlineTable;
-        public List<InlineObject> InlineObjects { get; protected set; } = new List<InlineObject>();
 
         public ParseInlineSymbolExpr(IInlineSymbol inlineSymbol, IInlineTable inlineTable)
         {
             this.inlineSymbol = inlineSymbol;
             this.inlineTable = inlineTable;
         }
+
+        public List<InlineObject> InlineObjects { get; protected set; } = new List<InlineObject>();
 
         public override void Execute()
         {
@@ -84,11 +82,10 @@ namespace DafnyRefactor.InlineTemp.Steps
 
     internal class AddAssertivesClassic : DafnyVisitor
     {
+        protected IInlineSymbol inlineSymbol;
+        protected IInlineTable inlineTable;
         protected Statement nearestStmt;
         protected List<int> stmtDivisors;
-        protected IInlineTable inlineTable;
-        protected IInlineSymbol inlineSymbol;
-        public List<SourceEdit> Edits { get; protected set; }
 
         public AddAssertivesClassic(Program program, List<int> stmtDivisors, IInlineTable inlineTable,
             IInlineSymbol inlineSymbol) : base(program)
@@ -97,6 +94,8 @@ namespace DafnyRefactor.InlineTemp.Steps
             this.inlineTable = inlineTable;
             this.inlineSymbol = inlineSymbol;
         }
+
+        public List<SourceEdit> Edits { get; protected set; }
 
         public override void Execute()
         {

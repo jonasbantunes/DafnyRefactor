@@ -1,9 +1,7 @@
-﻿using DafnyRefactor.InlineTemp.InlineTable;
-using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.DafnyVisitor;
-using Microsoft.Dafny;
+﻿using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp.Steps
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public class LocateVariableStep<TState> : RefactorStep<TState> where TState : IInlineState
     {

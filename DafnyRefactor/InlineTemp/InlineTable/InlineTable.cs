@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using DafnyRefactor.Utils.SymbolTable;
 using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp.InlineTable
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public interface IInlineTable : ISymbolTable
     {
@@ -19,10 +19,10 @@ namespace DafnyRefactor.InlineTemp.InlineTable
     public class InlineTable : IInlineTable
     {
         protected readonly BlockStmt blockStmt;
+        protected List<IInlineObject> inlineObjects = new List<IInlineObject>();
         protected IInlineTable parent;
         protected List<IInlineTable> subTables = new List<IInlineTable>();
         protected List<IInlineSymbol> symbols = new List<IInlineSymbol>();
-        protected List<IInlineObject> inlineObjects = new List<IInlineObject>();
 
         public InlineTable()
         {

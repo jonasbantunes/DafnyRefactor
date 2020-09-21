@@ -1,8 +1,8 @@
 ﻿using Microsoft.Dafny;
 
-namespace DafnyRefactor.Utils.SymbolTable
+namespace Microsoft.DafnyRefactor.Utils
 {
-    public class SymbolTableGenerator<TSymbolTable> : DafnyVisitor.DafnyVisitor where TSymbolTable : ISymbolTable, new()
+    public class SymbolTableGenerator<TSymbolTable> : DafnyVisitor where TSymbolTable : ISymbolTable, new()
     {
         public SymbolTableGenerator(Program program) :
             base(program)

@@ -1,8 +1,8 @@
 ﻿using System.IO;
 
-namespace DafnyRefactor.Utils
+namespace Microsoft.DafnyRefactor.Utils
 {
-    public class StdinCleaner<TState> : RefactorStep<TState> where TState : IRefactorState
+    public class StdinCleanerStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {
         public override void Handle(TState state)
         {

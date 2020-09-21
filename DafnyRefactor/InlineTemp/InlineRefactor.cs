@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DafnyRefactor.InlineTemp.Steps;
-using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.CommandLineOptions;
+using DafnyRefactor;
 using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public class InlineRefactor
     {
@@ -25,7 +24,7 @@ namespace DafnyRefactor.InlineTemp
             var steps = new List<RefactorStep<InlineState>>();
             if (options.Stdin)
             {
-                steps.Add(new StdinLoader<InlineState>());
+                steps.Add(new StdinLoaderStep<InlineState>());
             }
 
             steps.Add(new LoadProgramStep<InlineState>());
@@ -40,7 +39,7 @@ namespace DafnyRefactor.InlineTemp
             steps.Add(new SaveChangesStep<InlineState>());
             if (options.Stdin)
             {
-                steps.Add(new StdinCleaner<InlineState>());
+                steps.Add(new StdinCleanerStep<InlineState>());
             }
 
             for (var i = 0; i < steps.Count - 1; i++)

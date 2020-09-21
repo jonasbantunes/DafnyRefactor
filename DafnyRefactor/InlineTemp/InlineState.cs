@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using DafnyRefactor.InlineTemp.InlineTable;
-using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.CommandLineOptions;
-using DafnyRefactor.Utils.SourceEdit;
 using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public interface IInlineState : IRefactorState
     {

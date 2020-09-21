@@ -1,10 +1,8 @@
 ﻿using System.Linq;
-using DafnyRefactor.InlineTemp.InlineTable;
-using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.DafnyVisitor;
 using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp.Steps
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public class CheckImmutabilityStep<TState> : RefactorStep<TState> where TState : IInlineState
     {

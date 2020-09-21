@@ -104,9 +104,9 @@
     <Compile Include="InlineTemp\Steps\ProveImmutabilityClassicStep.cs" />
     <Compile Include="InlineTemp\Steps\ProveImmutabilityStep.cs" />
     <Compile Include="Utils\ParseStmtDivisors.cs" />
-    <Compile Include="Utils\RefactorState.cs" />
-    <Compile Include="Utils\RefactorStep.cs" />
-    <Compile Include="Utils\LoadProgramStep.cs" />
+    <Compile Include="Utils\RefactorStep\RefactorState.cs" />
+    <Compile Include="Utils\RefactorStep\RefactorStep.cs" />
+    <Compile Include="Utils\RefactorStep\LoadProgramStep.cs" />
     <Compile Include="Utils\CommandLineOptions\ApplyInlineTempOptions.cs" />
     <Compile Include="Utils\CommandLineOptions\ApplyOptions.cs" />
     <Compile Include="InlineTemp\InlineRefactor.cs" />
@@ -120,8 +120,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\DafnyVisitor\DafnyVisitor.cs" />
     <Compile Include="Utils\SourceEdit\SourceEditor.cs" />
-    <Compile Include="Utils\StdinCleaner.cs" />
-    <Compile Include="Utils\StdinLoader.cs" />
+    <Compile Include="Utils\RefactorStep\StdinCleanerStep.cs" />
+    <Compile Include="Utils\RefactorStep\StdinLoaderStep.cs" />
     <Compile Include="Utils\SymbolTable\SymbolTable.cs" />
     <Compile Include="Utils\SymbolTable\Symbol.cs" />
     <Compile Include="Utils\SymbolTable\SymbolTableGenerator.cs" />

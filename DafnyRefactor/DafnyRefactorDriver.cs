@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommandLine;
-using DafnyRefactor.InlineTemp;
-using DafnyRefactor.Utils.CommandLineOptions;
 using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.InlineTemp;
+using Microsoft.DafnyRefactor.Utils;
 using Parser = CommandLine.Parser;
 using Type = System.Type;
 

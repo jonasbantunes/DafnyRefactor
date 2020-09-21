@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Dafny;
 
-namespace DafnyRefactor.Utils.DafnyVisitor
+namespace Microsoft.DafnyRefactor.Utils
 {
     public class DafnyVisitor
     {

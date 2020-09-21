@@ -1,7 +1,7 @@
-﻿using DafnyRefactor.Utils.SymbolTable;
-using Microsoft.Dafny;
+﻿using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp.InlineTable
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public interface IInlineSymbol : ISymbol
     {

@@ -1,7 +1,6 @@
-﻿using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.SymbolTable;
+﻿using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp.Steps
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public class GenerateTableStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
@@ -9,7 +8,7 @@ namespace DafnyRefactor.InlineTemp.Steps
         {
             // TODO: improve code
             var tableGenerator =
-                new SymbolTableGenerator<InlineTable.InlineTable>(state.Program);
+                new SymbolTableGenerator<InlineTable>(state.Program);
             tableGenerator.Execute();
             state.SymbolTable = tableGenerator.GeneratedTable;
             base.Handle(state);

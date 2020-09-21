@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace DafnyRefactor.Utils.CommandLineOptions
+namespace Microsoft.DafnyRefactor.Utils
 {
     public class ApplyOptions
     {

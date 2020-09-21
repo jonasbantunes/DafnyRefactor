@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using DafnyRefactor.Utils;
-using DafnyRefactor.Utils.SourceEdit;
+using DafnyRefactor;
 using Microsoft.Dafny;
+using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.InlineTemp.Steps
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public class SaveChangesStep<TState> : RefactorStep<TState> where TState : IInlineState
     {

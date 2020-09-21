@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Dafny;
 
-namespace DafnyRefactor.Utils
+namespace Microsoft.DafnyRefactor.Utils
 {
     public class LoadProgramStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {

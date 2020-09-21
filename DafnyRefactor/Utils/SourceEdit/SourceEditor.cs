@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace DafnyRefactor.Utils.SourceEdit
+namespace Microsoft.DafnyRefactor.Utils
 {
     public class SourceEditor
     {

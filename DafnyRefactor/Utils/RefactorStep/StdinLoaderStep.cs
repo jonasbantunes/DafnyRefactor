@@ -2,9 +2,9 @@
 using System.IO;
 using System.Text;
 
-namespace DafnyRefactor.Utils
+namespace Microsoft.DafnyRefactor.Utils
 {
-    public class StdinLoader<TState> : RefactorStep<TState> where TState : IRefactorState
+    public class StdinLoaderStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {
         public override void Handle(TState state)
         {
