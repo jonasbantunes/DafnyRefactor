@@ -31,12 +31,36 @@ namespace DafnyRefactorTests
         {
             testFileDir = $"{testDir}\\linked_list";
             testNumber = 1;
-            line = 31;
+            line = 25;
             column = 9;
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(0, exitCode);
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
+
+        [Test]
+        public void LinkedListUncertainT1()
+        {
+            testFileDir = $"{testDir}\\linked_list_uncertain";
+            testNumber = 1;
+            line = 25;
+            column = 9;
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
+        }
+
+        [Test]
+        public void LinkedListWrongT1()
+        {
+            testFileDir = $"{testDir}\\linked_list_wrong";
+            testNumber = 1;
+            line = 25;
+            column = 9;
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
         }
 
         [Test]

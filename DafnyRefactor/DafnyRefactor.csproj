@@ -100,6 +100,8 @@
     <Compile Include="InlineTemp\InlineTable\InlineSymbol.cs" />
     <Compile Include="InlineTemp\InlineTable\InlineTable.cs" />
     <Compile Include="InlineTemp\Steps\GenerateTableStep.cs" />
+    <Compile Include="InlineTemp\InlineTable\InlineObject.cs" />
+    <Compile Include="InlineTemp\Steps\ProveImmutabilityClassicStep.cs" />
     <Compile Include="InlineTemp\Steps\ProveImmutabilityStep.cs" />
     <Compile Include="Utils\ParseStmtDivisors.cs" />
     <Compile Include="Utils\RefactorState.cs" />

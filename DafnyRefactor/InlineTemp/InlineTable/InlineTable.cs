@@ -8,9 +8,12 @@ namespace DafnyRefactor.InlineTemp.InlineTable
     {
         IInlineTable InlineParent { get; }
         List<IInlineSymbol> InlineSymbols { get; }
+        List<IInlineObject> InlineObjects { get; }
 
         IInlineSymbol LookupInlineSymbol(string name);
         IInlineTable FindInlineTable(int hashCode);
+        IInlineTable FindTableBySymbol(IInlineSymbol symbol);
+        void InsertInlineObject(string name, Type type);
     }
 
     public class InlineTable : IInlineTable
@@ -19,6 +22,7 @@ namespace DafnyRefactor.InlineTemp.InlineTable
         protected IInlineTable parent;
         protected List<IInlineTable> subTables = new List<IInlineTable>();
         protected List<IInlineSymbol> symbols = new List<IInlineSymbol>();
+        protected List<IInlineObject> inlineObjects = new List<IInlineObject>();
 
         public InlineTable()
         {
@@ -35,6 +39,7 @@ namespace DafnyRefactor.InlineTemp.InlineTable
         public BlockStmt BlockStmt => blockStmt;
         public List<ISymbol> Symbols => new List<ISymbol>(symbols);
         public List<IInlineSymbol> InlineSymbols => symbols;
+        public List<IInlineObject> InlineObjects => inlineObjects;
 
         public void InsertSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
@@ -98,6 +103,31 @@ namespace DafnyRefactor.InlineTemp.InlineTable
         {
             // TODO: Find better way to implice type
             return FindTable(hashCode) as IInlineTable;
+        }
+
+        public IInlineTable FindTableBySymbol(IInlineSymbol inlineSymbol)
+        {
+            foreach (var symbol in symbols)
+            {
+                if (symbol.GetHashCode() == inlineSymbol.GetHashCode())
+                {
+                    return this;
+                }
+            }
+
+            foreach (var subTable in subTables)
+            {
+                var result = subTable.FindTableBySymbol(inlineSymbol);
+                if (result != null) return result;
+            }
+
+            return null;
+        }
+
+        public void InsertInlineObject(string name, Type type)
+        {
+            var inlineObject = new InlineObject(name, type);
+            inlineObjects.Add(inlineObject);
         }
 
         protected ISymbol LookupSymbol(string name, IInlineTable table)

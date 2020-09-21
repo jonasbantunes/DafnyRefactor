@@ -9,7 +9,7 @@ namespace DafnyRefactor.Utils.DafnyVisitor
         protected readonly Program program;
         protected BlockStmt nearestBlockStmt;
 
-        public DafnyVisitor(Program program)
+        public DafnyVisitor(Program program = null)
         {
             this.program = program;
         }
@@ -54,65 +54,6 @@ namespace DafnyRefactor.Utils.DafnyVisitor
             Visit(mt.Body);
         }
 
-        protected virtual void Visit(WhileStmt @while)
-        {
-            Visit(@while.Body);
-        }
-
-        protected virtual void Visit(BlockStmt block)
-        {
-            // TODO: Improve stack of variabless
-            var oldNearest = nearestBlockStmt;
-            nearestBlockStmt = block;
-            Traverse(block.Body);
-            nearestBlockStmt = oldNearest;
-        }
-
-        protected virtual void Visit(IfStmt ifStmt)
-        {
-            Visit(ifStmt.Guard);
-            Visit(ifStmt.Thn);
-            Visit(ifStmt.Els);
-        }
-
-        protected virtual void Visit(Expression exp)
-        {
-            switch (exp)
-            {
-                case ParensExpression parensExps:
-                    Visit(parensExps);
-                    break;
-                case BinaryExpr binExp:
-                    Visit(binExp);
-                    break;
-                case NameSegment nameSeg:
-                    Visit(nameSeg);
-                    break;
-                case ExprDotName exprDotName:
-                    Visit(exprDotName);
-                    break;
-            }
-        }
-
-        protected virtual void Visit(ParensExpression parensExp)
-        {
-            Visit(parensExp.E);
-        }
-
-        protected virtual void Visit(BinaryExpr binExp)
-        {
-            Visit(binExp.E0);
-            Visit(binExp.E1);
-        }
-
-        protected virtual void Visit(NameSegment nameSeg)
-        {
-        }
-
-        protected virtual void Visit(ExprDotName exprDotName)
-        {
-        }
-
         protected virtual void Visit(Statement stmt)
         {
             if (stmt == null) return;
@@ -125,58 +66,82 @@ namespace DafnyRefactor.Utils.DafnyVisitor
                 case UpdateStmt us:
                     Visit(us);
                     break;
-                case AssertStmt assert:
-                    Visit(assert);
+                case BlockStmt block:
+                    Visit(block);
                     break;
-                case WhileStmt @while:
-                    Visit(@while);
-                    break;
-                case IfStmt ifStmt:
-                    Visit(ifStmt);
+                default:
+                    Traverse(stmt.SubExpressions?.ToList());
+                    Traverse(stmt.SubStatements?.ToList());
                     break;
             }
-
-            Traverse(stmt.SubExpressions?.ToList());
-            Traverse(stmt.SubStatements?.ToList());
         }
 
         protected virtual void Visit(VarDeclStmt vds)
         {
-            if (vds.Update is UpdateStmt up)
-            {
-                Visit(up);
-            }
+            Traverse(vds.SubStatements?.ToList());
         }
 
         protected virtual void Visit(UpdateStmt up)
         {
-            Traverse(up.Lhss);
-            Traverse(up.Rhss);
+            Traverse(up.SubExpressions?.ToList());
+            Traverse(up.SubStatements?.ToList());
         }
 
-        protected virtual void Visit(AssertStmt assert)
+        protected virtual void Visit(BlockStmt block)
         {
-            Visit(assert.Expr);
+            // TODO: Improve stack of variables
+            var oldNearest = nearestBlockStmt;
+            nearestBlockStmt = block;
+            Traverse(block.Body);
+            nearestBlockStmt = oldNearest;
+        }
+
+        protected virtual void Visit(Expression exp)
+        {
+            if (exp == null) return;
+
+            switch (exp)
+            {
+                case NameSegment nameSeg:
+                    Visit(nameSeg);
+                    break;
+                case ExprDotName exprDotName:
+                    Visit(exprDotName);
+                    break;
+                default:
+                    Traverse(exp.SubExpressions?.ToList());
+                    break;
+            }
+        }
+
+        protected virtual void Visit(NameSegment nameSeg)
+        {
+            Traverse(nameSeg.SubExpressions?.ToList());
+        }
+
+        protected virtual void Visit(ExprDotName exprDotName)
+        {
+            Traverse(exprDotName.SubExpressions?.ToList());
         }
 
         protected virtual void Visit(AssignmentRhs rhs)
         {
-            if (rhs is ExprRhs expRhs)
+            if (rhs == null) return;
+
+            switch (rhs)
             {
-                Visit(expRhs);
+                default:
+                    Traverse(rhs.SubExpressions?.ToList());
+                    Traverse(rhs.SubStatements?.ToList());
+                    break;
             }
         }
 
-        protected virtual void Visit(ExprRhs expRhs)
+        protected virtual void Traverse(List<MemberDecl> members)
         {
-            Visit(expRhs.Expr);
-        }
-
-        protected virtual void Traverse(List<Expression> exprs)
-        {
-            foreach (var expr in exprs)
+            foreach (var decl in members)
             {
-                Visit(expr);
+                Visit(decl);
             }
         }
 
@@ -188,11 +153,11 @@ namespace DafnyRefactor.Utils.DafnyVisitor
             }
         }
 
-        protected virtual void Traverse(List<MemberDecl> members)
+        protected virtual void Traverse(List<Expression> exprs)
         {
-            foreach (var decl in members)
+            foreach (var expr in exprs)
             {
-                Visit(decl);
+                Visit(expr);
             }
         }
 

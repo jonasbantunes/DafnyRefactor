@@ -22,10 +22,11 @@ method Main()
     n3.value := 3;
     n3.next := null;
 
-    
+    var expr := n1.next.next;
     var anotherNode := new Node_q();
     anotherNode.value := 44;
-    anotherNode.next := null;
+    anotherNode.next := n2;
+    anotherNode.next.next := null;
 
-    assert (n1.next.next) != null;
+    assert expr != null;
 }

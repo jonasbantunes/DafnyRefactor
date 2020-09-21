@@ -1,6 +1,6 @@
-class Node
+class Node_q
 {
-    var next: Node?;
+    var next: Node_q?;
     var value: int;
 
     constructor()
@@ -10,17 +10,11 @@ class Node
     }
 }
 
-method printNode(node: Node)
-modifies node;
-{
-    print(node.value);
-}
-
 method Main()
 {
-    var n1 := new Node();
-    var n2 := new Node();
-    var n3 := new Node();
+    var n1 := new Node_q();
+    var n2 := new Node_q();
+    var n3 := new Node_q();
     n1.value := 1;
     n1.next := n2;
     n2.value := 2;
@@ -29,9 +23,9 @@ method Main()
     n3.next := null;
 
     var expr := n1.next.next;
-    var anotherNode := new Node();
+    var anotherNode := new Node_q();
     anotherNode.value := 44;
     anotherNode.next := null;
 
-    printNode(expr);
+    assert expr != null;
 }

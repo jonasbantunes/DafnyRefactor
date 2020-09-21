@@ -118,20 +118,5 @@ namespace DafnyRefactor.InlineTemp.Steps
 
             base.Visit(nameSeg);
         }
-
-        protected override void Visit(ExprDotName exprDotName)
-        {
-            if (nearestStmt is AssignStmt)
-            {
-                var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
-                if (findIndex <= 1) return;
-
-                var assertStmtExpr =
-                    $"\n assert {Printer.ExprToString(exprDotName.Lhs)} == {Printer.ExprToString(exprDotName.Lhs)};\n";
-                Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
-            }
-
-            base.Visit(exprDotName);
-        }
     }
 }
