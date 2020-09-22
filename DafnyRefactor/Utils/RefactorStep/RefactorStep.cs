@@ -1,4 +1,6 @@
-﻿namespace Microsoft.DafnyRefactor.Utils
+﻿using System;
+
+namespace Microsoft.DafnyRefactor.Utils
 {
     public class RefactorStep<TRefactorState> where TRefactorState : IRefactorState
     {
@@ -6,6 +8,8 @@
 
         public virtual void Handle(TRefactorState state)
         {
+            if (state?.Errors == null) throw new ArgumentException();
+
             if (state.Errors.Count > 0) return;
             next?.Handle(state);
         }

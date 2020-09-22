@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 
@@ -8,6 +9,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
+            if (state == null || state.InlineSymbol == null || state.Program == null || state.SymbolTable == null)
+                throw new ArgumentNullException();
+
             var visitor = new InlineApplyVisitor(state.Program, state.SymbolTable, state.InlineSymbol);
             visitor.Execute();
             state.SourceEdits.AddRange(visitor.Edits);
@@ -23,6 +27,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         public InlineApplyVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar) :
             base(program)
         {
+            if (program == null || rootTable == null || inlineVar == null) throw new ArgumentNullException();
+
             this.inlineVar = inlineVar;
             this.rootTable = rootTable;
         }
@@ -37,12 +43,16 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(UpdateStmt up)
         {
+            if (up == null) throw new ArgumentNullException();
+
             Traverse(up.Rhss);
         }
 
 
         protected override void Visit(NameSegment nameSeg)
         {
+            if (nameSeg == null) throw new ArgumentNullException();
+
             // TODO: Avoid this repetition on source code
             var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
             if (nameSeg.Name == inlineVar.Name && curTable.LookupSymbol(nameSeg.Name).GetHashCode() ==

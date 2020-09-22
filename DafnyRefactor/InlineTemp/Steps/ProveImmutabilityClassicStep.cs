@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 
@@ -12,6 +11,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TInlineState state)
         {
+            if (state == null || state.Errors == null || state.FilePath == null || state.InlineOptions == null ||
+                state.InlineSymbol == null || state.Program == null || state.StmtDivisors == null ||
+                state.SymbolTable == null) throw new ArgumentNullException();
+
             var parser = new ParseInlineSymbolExpr(state.InlineSymbol, state.SymbolTable);
             parser.Execute();
             var table = state.SymbolTable.FindTableBySymbol(state.InlineSymbol);
@@ -29,8 +32,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             if (!checker.IsConstant)
             {
-                // TODO: Don't access list directly
-                state.Errors.Add(
+                state.AddError(
                     $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
                 return;
             }
@@ -46,6 +48,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public ParseInlineSymbolExpr(IInlineSymbol inlineSymbol, IInlineTable inlineTable)
         {
+            if (inlineSymbol == null || inlineTable == null) throw new ArgumentNullException();
+
             this.inlineSymbol = inlineSymbol;
             this.inlineTable = inlineTable;
         }
@@ -57,14 +61,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             Visit(inlineSymbol.Expr);
         }
 
-        protected override void Visit(Expression exp)
-        {
-            base.Visit(exp);
-            Traverse(exp.SubExpressions.ToList());
-        }
-
         protected override void Visit(ExprDotName exprDotName)
         {
+            if (exprDotName == null) throw new ArgumentNullException();
+
             var name = Printer.ExprToString(exprDotName);
             var type = exprDotName.Type;
             InlineObjects.Add(new InlineObject(name, type));
@@ -73,6 +73,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(NameSegment nameSeg)
         {
+            if (nameSeg == null) throw new ArgumentNullException();
+
             var name = Printer.ExprToString(nameSeg);
             var type = nameSeg.Type;
             InlineObjects.Add(new InlineObject(name, type));
@@ -90,6 +92,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         public AddAssertivesClassic(Program program, List<int> stmtDivisors, IInlineTable inlineTable,
             IInlineSymbol inlineSymbol) : base(program)
         {
+            if (program == null || stmtDivisors == null || inlineSymbol == null) throw new ArgumentNullException();
+
             this.stmtDivisors = stmtDivisors;
             this.inlineTable = inlineTable;
             this.inlineSymbol = inlineSymbol;
@@ -113,11 +117,15 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(UpdateStmt up)
         {
+            if (up == null) throw new ArgumentNullException();
+
             Traverse(up.Lhss);
         }
 
         protected override void Visit(ExprDotName exprDotName)
         {
+            if (exprDotName == null) throw new ArgumentNullException();
+
             if (nearestStmt.Tok.pos < inlineSymbol.InitStmt.EndTok.pos) return;
             if (nearestStmt is AssignStmt || nearestStmt is UpdateStmt)
             {
@@ -127,7 +135,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 var curTable = inlineTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
                 if (curTable == null) return;
 
-                var assertives = new List<string>();
                 foreach (var inlineObject in curTable.InlineObjects)
                 {
                     if (!exprDotName.Lhs.Type.Equals(inlineObject.Type)) continue;
@@ -147,6 +154,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public InlineImmutabilityCheckClassic(string filePath, List<SourceEdit> edits)
         {
+            if (filePath == null || edits == null) throw new ArgumentNullException();
+
             this.filePath = filePath;
             this.edits = edits;
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Dafny;
 
@@ -8,6 +9,8 @@ namespace Microsoft.DafnyRefactor.Utils
     {
         public override void Handle(TState state)
         {
+            if (state?.Program == null) throw new ArgumentNullException();
+
             var divisor = new ParseStmtDivisors(state.Program);
             divisor.Execute();
             state.StmtDivisors = divisor.StmtDivisors.ToList();
@@ -19,6 +22,7 @@ namespace Microsoft.DafnyRefactor.Utils
     {
         public ParseStmtDivisors(Program program) : base(program)
         {
+            if (program == null) throw new ArgumentNullException();
         }
 
         public SortedSet<int> StmtDivisors { get; protected set; }

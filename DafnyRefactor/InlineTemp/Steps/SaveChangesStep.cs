@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using DafnyRefactor;
 using Microsoft.Dafny;
@@ -10,12 +11,15 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
-            var changer = new SaveChanges(state);
+            if (state == null || state.Errors == null || state.FilePath == null || state.InlineOptions == null ||
+                state.SourceEdits == null) throw new ArgumentNullException();
+
+            var changer = new SaveChanges(state.FilePath, state.SourceEdits, state.InlineOptions);
             changer.Save();
 
             if (changer.ChangesInvalidateSource)
             {
-                state.Errors.Add("Error: refactor invalidate source");
+                state.AddError("Error: refactor invalidate source");
                 return;
             }
 
@@ -25,12 +29,18 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     internal class SaveChanges
     {
-        protected readonly IInlineState state;
+        protected List<SourceEdit> edits;
+        protected string filePath;
+        protected ApplyInlineTempOptions options;
         protected SourceEditor sourceEditor;
 
-        public SaveChanges(IInlineState state)
+        public SaveChanges(string filePath, List<SourceEdit> edits, ApplyInlineTempOptions options)
         {
-            this.state = state;
+            if (edits == null || filePath == null || options == null) throw new ArgumentNullException();
+
+            this.filePath = filePath;
+            this.edits = edits;
+            this.options = options;
         }
 
         public bool ChangesInvalidateSource { get; protected set; }
@@ -46,8 +56,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected void ApplyChanges()
         {
-            var source = File.ReadAllText(state.FilePath);
-            sourceEditor = new SourceEditor(source, state.SourceEdits);
+            var source = File.ReadAllText(filePath);
+            sourceEditor = new SourceEditor(source, edits);
             sourceEditor.Apply();
         }
 
@@ -63,17 +73,17 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected void SaveTo()
         {
-            if (state.Options.Stdout)
+            if (options.Stdout)
             {
                 DafnyRefactorDriver.consoleOutput.Write(sourceEditor.Source);
             }
-            else if (state.Options.Output != null)
+            else if (options.Output != null)
             {
-                File.WriteAllText(state.Options.Output, sourceEditor.Source);
+                File.WriteAllText(options.Output, sourceEditor.Source);
             }
             else
             {
-                File.WriteAllText(state.FilePath, sourceEditor.Source);
+                File.WriteAllText(filePath, sourceEditor.Source);
             }
         }
     }

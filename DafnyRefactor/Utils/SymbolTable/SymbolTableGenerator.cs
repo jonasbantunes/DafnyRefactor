@@ -1,4 +1,5 @@
-﻿using Microsoft.Dafny;
+﻿using System;
+using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
@@ -19,6 +20,8 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected override void Visit(VarDeclStmt vds)
         {
+            if (vds == null) throw new ArgumentNullException();
+
             foreach (var local in vds.Locals)
             {
                 // TODO: Find a better way to fallback to rootTable

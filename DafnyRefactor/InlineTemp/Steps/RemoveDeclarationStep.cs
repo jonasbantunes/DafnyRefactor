@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Dafny;
@@ -10,6 +11,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
+            if (state == null || state.InlineSymbol == null || state.Program == null || state.SymbolTable == null)
+                throw new ArgumentNullException();
+
+
             var visitor = new RemoveRefactoredDeclarationVisitor(state.Program, state.SymbolTable, state.InlineSymbol);
             visitor.Execute();
             state.SourceEdits.AddRange(visitor.Edits);
@@ -25,6 +30,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         public RemoveRefactoredDeclarationVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar) :
             base(program)
         {
+            if (program == null || rootTable == null || inlineVar == null) throw new ArgumentNullException();
+
             this.inlineVar = inlineVar;
             this.rootTable = rootTable;
         }
@@ -39,6 +46,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(VarDeclStmt vds)
         {
+            if (vds == null) throw new ArgumentNullException();
+
             // TODO: Avoid this repetition on source code
             var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
             if (vds.Locals.Count == 1 && curTable.LookupSymbol(vds.Locals[0].Name).GetHashCode() ==
@@ -100,6 +109,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(UpdateStmt up)
         {
+            if (up == null) throw new ArgumentNullException();
+
             // TODO: Avoid this repetition on source code
             var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
             if (up.Lhss.Count == 1 && up.Lhss[0] is NameSegment upNm &&

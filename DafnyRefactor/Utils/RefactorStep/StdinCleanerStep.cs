@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
@@ -6,6 +7,8 @@ namespace Microsoft.DafnyRefactor.Utils
     {
         public override void Handle(TState state)
         {
+            if (state?.TempFilePath == null) throw new ArgumentException();
+
             File.Delete(state.TempFilePath);
             base.Handle(state);
         }

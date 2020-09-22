@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Dafny;
 
@@ -19,9 +20,10 @@ namespace Microsoft.DafnyRefactor.Utils
             Visit(program);
         }
 
-        // TODO: Improve naming to differenciate between castings (also Visit), vertical (Visit) and horizontal (Traverse) iteration on tree and 
         protected virtual void Visit(Program prog)
         {
+            if (prog == null) throw new ArgumentNullException();
+
             foreach (var tld in prog.DefaultModuleDef.TopLevelDecls)
             {
                 Visit(tld);
@@ -30,6 +32,8 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Visit(TopLevelDecl tld)
         {
+            if (tld == null) throw new ArgumentNullException();
+
             if (tld is ClassDecl cd)
             {
                 Visit(cd);
@@ -38,11 +42,15 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Visit(ClassDecl cd)
         {
+            if (cd == null) throw new ArgumentNullException();
+
             Traverse(cd.Members);
         }
 
         protected virtual void Visit(MemberDecl md)
         {
+            if (md == null) throw new ArgumentNullException();
+
             if (md is Method mt)
             {
                 Visit(mt);
@@ -51,12 +59,14 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Visit(Method mt)
         {
+            if (mt == null) throw new ArgumentNullException();
+
             Visit(mt.Body);
         }
 
         protected virtual void Visit(Statement stmt)
         {
-            if (stmt == null) return;
+            if (stmt == null) throw new ArgumentNullException();
 
             switch (stmt)
             {
@@ -78,17 +88,23 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Visit(VarDeclStmt vds)
         {
+            if (vds == null) throw new ArgumentNullException();
+
             Traverse(vds.SubStatements?.ToList());
         }
 
         protected virtual void Visit(UpdateStmt up)
         {
+            if (up == null) throw new ArgumentNullException();
+
             Traverse(up.SubExpressions?.ToList());
             Traverse(up.SubStatements?.ToList());
         }
 
         protected virtual void Visit(BlockStmt block)
         {
+            if (block == null) throw new ArgumentNullException();
+
             // TODO: Improve stack of variables
             var oldNearest = nearestBlockStmt;
             nearestBlockStmt = block;
@@ -98,7 +114,7 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Visit(Expression exp)
         {
-            if (exp == null) return;
+            if (exp == null) throw new ArgumentNullException();
 
             switch (exp)
             {
@@ -116,17 +132,21 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Visit(NameSegment nameSeg)
         {
+            if (nameSeg == null) throw new ArgumentNullException();
+
             Traverse(nameSeg.SubExpressions?.ToList());
         }
 
         protected virtual void Visit(ExprDotName exprDotName)
         {
+            if (exprDotName == null) throw new ArgumentNullException();
+
             Traverse(exprDotName.SubExpressions?.ToList());
         }
 
         protected virtual void Visit(AssignmentRhs rhs)
         {
-            if (rhs == null) return;
+            if (rhs == null) throw new ArgumentNullException();
 
             switch (rhs)
             {
@@ -139,6 +159,8 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Traverse(List<MemberDecl> members)
         {
+            if (members == null) throw new ArgumentNullException();
+
             foreach (var decl in members)
             {
                 Visit(decl);
@@ -147,6 +169,8 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Traverse(List<Statement> body)
         {
+            if (body == null) throw new ArgumentNullException();
+
             foreach (var stmt in body)
             {
                 Visit(stmt);
@@ -155,6 +179,8 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Traverse(List<Expression> exprs)
         {
+            if (exprs == null) throw new ArgumentNullException();
+
             foreach (var expr in exprs)
             {
                 Visit(expr);
@@ -163,6 +189,8 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Traverse(List<AssignmentRhs> rhss)
         {
+            if (rhss == null) throw new ArgumentNullException();
+
             foreach (var rhs in rhss)
             {
                 Visit(rhs);

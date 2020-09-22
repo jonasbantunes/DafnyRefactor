@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -11,7 +12,7 @@ namespace Microsoft.DafnyRefactor.Utils
         public SourceEditor(string source, List<SourceEdit> edits)
         {
             Source = source;
-            this.edits = edits;
+            this.edits = edits ?? throw new ArgumentNullException();
         }
 
         public string Source { get; protected set; }

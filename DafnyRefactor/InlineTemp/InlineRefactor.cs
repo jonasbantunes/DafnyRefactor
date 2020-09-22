@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DafnyRefactor;
 using Microsoft.Dafny;
@@ -12,7 +13,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public InlineRefactor(ApplyInlineTempOptions options)
         {
-            this.options = options;
+            this.options = options ?? throw new ArgumentNullException();
         }
 
         public int ExitCode { get; protected set; }

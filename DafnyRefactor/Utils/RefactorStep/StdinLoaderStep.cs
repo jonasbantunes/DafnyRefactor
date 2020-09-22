@@ -8,6 +8,8 @@ namespace Microsoft.DafnyRefactor.Utils
     {
         public override void Handle(TState state)
         {
+            if (state == null) throw new ArgumentException();
+
             var stdinBuilder = new StringBuilder();
             string s;
             while ((s = Console.ReadLine()) != null)

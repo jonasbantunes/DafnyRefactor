@@ -22,17 +22,12 @@ namespace Microsoft.DafnyRefactor.Utils
 
         public LocalVariable LocalVariable => localVariable;
         public VarDeclStmt VarDeclStmt => varDeclStmt;
-        public string Name => LocalVariable.Name;
+        public string Name => LocalVariable?.Name;
 
         public override int GetHashCode()
         {
             // TODO: Check if is better to use localVariable or localVariable.Tok
-            return LocalVariable?.GetHashCode() ?? 0;
-        }
-
-        public static Symbol CreateSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
-        {
-            return new Symbol(localVariable, varDeclStmt);
+            return localVariable?.GetHashCode() ?? 0;
         }
     }
 }

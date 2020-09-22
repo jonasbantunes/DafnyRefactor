@@ -1,4 +1,5 @@
-﻿using Microsoft.DafnyRefactor.Utils;
+﻿using System;
+using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
@@ -6,6 +7,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
+            if (state?.Program == null) throw new ArgumentException();
+
             // TODO: improve code
             var tableGenerator =
                 new SymbolTableGenerator<InlineTable>(state.Program);

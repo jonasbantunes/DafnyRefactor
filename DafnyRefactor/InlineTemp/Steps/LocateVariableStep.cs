@@ -1,4 +1,5 @@
-﻿using Microsoft.Dafny;
+﻿using System;
+using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
@@ -7,12 +8,15 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
+            if (state == null || state.Errors == null || state.InlineOptions == null || state.Program == null ||
+                state.SymbolTable == null) throw new ArgumentNullException();
+
             var visitor = new LocateVariableVisitor(state.Program, state.SymbolTable, state.InlineOptions.VarLine,
                 state.InlineOptions.VarColumn);
             visitor.Execute();
             if (visitor.FoundDeclaration == null)
             {
-                state.Errors.Add(
+                state.AddError(
                     $"Error: can't locate variable on line {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn}.");
                 return;
             }
@@ -35,6 +39,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         public LocateVariableVisitor(Program program, IInlineTable rootTable, int varLine, int varColumn) :
             base(program)
         {
+            if (program == null || rootTable == null) throw new ArgumentNullException();
+
             this.varLine = varLine;
             this.varColumn = varColumn;
             this.rootTable = rootTable;
@@ -44,6 +50,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(VarDeclStmt vds)
         {
+            if (vds == null) throw new ArgumentNullException();
+
             foreach (var local in vds.Locals)
             {
                 if (IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line, local.EndTok.col))
@@ -59,6 +67,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(NameSegment nameSeg)
         {
+            if (nameSeg == null) throw new ArgumentNullException();
+
             if (IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line,
                 nameSeg.tok.col + nameSeg.tok.val.Length - 1))
             {

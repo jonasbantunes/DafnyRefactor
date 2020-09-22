@@ -29,10 +29,5 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         {
             return Expr != null && !IsUpdated;
         }
-
-        public static InlineSymbol CreateInlineSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
-        {
-            return new InlineSymbol(localVariable, varDeclStmt);
-        }
     }
 }

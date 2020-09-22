@@ -103,7 +103,7 @@
     <Compile Include="InlineTemp\InlineTable\InlineObject.cs" />
     <Compile Include="InlineTemp\Steps\ProveImmutabilityClassicStep.cs" />
     <Compile Include="InlineTemp\Steps\ProveImmutabilityStep.cs" />
-    <Compile Include="Utils\ParseStmtDivisors.cs" />
+    <Compile Include="Utils\RefactorStep\ParseStmtDivisorsStep.cs" />
     <Compile Include="Utils\RefactorStep\RefactorState.cs" />
     <Compile Include="Utils\RefactorStep\RefactorStep.cs" />
     <Compile Include="Utils\RefactorStep\LoadProgramStep.cs" />

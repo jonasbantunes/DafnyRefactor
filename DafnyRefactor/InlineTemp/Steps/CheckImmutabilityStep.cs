@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 
@@ -8,18 +9,21 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
+            if (state == null || state.InlineSymbol == null || state.Program == null || state.SymbolTable == null)
+                throw new ArgumentNullException();
+
             var visitor = new InlineRetrieveVisitor(state.Program, state.SymbolTable);
             visitor.Execute();
             if (state.InlineSymbol.Expr == null)
             {
-                state.Errors.Add(
+                state.AddError(
                     $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is never initialized.");
                 return;
             }
 
             if (state.InlineSymbol.IsUpdated)
             {
-                state.Errors.Add(
+                state.AddError(
                     $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant.");
                 return;
             }
@@ -34,11 +38,15 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public InlineRetrieveVisitor(Program program, IInlineTable rootTable) : base(program)
         {
+            if (program == null || rootTable == null) throw new ArgumentNullException();
+
             this.rootTable = rootTable;
         }
 
         protected override void Visit(VarDeclStmt vds)
         {
+            if (vds == null) throw new ArgumentNullException();
+
             if (!(vds.Update is UpdateStmt up)) return;
             for (var i = 0; i < up.Lhss.Count; i++)
             {
@@ -58,6 +66,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(UpdateStmt up)
         {
+            if (up?.Lhss == null) throw new ArgumentNullException();
+
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (!(up.Lhss[i] is NameSegment nm)) continue;

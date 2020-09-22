@@ -10,6 +10,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
+            if (state == null || state.Errors == null || state.FilePath == null || state.InlineOptions == null ||
+                state.Program == null || state.StmtDivisors == null ||
+                state.SymbolTable == null) throw new ArgumentNullException();
+
             var addAssertives = new AddAssertivesVisitor(state.Program, state.SymbolTable, state.InlineSymbol,
                 state.StmtDivisors);
             addAssertives.Execute();
@@ -20,7 +24,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (!checker.IsConstant)
             {
                 // TODO: Don't access list directly
-                state.Errors.Add(
+                state.AddError(
                     $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
                 return;
             }
@@ -40,6 +44,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         public AddAssertivesVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineSymbol,
             List<int> stmtDivisors) : base(program)
         {
+            if (program == null || rootTable == null || inlineSymbol == null || stmtDivisors == null)
+                throw new ArgumentNullException();
+
             this.inlineSymbol = inlineSymbol;
             this.rootTable = rootTable;
             this.stmtDivisors = stmtDivisors;
@@ -66,11 +73,15 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(UpdateStmt up)
         {
+            if (up == null) throw new ArgumentNullException();
+
             Traverse(up.Rhss);
         }
 
         protected override void Visit(NameSegment nameSeg)
         {
+            if (nameSeg == null) throw new ArgumentNullException();
+
             // TODO: Avoid this repetition on source code
             var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
             if (curTable.LookupSymbol(nameSeg.Name).GetHashCode() == inlineSymbol.GetHashCode())
@@ -94,6 +105,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public InlineImmutabilityCheck(string filePath, List<SourceEdit> edits)
         {
+            if (filePath == null || edits == null) throw new ArgumentNullException();
+
             this.filePath = filePath;
             this.edits = edits;
         }
