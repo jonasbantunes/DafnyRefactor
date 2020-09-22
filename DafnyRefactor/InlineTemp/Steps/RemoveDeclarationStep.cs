@@ -22,7 +22,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class RemoveRefactoredDeclarationVisitor : DafnyVisitor
+    internal class RemoveRefactoredDeclarationVisitor : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVar;
         protected Program program;

@@ -32,10 +32,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class AddAssertivesVisitor : DafnyVisitor
+    internal class AddAssertivesVisitor : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVariable;
-        protected Statement nearestStmt;
         protected Program program;
         protected IRefactorScope rootTable;
         protected List<int> stmtDivisors;
@@ -62,14 +61,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 $"\n ghost var {inlineVariable.Name}___RefactorGhostExpr := {Printer.ExprToString(inlineVariable.Expr)};\n";
             Edits.Add(new SourceEdit(inlineVariable.InitStmt.EndTok.pos + 1, ghostStmtExpr));
             Visit(program);
-        }
-
-        protected override void Visit(Statement stmt)
-        {
-            var oldNearestStmt = nearestStmt;
-            nearestStmt = stmt;
-            base.Visit(stmt);
-            nearestStmt = oldNearestStmt;
         }
 
         protected override void Visit(UpdateStmt up)

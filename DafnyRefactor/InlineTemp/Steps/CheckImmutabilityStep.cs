@@ -32,7 +32,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class InlineRetrieveVisitor : DafnyVisitor
+    internal class InlineRetrieveVisitor : DafnyVisitorWithNearests
     {
         protected Program program;
         protected IInlineScope rootScope;

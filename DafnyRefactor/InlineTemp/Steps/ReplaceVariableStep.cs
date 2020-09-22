@@ -19,7 +19,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class InlineApplyVisitor : DafnyVisitor
+    internal class InlineApplyVisitor : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVar;
         protected Program program;

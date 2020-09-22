@@ -82,7 +82,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class AddAssertivesClassic : DafnyVisitor
+    internal class AddAssertivesClassic : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVariable;
         protected IInlineScope inlineScope;

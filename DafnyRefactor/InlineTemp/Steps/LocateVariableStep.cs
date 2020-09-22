@@ -27,7 +27,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class LocateVariableVisitor : DafnyVisitor
+    internal class LocateVariableVisitor : DafnyVisitorWithNearests
     {
         protected Program program;
         protected IInlineScope rootScope;

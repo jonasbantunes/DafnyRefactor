@@ -7,8 +7,6 @@ namespace Microsoft.DafnyRefactor.Utils
 {
     public class DafnyVisitor
     {
-        protected BlockStmt nearestBlockStmt;
-
         protected virtual void Visit(Program prog)
         {
             if (prog == null) throw new ArgumentNullException();
@@ -94,11 +92,7 @@ namespace Microsoft.DafnyRefactor.Utils
         {
             if (block == null) throw new ArgumentNullException();
 
-            // TODO: Improve stack of variables
-            var oldNearest = nearestBlockStmt;
-            nearestBlockStmt = block;
             Traverse(block.Body);
-            nearestBlockStmt = oldNearest;
         }
 
         protected virtual void Visit(Expression exp)

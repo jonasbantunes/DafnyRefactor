@@ -3,7 +3,7 @@ using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
-    public class ScopeGenerator<TScopeState> : DafnyVisitor where TScopeState : IRefactorScope, new()
+    public class ScopeGenerator<TScopeState> : DafnyVisitorWithNearests where TScopeState : IRefactorScope, new()
     {
         protected Program program;
 
