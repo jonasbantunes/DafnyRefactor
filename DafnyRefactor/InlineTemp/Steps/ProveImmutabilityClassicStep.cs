@@ -56,7 +56,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public List<InlineObject> InlineObjects { get; protected set; } = new List<InlineObject>();
 
-        public override void Execute()
+        public virtual void Execute()
         {
             Visit(inlineSymbol.Expr);
         }
@@ -87,13 +87,16 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         protected IInlineSymbol inlineSymbol;
         protected IInlineTable inlineTable;
         protected Statement nearestStmt;
+        protected Program program;
         protected List<int> stmtDivisors;
 
         public AddAssertivesClassic(Program program, List<int> stmtDivisors, IInlineTable inlineTable,
-            IInlineSymbol inlineSymbol) : base(program)
+            IInlineSymbol inlineSymbol)
         {
-            if (program == null || stmtDivisors == null || inlineSymbol == null) throw new ArgumentNullException();
+            if (inlineTable == null || program == null || stmtDivisors == null || inlineSymbol == null)
+                throw new ArgumentNullException();
 
+            this.program = program;
             this.stmtDivisors = stmtDivisors;
             this.inlineTable = inlineTable;
             this.inlineSymbol = inlineSymbol;
@@ -101,10 +104,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public List<SourceEdit> Edits { get; protected set; }
 
-        public override void Execute()
+        public virtual void Execute()
         {
             Edits = new List<SourceEdit>();
-            base.Execute();
+            Visit(program);
         }
 
         protected override void Visit(Statement stmt)

@@ -5,17 +5,19 @@ namespace Microsoft.DafnyRefactor.Utils
 {
     public class SymbolTableGenerator<TSymbolTable> : DafnyVisitor where TSymbolTable : ISymbolTable, new()
     {
-        public SymbolTableGenerator(Program program) :
-            base(program)
+        protected Program program;
+
+        public SymbolTableGenerator(Program program)
         {
+            this.program = program ?? throw new ArgumentNullException();
         }
 
         public TSymbolTable GeneratedTable { get; protected set; }
 
-        public override void Execute()
+        public virtual void Execute()
         {
             GeneratedTable = new TSymbolTable();
-            base.Execute();
+            Visit(program);
         }
 
         protected override void Visit(VarDeclStmt vds)

@@ -20,17 +20,19 @@ namespace Microsoft.DafnyRefactor.Utils
 
     internal class ParseStmtDivisors : DafnyVisitor
     {
-        public ParseStmtDivisors(Program program) : base(program)
+        protected Program program;
+
+        public ParseStmtDivisors(Program program)
         {
-            if (program == null) throw new ArgumentNullException();
+            this.program = program ?? throw new ArgumentNullException();
         }
 
         public SortedSet<int> StmtDivisors { get; protected set; }
 
-        public override void Execute()
+        public virtual void Execute()
         {
             StmtDivisors = new SortedSet<int>();
-            base.Execute();
+            Visit(program);
         }
 
         protected override void Visit(BlockStmt block)

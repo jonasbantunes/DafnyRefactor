@@ -37,16 +37,18 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         protected IInlineSymbol inlineSymbol;
         protected Statement nearestStmt;
+        protected Program program;
         protected ISymbolTable rootTable;
         protected List<int> stmtDivisors;
 
 
         public AddAssertivesVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineSymbol,
-            List<int> stmtDivisors) : base(program)
+            List<int> stmtDivisors)
         {
             if (program == null || rootTable == null || inlineSymbol == null || stmtDivisors == null)
                 throw new ArgumentNullException();
 
+            this.program = program;
             this.inlineSymbol = inlineSymbol;
             this.rootTable = rootTable;
             this.stmtDivisors = stmtDivisors;
@@ -54,13 +56,13 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public List<SourceEdit> Edits { get; protected set; }
 
-        public override void Execute()
+        public virtual void Execute()
         {
             Edits = new List<SourceEdit>();
             var ghostStmtExpr =
                 $"\n ghost var {inlineSymbol.Name}___RefactorGhostExpr := {Printer.ExprToString(inlineSymbol.Expr)};\n";
             Edits.Add(new SourceEdit(inlineSymbol.InitStmt.EndTok.pos + 1, ghostStmtExpr));
-            base.Execute();
+            Visit(program);
         }
 
         protected override void Visit(Statement stmt)

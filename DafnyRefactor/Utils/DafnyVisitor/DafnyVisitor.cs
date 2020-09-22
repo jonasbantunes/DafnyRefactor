@@ -7,18 +7,7 @@ namespace Microsoft.DafnyRefactor.Utils
 {
     public class DafnyVisitor
     {
-        protected readonly Program program;
         protected BlockStmt nearestBlockStmt;
-
-        public DafnyVisitor(Program program = null)
-        {
-            this.program = program;
-        }
-
-        public virtual void Execute()
-        {
-            Visit(program);
-        }
 
         protected virtual void Visit(Program prog)
         {

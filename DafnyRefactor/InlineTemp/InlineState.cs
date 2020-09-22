@@ -15,8 +15,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     public class InlineState : IInlineState
     {
-        protected ApplyInlineTempOptions options;
         protected List<string> errors;
+        protected ApplyInlineTempOptions options;
 
         public InlineState(ApplyInlineTempOptions options)
         {

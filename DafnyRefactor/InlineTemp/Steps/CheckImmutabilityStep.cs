@@ -34,13 +34,20 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     internal class InlineRetrieveVisitor : DafnyVisitor
     {
+        protected Program program;
         protected IInlineTable rootTable;
 
-        public InlineRetrieveVisitor(Program program, IInlineTable rootTable) : base(program)
+        public InlineRetrieveVisitor(Program program, IInlineTable rootTable)
         {
             if (program == null || rootTable == null) throw new ArgumentNullException();
 
+            this.program = program;
             this.rootTable = rootTable;
+        }
+
+        public virtual void Execute()
+        {
+            Visit(program);
         }
 
         protected override void Visit(VarDeclStmt vds)

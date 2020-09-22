@@ -25,23 +25,24 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     internal class RemoveRefactoredDeclarationVisitor : DafnyVisitor
     {
         protected IInlineSymbol inlineVar;
+        protected Program program;
         protected ISymbolTable rootTable;
 
-        public RemoveRefactoredDeclarationVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar) :
-            base(program)
+        public RemoveRefactoredDeclarationVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar)
         {
             if (program == null || rootTable == null || inlineVar == null) throw new ArgumentNullException();
 
+            this.program = program;
             this.inlineVar = inlineVar;
             this.rootTable = rootTable;
         }
 
         public List<SourceEdit> Edits { get; protected set; }
 
-        public override void Execute()
+        public virtual void Execute()
         {
             Edits = new List<SourceEdit>();
-            base.Execute();
+            Visit(program);
         }
 
         protected override void Visit(VarDeclStmt vds)

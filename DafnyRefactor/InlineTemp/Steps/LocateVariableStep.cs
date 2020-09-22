@@ -29,6 +29,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     internal class LocateVariableVisitor : DafnyVisitor
     {
+        protected Program program;
         protected IInlineTable rootTable;
 
         protected int varColumn;
@@ -36,17 +37,22 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         // TODO: Analyse if varLine and varColumn should be an Location "struct"
         protected int varLine;
 
-        public LocateVariableVisitor(Program program, IInlineTable rootTable, int varLine, int varColumn) :
-            base(program)
+        public LocateVariableVisitor(Program program, IInlineTable rootTable, int varLine, int varColumn)
         {
             if (program == null || rootTable == null) throw new ArgumentNullException();
 
+            this.program = program;
             this.varLine = varLine;
             this.varColumn = varColumn;
             this.rootTable = rootTable;
         }
 
         public IInlineSymbol FoundDeclaration { get; protected set; }
+
+        public virtual void Execute()
+        {
+            Visit(program);
+        }
 
         protected override void Visit(VarDeclStmt vds)
         {
