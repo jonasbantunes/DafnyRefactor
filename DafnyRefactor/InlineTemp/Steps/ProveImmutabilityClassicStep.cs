@@ -135,7 +135,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 var curTable = inlineTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
                 if (curTable == null) return;
 
-                foreach (var inlineObject in curTable.InlineObjects)
+                foreach (var inlineObject in curTable.GetInlineObjects())
                 {
                     if (!exprDotName.Lhs.Type.Equals(inlineObject.Type)) continue;
                     var assertStmtExpr = $"\n assert {Printer.ExprToString(exprDotName.Lhs)} != {inlineObject.Name};\n";

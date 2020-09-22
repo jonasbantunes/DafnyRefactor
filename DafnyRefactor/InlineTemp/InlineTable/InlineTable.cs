@@ -14,6 +14,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         IInlineTable FindInlineTable(int hashCode);
         IInlineTable FindTableBySymbol(IInlineSymbol symbol);
         void InsertInlineObject(string name, Type type);
+        List<IInlineObject> GetInlineObjects();
     }
 
     public class InlineTable : IInlineTable
@@ -128,6 +129,31 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         {
             var inlineObject = new InlineObject(name, type);
             inlineObjects.Add(inlineObject);
+        }
+
+        public List<IInlineObject> GetInlineObjects()
+        {
+            return RetrieveInlineObjects(this);
+        }
+
+        protected List<IInlineObject> RetrieveInlineObjects(IInlineTable table)
+        {
+            if (table.Parent == null) return table.InlineObjects;
+
+            var objects = new List<IInlineObject>();
+
+            var res = RetrieveInlineObjects(table.InlineParent);
+            if (res != null)
+            {
+                objects.AddRange(res);
+            }
+
+            if (table.InlineObjects != null)
+            {
+                objects.AddRange(table.InlineObjects);
+            }
+
+            return objects;
         }
 
         protected ISymbol LookupSymbol(string name, IInlineTable table)
