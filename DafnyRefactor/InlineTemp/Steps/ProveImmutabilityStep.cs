@@ -23,7 +23,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             if (!checker.IsConstant)
             {
-                // TODO: Don't access list directly
                 state.AddError(
                     $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
                 return;

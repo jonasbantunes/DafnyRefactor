@@ -45,8 +45,8 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected override void Visit(Statement stmt)
         {
-            // TODO: Add contractors to remove this IF
             if (stmt == null) return;
+
             if (stmt.EndTok.val == ";")
             {
                 StmtDivisors.Add(stmt.EndTok.pos);

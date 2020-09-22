@@ -61,12 +61,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public ISymbolTable FindTable(int hashCode)
         {
-            foreach (var subTable in subTables)
+            if (GetHashCode() == hashCode)
             {
-                if (subTable.GetHashCode() == hashCode)
-                {
-                    return subTable;
-                }
+                return this;
             }
 
             foreach (var subTable in subTables)

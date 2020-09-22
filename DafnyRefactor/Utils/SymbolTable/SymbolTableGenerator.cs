@@ -26,18 +26,14 @@ namespace Microsoft.DafnyRefactor.Utils
 
             foreach (var local in vds.Locals)
             {
-                // TODO: Find a better way to fallback to rootTable
-                var curTable = GeneratedTable.FindTable(nearestBlockStmt.Tok.GetHashCode()) ?? GeneratedTable;
+                var curTable = GeneratedTable.FindTable(nearestBlockStmt?.Tok?.GetHashCode() ?? 0);
                 curTable.InsertSymbol(local, vds);
             }
         }
 
         protected override void Visit(BlockStmt block)
         {
-            // TODO: Find a better way to fallback to rootTable
-            var curTable = nearestBlockStmt == null
-                ? GeneratedTable
-                : GeneratedTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
+            var curTable = GeneratedTable.FindTable(nearestBlockStmt?.Tok?.GetHashCode() ?? 0);
 
             curTable.InsertTable(block);
 
