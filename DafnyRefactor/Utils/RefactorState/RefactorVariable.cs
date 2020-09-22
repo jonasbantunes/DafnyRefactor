@@ -2,19 +2,19 @@
 
 namespace Microsoft.DafnyRefactor.Utils
 {
-    public interface ISymbol
+    public interface IRefactorVariable
     {
         LocalVariable LocalVariable { get; }
         VarDeclStmt VarDeclStmt { get; }
         string Name { get; }
     }
 
-    public class Symbol : ISymbol
+    public class RefactorVariable : IRefactorVariable
     {
         protected readonly LocalVariable localVariable;
         protected VarDeclStmt varDeclStmt;
 
-        public Symbol(LocalVariable localVariable, VarDeclStmt varDeclStmt)
+        public RefactorVariable(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
             this.localVariable = localVariable;
             this.varDeclStmt = varDeclStmt;

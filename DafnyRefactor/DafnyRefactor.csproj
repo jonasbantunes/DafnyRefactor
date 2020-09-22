@@ -96,11 +96,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InlineTemp\InlineState.cs" />
-    <Compile Include="InlineTemp\InlineTable\InlineSymbol.cs" />
-    <Compile Include="InlineTemp\InlineTable\InlineTable.cs" />
+    <Compile Include="InlineTemp\State\InlineState.cs" />
+    <Compile Include="InlineTemp\State\InlineVariable.cs" />
+    <Compile Include="InlineTemp\State\InlineScope.cs" />
     <Compile Include="InlineTemp\Steps\GenerateTableStep.cs" />
-    <Compile Include="InlineTemp\InlineTable\InlineObject.cs" />
+    <Compile Include="InlineTemp\State\InlineObject.cs" />
     <Compile Include="InlineTemp\Steps\ProveImmutabilityClassicStep.cs" />
     <Compile Include="InlineTemp\Steps\ProveImmutabilityStep.cs" />
     <Compile Include="Utils\RefactorStep\ParseStmtDivisorsStep.cs" />
@@ -122,9 +122,9 @@
     <Compile Include="Utils\SourceEdit\SourceEditor.cs" />
     <Compile Include="Utils\RefactorStep\StdinCleanerStep.cs" />
     <Compile Include="Utils\RefactorStep\StdinLoaderStep.cs" />
-    <Compile Include="Utils\SymbolTable\SymbolTable.cs" />
-    <Compile Include="Utils\SymbolTable\Symbol.cs" />
-    <Compile Include="Utils\SymbolTable\SymbolTableGenerator.cs" />
+    <Compile Include="Utils\RefactorState\IRefactorScope.cs" />
+    <Compile Include="Utils\RefactorState\RefactorVariable.cs" />
+    <Compile Include="Utils\RefactorState\ScopeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\dafny\Binaries\DafnyPrelude.bpl">

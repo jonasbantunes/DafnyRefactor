@@ -12,19 +12,19 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         public override void Handle(TInlineState state)
         {
             if (state == null || state.Errors == null || state.FilePath == null || state.InlineOptions == null ||
-                state.InlineSymbol == null || state.Program == null || state.StmtDivisors == null ||
-                state.SymbolTable == null) throw new ArgumentNullException();
+                state.InlineVariable == null || state.Program == null || state.StmtDivisors == null ||
+                state.RootScope == null) throw new ArgumentNullException();
 
-            var parser = new ParseInlineSymbolExpr(state.InlineSymbol, state.SymbolTable);
+            var parser = new ParseInlineSymbolExpr(state.InlineVariable, state.RootScope);
             parser.Execute();
-            var table = state.SymbolTable.FindTableBySymbol(state.InlineSymbol);
+            var table = state.RootScope.FindScopeByVariable(state.InlineVariable);
             foreach (var inlineObject in parser.InlineObjects)
             {
                 table.InsertInlineObject(inlineObject.Name, inlineObject.Type);
             }
 
-            var assertives = new AddAssertivesClassic(state.Program, state.StmtDivisors, state.SymbolTable,
-                state.InlineSymbol);
+            var assertives = new AddAssertivesClassic(state.Program, state.StmtDivisors, state.RootScope,
+                state.InlineVariable);
             assertives.Execute();
 
             var checker = new InlineImmutabilityCheckClassic(state.FilePath, assertives.Edits);
@@ -33,7 +33,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (!checker.IsConstant)
             {
                 state.AddError(
-                    $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
                 return;
             }
 
@@ -43,22 +43,22 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     internal class ParseInlineSymbolExpr : DafnyVisitor
     {
-        protected IInlineSymbol inlineSymbol;
-        protected IInlineTable inlineTable;
+        protected IInlineVariable inlineVariable;
+        protected IInlineScope inlineScope;
 
-        public ParseInlineSymbolExpr(IInlineSymbol inlineSymbol, IInlineTable inlineTable)
+        public ParseInlineSymbolExpr(IInlineVariable inlineVariable, IInlineScope inlineScope)
         {
-            if (inlineSymbol == null || inlineTable == null) throw new ArgumentNullException();
+            if (inlineVariable == null || inlineScope == null) throw new ArgumentNullException();
 
-            this.inlineSymbol = inlineSymbol;
-            this.inlineTable = inlineTable;
+            this.inlineVariable = inlineVariable;
+            this.inlineScope = inlineScope;
         }
 
         public List<InlineObject> InlineObjects { get; protected set; } = new List<InlineObject>();
 
         public virtual void Execute()
         {
-            Visit(inlineSymbol.Expr);
+            Visit(inlineVariable.Expr);
         }
 
         protected override void Visit(ExprDotName exprDotName)
@@ -84,22 +84,22 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     internal class AddAssertivesClassic : DafnyVisitor
     {
-        protected IInlineSymbol inlineSymbol;
-        protected IInlineTable inlineTable;
+        protected IInlineVariable inlineVariable;
+        protected IInlineScope inlineScope;
         protected Statement nearestStmt;
         protected Program program;
         protected List<int> stmtDivisors;
 
-        public AddAssertivesClassic(Program program, List<int> stmtDivisors, IInlineTable inlineTable,
-            IInlineSymbol inlineSymbol)
+        public AddAssertivesClassic(Program program, List<int> stmtDivisors, IInlineScope inlineScope,
+            IInlineVariable inlineVariable)
         {
-            if (inlineTable == null || program == null || stmtDivisors == null || inlineSymbol == null)
+            if (inlineScope == null || program == null || stmtDivisors == null || inlineVariable == null)
                 throw new ArgumentNullException();
 
             this.program = program;
             this.stmtDivisors = stmtDivisors;
-            this.inlineTable = inlineTable;
-            this.inlineSymbol = inlineSymbol;
+            this.inlineScope = inlineScope;
+            this.inlineVariable = inlineVariable;
         }
 
         public List<SourceEdit> Edits { get; protected set; }
@@ -129,13 +129,13 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         {
             if (exprDotName == null) throw new ArgumentNullException();
 
-            if (nearestStmt.Tok.pos < inlineSymbol.InitStmt.EndTok.pos) return;
+            if (nearestStmt.Tok.pos < inlineVariable.InitStmt.EndTok.pos) return;
             if (nearestStmt is AssignStmt || nearestStmt is UpdateStmt)
             {
                 var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
                 if (findIndex <= 1) return;
 
-                var curTable = inlineTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
+                var curTable = inlineScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
                 if (curTable == null) return;
 
                 foreach (var inlineObject in curTable.GetInlineObjects())

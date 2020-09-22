@@ -9,10 +9,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.InlineSymbol == null || state.Program == null || state.SymbolTable == null)
+            if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
-            var visitor = new InlineApplyVisitor(state.Program, state.SymbolTable, state.InlineSymbol);
+            var visitor = new InlineApplyVisitor(state.Program, state.RootScope, state.InlineVariable);
             visitor.Execute();
             state.SourceEdits.AddRange(visitor.Edits);
             base.Handle(state);
@@ -21,11 +21,11 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     internal class InlineApplyVisitor : DafnyVisitor
     {
-        protected IInlineSymbol inlineVar;
+        protected IInlineVariable inlineVar;
         protected Program program;
-        protected ISymbolTable rootTable;
+        protected IRefactorScope rootTable;
 
-        public InlineApplyVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar)
+        public InlineApplyVisitor(Program program, IRefactorScope rootTable, IInlineVariable inlineVar)
         {
             if (program == null || rootTable == null || inlineVar == null) throw new ArgumentNullException();
 
@@ -55,8 +55,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (nameSeg == null) throw new ArgumentNullException();
 
             // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
-            if (nameSeg.Name == inlineVar.Name && curTable.LookupSymbol(nameSeg.Name).GetHashCode() ==
+            var curTable = rootTable.FindScope(nearestBlockStmt.Tok.GetHashCode());
+            if (nameSeg.Name == inlineVar.Name && curTable.LookupVariable(nameSeg.Name).GetHashCode() ==
                 inlineVar.GetHashCode())
             {
                 Edits.Add(new SourceEdit(nameSeg.tok.pos, nameSeg.tok.pos + nameSeg.tok.val.Length,

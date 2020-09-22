@@ -9,22 +9,22 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.InlineSymbol == null || state.Program == null || state.SymbolTable == null)
+            if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
-            var visitor = new InlineRetrieveVisitor(state.Program, state.SymbolTable);
+            var visitor = new InlineRetrieveVisitor(state.Program, state.RootScope);
             visitor.Execute();
-            if (state.InlineSymbol.Expr == null)
+            if (state.InlineVariable.Expr == null)
             {
                 state.AddError(
-                    $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is never initialized.");
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is never initialized.");
                 return;
             }
 
-            if (state.InlineSymbol.IsUpdated)
+            if (state.InlineVariable.IsUpdated)
             {
                 state.AddError(
-                    $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant.");
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant.");
                 return;
             }
 
@@ -35,14 +35,14 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     internal class InlineRetrieveVisitor : DafnyVisitor
     {
         protected Program program;
-        protected IInlineTable rootTable;
+        protected IInlineScope rootScope;
 
-        public InlineRetrieveVisitor(Program program, IInlineTable rootTable)
+        public InlineRetrieveVisitor(Program program, IInlineScope rootScope)
         {
-            if (program == null || rootTable == null) throw new ArgumentNullException();
+            if (program == null || rootScope == null) throw new ArgumentNullException();
 
             this.program = program;
-            this.rootTable = rootTable;
+            this.rootScope = rootScope;
         }
 
         public virtual void Execute()
@@ -59,12 +59,12 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             {
                 if (!(up.Lhss[i] is AutoGhostIdentifierExpr agie)) continue;
                 // TODO: Avoid this repetition on source code
-                var curTable = rootTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
+                var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
                 var symbol = curTable.LookupInlineSymbol(agie.Name);
                 if (symbol == null) continue;
                 // TODO: Analyse if commented lines are equivalent with new implementation
                 //var erhs = (ExprRhs) up.Rhss[i];
-                //symbol.Expr = erhs.Expr;
+                //variable.Expr = erhs.Expr;
                 var assign = up.Rhss[i];
                 symbol.Expr = assign.SubExpressions.FirstOrDefault();
                 symbol.InitStmt = up;
@@ -78,7 +78,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (!(up.Lhss[i] is NameSegment nm)) continue;
-                var curTable = rootTable.FindInlineTable(nearestBlockStmt.Tok.GetHashCode());
+                var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
                 var symbol = curTable.LookupInlineSymbol(nm.Name);
                 if (symbol.Expr == null && up.Rhss[i] is ExprRhs erhs)
                 {

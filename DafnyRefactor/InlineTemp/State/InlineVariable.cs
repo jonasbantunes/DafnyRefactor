@@ -3,7 +3,7 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
-    public interface IInlineSymbol : ISymbol
+    public interface IInlineVariable : IRefactorVariable
     {
         bool IsUpdated { get; set; }
         Expression Expr { get; set; }
@@ -12,9 +12,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         bool IsConstant();
     }
 
-    public class InlineSymbol : Symbol, IInlineSymbol
+    public class InlineVariable : RefactorVariable, IInlineVariable
     {
-        public InlineSymbol(LocalVariable localVariable, VarDeclStmt varDeclStmt) : base(localVariable, varDeclStmt)
+        public InlineVariable(LocalVariable localVariable, VarDeclStmt varDeclStmt) : base(localVariable, varDeclStmt)
         {
         }
 

@@ -11,11 +11,11 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.InlineSymbol == null || state.Program == null || state.SymbolTable == null)
+            if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
 
-            var visitor = new RemoveRefactoredDeclarationVisitor(state.Program, state.SymbolTable, state.InlineSymbol);
+            var visitor = new RemoveRefactoredDeclarationVisitor(state.Program, state.RootScope, state.InlineVariable);
             visitor.Execute();
             state.SourceEdits.AddRange(visitor.Edits);
             base.Handle(state);
@@ -24,11 +24,11 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     internal class RemoveRefactoredDeclarationVisitor : DafnyVisitor
     {
-        protected IInlineSymbol inlineVar;
+        protected IInlineVariable inlineVar;
         protected Program program;
-        protected ISymbolTable rootTable;
+        protected IRefactorScope rootTable;
 
-        public RemoveRefactoredDeclarationVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineVar)
+        public RemoveRefactoredDeclarationVisitor(Program program, IRefactorScope rootTable, IInlineVariable inlineVar)
         {
             if (program == null || rootTable == null || inlineVar == null) throw new ArgumentNullException();
 
@@ -50,8 +50,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (vds == null) throw new ArgumentNullException();
 
             // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
-            if (vds.Locals.Count == 1 && curTable.LookupSymbol(vds.Locals[0].Name).GetHashCode() ==
+            var curTable = rootTable.FindScope(nearestBlockStmt.Tok.GetHashCode());
+            if (vds.Locals.Count == 1 && curTable.LookupVariable(vds.Locals[0].Name).GetHashCode() ==
                 inlineVar.GetHashCode())
             {
                 Edits.Add(new SourceEdit(vds.Tok.pos, vds.EndTok.pos + 1, ""));
@@ -63,7 +63,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 for (var i = vds.Locals.Count - 1; i >= 0; i--)
                 {
                     if (vds.Locals[i].Name == inlineVar.Name &&
-                        curTable.LookupSymbol(vds.Locals[i].Name).GetHashCode() ==
+                        curTable.LookupVariable(vds.Locals[i].Name).GetHashCode() ==
                         inlineVar.GetHashCode())
                     {
                         newVds.Locals.RemoveAt(i);
@@ -87,7 +87,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                     for (var i = up.Lhss.Count - 1; i >= 0; i--)
                     {
                         if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == inlineVar.Name &&
-                            curTable.LookupSymbol(agie.Name).GetHashCode() ==
+                            curTable.LookupVariable(agie.Name).GetHashCode() ==
                             inlineVar.GetHashCode())
                         {
                             newUpdate.Lhss.RemoveAt(i);
@@ -113,9 +113,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (up == null) throw new ArgumentNullException();
 
             // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
+            var curTable = rootTable.FindScope(nearestBlockStmt.Tok.GetHashCode());
             if (up.Lhss.Count == 1 && up.Lhss[0] is NameSegment upNm &&
-                curTable.LookupSymbol(upNm.Name).GetHashCode() == inlineVar.GetHashCode())
+                curTable.LookupVariable(upNm.Name).GetHashCode() == inlineVar.GetHashCode())
             {
                 Edits.Add(new SourceEdit(upNm.tok.pos, up.EndTok.pos + 1, ""));
             }
@@ -126,7 +126,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 for (var i = up.Lhss.Count - 1; i >= 0; i--)
                 {
                     if (up.Lhss[i] is NameSegment nm && nm.Name == inlineVar.Name &&
-                        curTable.LookupSymbol(nm.Name).GetHashCode() == inlineVar.GetHashCode())
+                        curTable.LookupVariable(nm.Name).GetHashCode() == inlineVar.GetHashCode())
                     {
                         newUpdate.Lhss.RemoveAt(i);
                         newUpdate.Rhss.RemoveAt(i);

@@ -8,9 +8,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     public interface IInlineState : IRefactorState
     {
         ApplyInlineTempOptions InlineOptions { get; }
-        IInlineSymbol InlineSymbol { get; set; }
+        IInlineVariable InlineVariable { get; set; }
         List<SourceEdit> SourceEdits { get; }
-        IInlineTable SymbolTable { get; set; }
+        IInlineScope RootScope { get; set; }
     }
 
     public class InlineState : IInlineState
@@ -27,9 +27,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
 
         public ApplyInlineTempOptions InlineOptions => options;
-        public IInlineSymbol InlineSymbol { get; set; }
+        public IInlineVariable InlineVariable { get; set; }
         public List<SourceEdit> SourceEdits { get; }
-        public IInlineTable SymbolTable { get; set; }
+        public IInlineScope RootScope { get; set; }
         public List<string> Errors => errors;
         public ApplyOptions Options => options;
         public Program Program { get; set; }

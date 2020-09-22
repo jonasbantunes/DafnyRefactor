@@ -3,20 +3,20 @@ using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
-    public class SymbolTableGenerator<TSymbolTable> : DafnyVisitor where TSymbolTable : ISymbolTable, new()
+    public class ScopeGenerator<TScopeState> : DafnyVisitor where TScopeState : IRefactorScope, new()
     {
         protected Program program;
 
-        public SymbolTableGenerator(Program program)
+        public ScopeGenerator(Program program)
         {
             this.program = program ?? throw new ArgumentNullException();
         }
 
-        public TSymbolTable GeneratedTable { get; protected set; }
+        public TScopeState GeneratedTable { get; protected set; }
 
         public virtual void Execute()
         {
-            GeneratedTable = new TSymbolTable();
+            GeneratedTable = new TScopeState();
             Visit(program);
         }
 
@@ -26,16 +26,16 @@ namespace Microsoft.DafnyRefactor.Utils
 
             foreach (var local in vds.Locals)
             {
-                var curTable = GeneratedTable.FindTable(nearestBlockStmt?.Tok?.GetHashCode() ?? 0);
-                curTable.InsertSymbol(local, vds);
+                var curTable = GeneratedTable.FindScope(nearestBlockStmt?.Tok?.GetHashCode() ?? 0);
+                curTable.InsertVariable(local, vds);
             }
         }
 
         protected override void Visit(BlockStmt block)
         {
-            var curTable = GeneratedTable.FindTable(nearestBlockStmt?.Tok?.GetHashCode() ?? 0);
+            var curTable = GeneratedTable.FindScope(nearestBlockStmt?.Tok?.GetHashCode() ?? 0);
 
-            curTable.InsertTable(block);
+            curTable.InsertScope(block);
 
             base.Visit(block);
         }

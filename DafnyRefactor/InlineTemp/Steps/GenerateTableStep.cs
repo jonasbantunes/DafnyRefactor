@@ -11,9 +11,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             // TODO: improve code
             var tableGenerator =
-                new SymbolTableGenerator<InlineTable>(state.Program);
+                new ScopeGenerator<InlineScope>(state.Program);
             tableGenerator.Execute();
-            state.SymbolTable = tableGenerator.GeneratedTable;
+            state.RootScope = tableGenerator.GeneratedTable;
             base.Handle(state);
         }
     }

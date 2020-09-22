@@ -12,9 +12,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         {
             if (state == null || state.Errors == null || state.FilePath == null || state.InlineOptions == null ||
                 state.Program == null || state.StmtDivisors == null ||
-                state.SymbolTable == null) throw new ArgumentNullException();
+                state.RootScope == null) throw new ArgumentNullException();
 
-            var addAssertives = new AddAssertivesVisitor(state.Program, state.SymbolTable, state.InlineSymbol,
+            var addAssertives = new AddAssertivesVisitor(state.Program, state.RootScope, state.InlineVariable,
                 state.StmtDivisors);
             addAssertives.Execute();
 
@@ -24,7 +24,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (!checker.IsConstant)
             {
                 state.AddError(
-                    $"Error: variable {state.InlineSymbol.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
                 return;
             }
 
@@ -34,21 +34,21 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     internal class AddAssertivesVisitor : DafnyVisitor
     {
-        protected IInlineSymbol inlineSymbol;
+        protected IInlineVariable inlineVariable;
         protected Statement nearestStmt;
         protected Program program;
-        protected ISymbolTable rootTable;
+        protected IRefactorScope rootTable;
         protected List<int> stmtDivisors;
 
 
-        public AddAssertivesVisitor(Program program, ISymbolTable rootTable, IInlineSymbol inlineSymbol,
+        public AddAssertivesVisitor(Program program, IRefactorScope rootTable, IInlineVariable inlineVariable,
             List<int> stmtDivisors)
         {
-            if (program == null || rootTable == null || inlineSymbol == null || stmtDivisors == null)
+            if (program == null || rootTable == null || inlineVariable == null || stmtDivisors == null)
                 throw new ArgumentNullException();
 
             this.program = program;
-            this.inlineSymbol = inlineSymbol;
+            this.inlineVariable = inlineVariable;
             this.rootTable = rootTable;
             this.stmtDivisors = stmtDivisors;
         }
@@ -59,8 +59,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         {
             Edits = new List<SourceEdit>();
             var ghostStmtExpr =
-                $"\n ghost var {inlineSymbol.Name}___RefactorGhostExpr := {Printer.ExprToString(inlineSymbol.Expr)};\n";
-            Edits.Add(new SourceEdit(inlineSymbol.InitStmt.EndTok.pos + 1, ghostStmtExpr));
+                $"\n ghost var {inlineVariable.Name}___RefactorGhostExpr := {Printer.ExprToString(inlineVariable.Expr)};\n";
+            Edits.Add(new SourceEdit(inlineVariable.InitStmt.EndTok.pos + 1, ghostStmtExpr));
             Visit(program);
         }
 
@@ -84,14 +84,14 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (nameSeg == null) throw new ArgumentNullException();
 
             // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindTable(nearestBlockStmt.Tok.GetHashCode());
-            if (curTable.LookupSymbol(nameSeg.Name).GetHashCode() == inlineSymbol.GetHashCode())
+            var curTable = rootTable.FindScope(nearestBlockStmt.Tok.GetHashCode());
+            if (curTable.LookupVariable(nameSeg.Name).GetHashCode() == inlineVariable.GetHashCode())
             {
                 var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
                 if (findIndex <= 1) return;
 
                 var assertStmtExpr =
-                    $"\n assert {inlineSymbol.Name}___RefactorGhostExpr == {Printer.ExprToString(inlineSymbol.Expr)};\n";
+                    $"\n assert {inlineVariable.Name}___RefactorGhostExpr == {Printer.ExprToString(inlineVariable.Expr)};\n";
                 Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
             }
 
