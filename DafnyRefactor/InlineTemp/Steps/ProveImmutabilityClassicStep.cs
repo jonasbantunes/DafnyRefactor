@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 
@@ -85,20 +86,19 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     internal class AddAssertivesClassic : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVariable;
-        protected IInlineScope inlineScope;
-        protected Statement nearestStmt;
+        protected IInlineScope rootScope;
         protected Program program;
         protected List<int> stmtDivisors;
 
-        public AddAssertivesClassic(Program program, List<int> stmtDivisors, IInlineScope inlineScope,
+        public AddAssertivesClassic(Program program, List<int> stmtDivisors, IInlineScope rootScope,
             IInlineVariable inlineVariable)
         {
-            if (inlineScope == null || program == null || stmtDivisors == null || inlineVariable == null)
+            if (rootScope == null || program == null || stmtDivisors == null || inlineVariable == null)
                 throw new ArgumentNullException();
 
             this.program = program;
             this.stmtDivisors = stmtDivisors;
-            this.inlineScope = inlineScope;
+            this.rootScope = rootScope;
             this.inlineVariable = inlineVariable;
         }
 
@@ -110,43 +110,55 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             Visit(program);
         }
 
-        protected override void Visit(Statement stmt)
+        protected override void Visit(AssignStmt assignStmt)
         {
-            var oldNearestStmt = nearestStmt;
-            nearestStmt = stmt;
-            base.Visit(stmt);
-            nearestStmt = oldNearestStmt;
-        }
-
-        protected override void Visit(UpdateStmt up)
-        {
-            if (up == null) throw new ArgumentNullException();
-
-            Traverse(up.Lhss);
-        }
-
-        protected override void Visit(ExprDotName exprDotName)
-        {
-            if (exprDotName == null) throw new ArgumentNullException();
-
+            if (assignStmt == null) throw new ArgumentNullException();
             if (nearestStmt.Tok.pos < inlineVariable.InitStmt.EndTok.pos) return;
-            if (nearestStmt is AssignStmt || nearestStmt is UpdateStmt)
+
+            if (assignStmt.Lhs is MemberSelectExpr memberSelectExpr)
             {
                 var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
                 if (findIndex <= 1) return;
 
-                var curTable = inlineScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+                var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
                 if (curTable == null) return;
 
                 foreach (var inlineObject in curTable.GetInlineObjects())
                 {
-                    if (!exprDotName.Lhs.Type.Equals(inlineObject.Type)) continue;
-                    var assertStmtExpr = $"\n assert {Printer.ExprToString(exprDotName.Lhs)} != {inlineObject.Name};\n";
+                    if (!memberSelectExpr.Obj.Type.Equals(inlineObject.Type)) continue;
+                    var assertStmtExpr =
+                        $"\n assert {Printer.ExprToString(memberSelectExpr.Obj)} != {inlineObject.Name};\n";
                     Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
                 }
             }
 
-            base.Visit(exprDotName);
+            base.Visit(assignStmt);
+        }
+
+        protected override void Visit(NameSegment nameSeg)
+        {
+            if (nameSeg == null) throw new ArgumentNullException();
+
+            if (nearestStmt is CallStmt)
+            {
+                var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
+                if (findIndex <= 1) return;
+
+                var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+                if (curTable == null) return;
+
+                foreach (var inlineObject in curTable.GetInlineObjects())
+                {
+                    if (nameSeg.Resolved.Type.Equals(inlineObject.Type))
+                    {
+                        var assertStmtExpr =
+                            $"\n assert {nameSeg.Name} != {inlineObject.Name};\n";
+                        Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
+                    }
+                }
+            }
+
+            base.Visit(nameSeg);
         }
     }
 

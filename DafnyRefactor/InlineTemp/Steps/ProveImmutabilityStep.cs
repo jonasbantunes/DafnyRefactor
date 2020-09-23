@@ -76,7 +76,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             // TODO: Avoid this repetition on source code
             var curTable = rootTable.FindScope(nearestBlockStmt.Tok.GetHashCode());
-            if (curTable.LookupVariable(nameSeg.Name).GetHashCode() == inlineVariable.GetHashCode())
+            if (curTable.LookupVariable(nameSeg.Name)?.GetHashCode() == inlineVariable.GetHashCode())
             {
                 var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
                 if (findIndex <= 1) return;

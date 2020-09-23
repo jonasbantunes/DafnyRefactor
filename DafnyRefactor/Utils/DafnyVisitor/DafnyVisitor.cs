@@ -66,6 +66,9 @@ namespace Microsoft.DafnyRefactor.Utils
                 case BlockStmt block:
                     Visit(block);
                     break;
+                case AssignStmt assignStmt:
+                    Visit(assignStmt);
+                    break;
                 default:
                     Traverse(stmt.SubExpressions?.ToList());
                     Traverse(stmt.SubStatements?.ToList());
@@ -95,6 +98,14 @@ namespace Microsoft.DafnyRefactor.Utils
             Traverse(block.Body);
         }
 
+        protected virtual void Visit(AssignStmt assignStmt)
+        {
+            if (assignStmt == null) throw new ArgumentNullException();
+
+            Traverse(assignStmt.SubExpressions?.ToList());
+            Traverse(assignStmt.SubExpressions?.ToList());
+        }
+
         protected virtual void Visit(Expression exp)
         {
             if (exp == null) throw new ArgumentNullException();
@@ -106,6 +117,9 @@ namespace Microsoft.DafnyRefactor.Utils
                     break;
                 case ExprDotName exprDotName:
                     Visit(exprDotName);
+                    break;
+                case ApplySuffix applySuffix:
+                    Visit(applySuffix);
                     break;
                 default:
                     Traverse(exp.SubExpressions?.ToList());
@@ -125,6 +139,14 @@ namespace Microsoft.DafnyRefactor.Utils
             if (exprDotName == null) throw new ArgumentNullException();
 
             Traverse(exprDotName.SubExpressions?.ToList());
+        }
+
+        protected virtual void Visit(ApplySuffix applySuffix)
+        {
+            if (applySuffix == null) throw new ArgumentNullException();
+
+            Visit(applySuffix.Lhs);
+            Traverse(applySuffix.SubExpressions?.ToList());
         }
 
         protected virtual void Visit(AssignmentRhs rhs)
