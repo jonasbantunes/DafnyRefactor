@@ -52,6 +52,19 @@ namespace DafnyRefactorTests
         }
 
         [Test]
+        public void LinkedListValueT1()
+        {
+            testFileDir = $"{testDir}\\linked_list_value";
+            testNumber = 1;
+            line = 34;
+            column = 22;
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(0, exitCode);
+            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
+
+        [Test]
         public void LinkedListWrongT1()
         {
             testFileDir = $"{testDir}\\linked_list_wrong";

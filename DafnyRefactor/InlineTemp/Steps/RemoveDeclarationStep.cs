@@ -115,7 +115,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             // TODO: Avoid this repetition on source code
             var curTable = rootTable.FindScope(nearestScopeToken.GetHashCode());
             if (up.Lhss.Count == 1 && up.Lhss[0] is NameSegment upNm &&
-                curTable.LookupVariable(upNm.Name).GetHashCode() == inlineVar.GetHashCode())
+                curTable.LookupVariable(upNm.Name)?.GetHashCode() == inlineVar.GetHashCode())
             {
                 Edits.Add(new SourceEdit(upNm.tok.pos, up.EndTok.pos + 1, ""));
             }

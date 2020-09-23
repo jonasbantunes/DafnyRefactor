@@ -77,6 +77,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 if (!(up.Lhss[i] is NameSegment nm)) continue;
                 var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
                 var symbol = curTable.LookupInlineSymbol(nm.Name);
+                if (symbol == null) continue;
                 if (symbol.Expr == null && up.Rhss[i] is ExprRhs erhs)
                 {
                     symbol.Expr = erhs.Expr;
