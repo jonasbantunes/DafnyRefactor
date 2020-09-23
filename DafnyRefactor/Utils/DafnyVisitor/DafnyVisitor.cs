@@ -69,6 +69,9 @@ namespace Microsoft.DafnyRefactor.Utils
                 case AssignStmt assignStmt:
                     Visit(assignStmt);
                     break;
+                case CallStmt callStmt:
+                    Visit(callStmt);
+                    break;
                 default:
                     Traverse(stmt.SubExpressions?.ToList());
                     Traverse(stmt.SubStatements?.ToList());
@@ -104,6 +107,14 @@ namespace Microsoft.DafnyRefactor.Utils
 
             Traverse(assignStmt.SubExpressions?.ToList());
             Traverse(assignStmt.SubExpressions?.ToList());
+        }
+
+        protected virtual void Visit(CallStmt callStmt)
+        {
+            if (callStmt == null) throw new ArgumentNullException();
+
+            Traverse(callStmt.SubExpressions?.ToList());
+            Traverse(callStmt.SubStatements?.ToList());
         }
 
         protected virtual void Visit(Expression exp)

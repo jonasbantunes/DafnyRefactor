@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using DafnyRefactor.InlineTemp.State;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
+using Type = Microsoft.Dafny.Type;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
@@ -15,6 +18,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         IInlineScope FindScopeByVariable(IInlineVariable variable);
         void InsertInlineObject(string name, Type type);
         List<IInlineObject> GetInlineObjects();
+        IRefactorMethod LookupMethod(int hashCode);
+        void InsertMethod(Method mt);
     }
 
     public class InlineScope : IInlineScope
@@ -24,6 +29,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         protected IInlineScope parent;
         protected List<IInlineScope> subScopes = new List<IInlineScope>();
         protected List<IInlineVariable> variables = new List<IInlineVariable>();
+        protected List<IRefactorMethod> methods = new List<IRefactorMethod>();
 
         public InlineScope()
         {
@@ -131,6 +137,26 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         public List<IInlineObject> GetInlineObjects()
         {
             return RetrieveInlineObjects(this);
+        }
+
+        public IRefactorMethod LookupMethod(int hashCode)
+        {
+            foreach (var method in methods)
+            {
+                if (method.GetHashCode() == hashCode)
+                {
+                    return method;
+                }
+            }
+
+            var res = InlineParent?.LookupMethod(hashCode);
+            return res;
+        }
+
+        public void InsertMethod(Method mt)
+        {
+            var method = new RefactorMethod(mt);
+            methods.Add(method);
         }
 
         protected List<IInlineObject> RetrieveInlineObjects(IInlineScope scope)

@@ -62,9 +62,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
                 var symbol = curTable.LookupInlineSymbol(agie.Name);
                 if (symbol == null) continue;
-                // TODO: Analyse if commented lines are equivalent with new implementation
-                //var erhs = (ExprRhs) up.Rhss[i];
-                //variable.Expr = erhs.Expr;
                 var assign = up.Rhss[i];
                 symbol.Expr = assign.SubExpressions.FirstOrDefault();
                 symbol.InitStmt = up;

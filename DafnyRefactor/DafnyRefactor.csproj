@@ -99,8 +99,11 @@
     <Compile Include="InlineTemp\State\InlineState.cs" />
     <Compile Include="InlineTemp\State\InlineVariable.cs" />
     <Compile Include="InlineTemp\State\InlineScope.cs" />
-    <Compile Include="InlineTemp\Steps\GenerateTableStep.cs" />
+    <Compile Include="InlineTemp\State\MethodArg.cs" />
+    <Compile Include="InlineTemp\State\RefactorMethod.cs" />
+    <Compile Include="InlineTemp\Steps\GenerateScopeStep.cs" />
     <Compile Include="InlineTemp\State\InlineObject.cs" />
+    <Compile Include="InlineTemp\Steps\ParseMethodsStep.cs" />
     <Compile Include="InlineTemp\Steps\ProveImmutabilityClassicStep.cs" />
     <Compile Include="InlineTemp\Steps\ProveImmutabilityStep.cs" />
     <Compile Include="Utils\DafnyVisitor\DafnyVisitorWithNearests.cs" />

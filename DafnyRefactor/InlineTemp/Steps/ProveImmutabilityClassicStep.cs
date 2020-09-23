@@ -135,31 +135,72 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             base.Visit(assignStmt);
         }
 
-        protected override void Visit(NameSegment nameSeg)
+        protected override void Visit(CallStmt callStmt)
         {
-            if (nameSeg == null) throw new ArgumentNullException();
+            if (callStmt == null) throw new ArgumentNullException();
 
-            if (nearestStmt is CallStmt)
+            var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
+            if (findIndex <= 1) return;
+
+            var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+            if (curTable == null) return;
+
+            var method = curTable.LookupMethod(callStmt.Method.GetHashCode());
+            if (method == null) return;
+
+            for (var i = 0; i < callStmt.Args.Count; i++)
             {
-                var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
-                if (findIndex <= 1) return;
+                var arg = callStmt.Args[i];
+                var methodArg = method.Args[i];
 
-                var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
-                if (curTable == null) return;
-
-                foreach (var inlineObject in curTable.GetInlineObjects())
+                if (methodArg.CanBeModified)
                 {
-                    if (nameSeg.Resolved.Type.Equals(inlineObject.Type))
+                    foreach (var inlineObject in curTable.GetInlineObjects())
                     {
-                        var assertStmtExpr =
-                            $"\n assert {nameSeg.Name} != {inlineObject.Name};\n";
-                        Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
+                        if (methodArg.Type.Equals(inlineObject.Type))
+                        {
+                            var assertStmtExpr =
+                                $"\n assert {Printer.ExprToString(arg)} != {inlineObject.Name};\n";
+                            Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
+                        }
                     }
                 }
             }
 
-            base.Visit(nameSeg);
+            base.Visit(callStmt);
         }
+
+        //protected override void Visit(NameSegment nameSeg)
+        //{
+        //    if (nameSeg == null) throw new ArgumentNullException();
+
+        //    if (nearestStmt is CallStmt callStmt)
+        //    {
+        //        var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
+        //        if (findIndex <= 1) return;
+
+        //        var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+        //        if (curTable == null) return;
+
+        //        var method = curTable.LookupMethod(callStmt.Method.GetHashCode());
+        //        if (method == null) return;
+
+        //        var arg = method.LookupArg(nameSeg.Name);
+        //        if (arg == null || !arg.CanBeModified) return;
+
+        //        foreach (var inlineObject in curTable.GetInlineObjects())
+        //        {
+        //            if (nameSeg.Resolved.Type.Equals(inlineObject.Type))
+        //            {
+        //                var assertStmtExpr =
+        //                    $"\n assert {nameSeg.Name} != {inlineObject.Name};\n";
+        //                Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
+        //            }
+        //        }
+        //    }
+
+        //    base.Visit(nameSeg);
+        //}
     }
 
     internal class InlineImmutabilityCheckClassic
