@@ -75,7 +75,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (nameSeg == null) throw new ArgumentNullException();
 
             // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindScope(nearestBlockStmt.Tok.GetHashCode());
+            var curTable = rootTable.FindScope(nearestScopeToken.GetHashCode());
             if (curTable.LookupVariable(nameSeg.Name)?.GetHashCode() == inlineVariable.GetHashCode())
             {
                 var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);

@@ -42,20 +42,12 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             Visit(program);
         }
 
-        protected override void Visit(UpdateStmt up)
-        {
-            if (up == null) throw new ArgumentNullException();
-
-            Traverse(up.Rhss);
-        }
-
-
         protected override void Visit(NameSegment nameSeg)
         {
             if (nameSeg == null) throw new ArgumentNullException();
 
             // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindScope(nearestBlockStmt.Tok.GetHashCode());
+            var curTable = rootTable.FindScope(nearestScopeToken.GetHashCode());
             if (nameSeg.Name == inlineVar.Name && curTable.LookupVariable(nameSeg.Name).GetHashCode() ==
                 inlineVar.GetHashCode())
             {

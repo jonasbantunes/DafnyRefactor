@@ -50,7 +50,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (vds == null) throw new ArgumentNullException();
 
             // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindScope(nearestBlockStmt.Tok.GetHashCode());
+            var curTable = rootTable.FindScope(nearestScopeToken.GetHashCode());
             if (vds.Locals.Count == 1 && curTable.LookupVariable(vds.Locals[0].Name).GetHashCode() ==
                 inlineVar.GetHashCode())
             {
@@ -113,7 +113,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (up == null) throw new ArgumentNullException();
 
             // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindScope(nearestBlockStmt.Tok.GetHashCode());
+            var curTable = rootTable.FindScope(nearestScopeToken.GetHashCode());
             if (up.Lhss.Count == 1 && up.Lhss[0] is NameSegment upNm &&
                 curTable.LookupVariable(upNm.Name).GetHashCode() == inlineVar.GetHashCode())
             {

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using DafnyRefactor.InlineTemp.State;
+using Microsoft.Boogie;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
+using LocalVariable = Microsoft.Dafny.LocalVariable;
 using Type = Microsoft.Dafny.Type;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
@@ -24,7 +26,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
     public class InlineScope : IInlineScope
     {
-        protected readonly BlockStmt blockStmt;
+        protected readonly IToken token;
         protected List<IInlineObject> inlineObjects = new List<IInlineObject>();
         protected IInlineScope parent;
         protected List<IInlineScope> subScopes = new List<IInlineScope>();
@@ -35,15 +37,15 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         {
         }
 
-        public InlineScope(BlockStmt blockStmt = null, IInlineScope parent = null)
+        public InlineScope(IToken token = null, IInlineScope parent = null)
         {
             this.parent = parent;
-            this.blockStmt = blockStmt;
+            this.token = token;
         }
 
         public IRefactorScope Parent => parent;
         public IInlineScope InlineParent => parent;
-        public BlockStmt BlockStmt => blockStmt;
+        public IToken Token => token;
         public List<IRefactorVariable> Variables => new List<IRefactorVariable>(variables);
         public List<IInlineVariable> InlineVariables => variables;
         public List<IInlineObject> InlineObjects => inlineObjects;
@@ -54,9 +56,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             variables.Add(symbol);
         }
 
-        public void InsertScope(BlockStmt block)
+        public void InsertScope(IToken tok)
         {
-            var table = new InlineScope(block, this);
+            var table = new InlineScope(tok, this);
             subScopes.Add(table);
         }
 
@@ -199,7 +201,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public override int GetHashCode()
         {
-            return blockStmt?.Tok.GetHashCode() ?? 0;
+            return token?.GetHashCode() ?? 0;
         }
     }
 }

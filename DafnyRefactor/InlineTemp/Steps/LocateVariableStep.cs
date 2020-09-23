@@ -63,7 +63,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 if (IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line, local.EndTok.col))
                 {
                     // TODO: Avoid this repetition on source code
-                    var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+                    var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
                     FoundDeclaration = curTable.LookupInlineSymbol(local.Name);
                 }
             }
@@ -79,7 +79,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 nameSeg.tok.col + nameSeg.tok.val.Length - 1))
             {
                 // TODO: Avoid this repetition on source code
-                var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+                var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
                 FoundDeclaration = curTable.LookupInlineSymbol(nameSeg.Name);
             }
         }

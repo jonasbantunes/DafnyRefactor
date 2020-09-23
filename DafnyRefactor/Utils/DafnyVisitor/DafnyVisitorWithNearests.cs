@@ -1,12 +1,13 @@
 ﻿using System;
+using Microsoft.Boogie;
 using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
     public class DafnyVisitorWithNearests : DafnyVisitor
     {
-        protected BlockStmt nearestBlockStmt;
         protected Statement nearestStmt;
+        protected IToken nearestScopeToken;
 
         protected override void Visit(Statement stmt)
         {
@@ -21,10 +22,10 @@ namespace Microsoft.DafnyRefactor.Utils
             if (block == null) throw new ArgumentNullException();
 
             // TODO: Improve stack of variables
-            var oldNearest = nearestBlockStmt;
-            nearestBlockStmt = block;
+            var oldNearest = nearestScopeToken;
+            nearestScopeToken = block.Tok;
             Traverse(block.Body);
-            nearestBlockStmt = oldNearest;
+            nearestScopeToken = oldNearest;
         }
     }
 }

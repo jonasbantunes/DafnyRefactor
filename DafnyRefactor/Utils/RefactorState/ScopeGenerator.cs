@@ -26,16 +26,16 @@ namespace Microsoft.DafnyRefactor.Utils
 
             foreach (var local in vds.Locals)
             {
-                var curTable = GeneratedTable.FindScope(nearestBlockStmt?.Tok?.GetHashCode() ?? 0);
+                var curTable = GeneratedTable.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
                 curTable.InsertVariable(local, vds);
             }
         }
 
         protected override void Visit(BlockStmt block)
         {
-            var curTable = GeneratedTable.FindScope(nearestBlockStmt?.Tok?.GetHashCode() ?? 0);
+            var curTable = GeneratedTable.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
 
-            curTable.InsertScope(block);
+            curTable.InsertScope(block.Tok);
 
             base.Visit(block);
         }

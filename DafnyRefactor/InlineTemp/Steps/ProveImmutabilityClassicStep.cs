@@ -120,7 +120,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
                 if (findIndex <= 1) return;
 
-                var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+                var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
                 if (curTable == null) return;
 
                 foreach (var inlineObject in curTable.GetInlineObjects())
@@ -142,7 +142,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
             if (findIndex <= 1) return;
 
-            var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+            var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
             if (curTable == null) return;
 
             var method = curTable.LookupMethod(callStmt.Method.GetHashCode());
@@ -169,38 +169,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             base.Visit(callStmt);
         }
-
-        //protected override void Visit(NameSegment nameSeg)
-        //{
-        //    if (nameSeg == null) throw new ArgumentNullException();
-
-        //    if (nearestStmt is CallStmt callStmt)
-        //    {
-        //        var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
-        //        if (findIndex <= 1) return;
-
-        //        var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
-        //        if (curTable == null) return;
-
-        //        var method = curTable.LookupMethod(callStmt.Method.GetHashCode());
-        //        if (method == null) return;
-
-        //        var arg = method.LookupArg(nameSeg.Name);
-        //        if (arg == null || !arg.CanBeModified) return;
-
-        //        foreach (var inlineObject in curTable.GetInlineObjects())
-        //        {
-        //            if (nameSeg.Resolved.Type.Equals(inlineObject.Type))
-        //            {
-        //                var assertStmtExpr =
-        //                    $"\n assert {nameSeg.Name} != {inlineObject.Name};\n";
-        //                Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
-        //            }
-        //        }
-        //    }
-
-        //    base.Visit(nameSeg);
-        //}
     }
 
     internal class InlineImmutabilityCheckClassic

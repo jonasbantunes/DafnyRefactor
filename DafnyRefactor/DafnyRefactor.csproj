@@ -108,7 +108,7 @@
     <Compile Include="InlineTemp\Steps\ProveImmutabilityStep.cs" />
     <Compile Include="Utils\DafnyVisitor\DafnyVisitorWithNearests.cs" />
     <Compile Include="Utils\RefactorStep\ParseStmtDivisorsStep.cs" />
-    <Compile Include="Utils\RefactorStep\RefactorState.cs" />
+    <Compile Include="Utils\RefactorState\RefactorState.cs" />
     <Compile Include="Utils\RefactorStep\RefactorStep.cs" />
     <Compile Include="Utils\RefactorStep\LoadProgramStep.cs" />
     <Compile Include="Utils\CommandLineOptions\ApplyInlineTempOptions.cs" />

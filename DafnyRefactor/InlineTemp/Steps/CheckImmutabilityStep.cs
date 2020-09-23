@@ -59,7 +59,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             {
                 if (!(up.Lhss[i] is AutoGhostIdentifierExpr agie)) continue;
                 // TODO: Avoid this repetition on source code
-                var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+                var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
                 var symbol = curTable.LookupInlineSymbol(agie.Name);
                 if (symbol == null) continue;
                 var assign = up.Rhss[i];
@@ -75,7 +75,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (!(up.Lhss[i] is NameSegment nm)) continue;
-                var curTable = rootScope.FindInlineScope(nearestBlockStmt.Tok.GetHashCode());
+                var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
                 var symbol = curTable.LookupInlineSymbol(nm.Name);
                 if (symbol.Expr == null && up.Rhss[i] is ExprRhs erhs)
                 {

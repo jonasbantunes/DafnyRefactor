@@ -36,7 +36,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(Method mt)
         {
-            var curScope = rootScope.FindInlineScope(nearestBlockStmt?.Tok.GetHashCode() ?? 0);
+            var curScope = rootScope.FindInlineScope(nearestScopeToken?.GetHashCode() ?? 0);
             curScope.InsertMethod(mt);
             var refactorMethod = curScope.LookupMethod(mt.GetHashCode());
             if (refactorMethod != null)
