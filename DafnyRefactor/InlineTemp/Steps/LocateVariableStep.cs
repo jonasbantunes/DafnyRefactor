@@ -84,6 +84,14 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             }
         }
 
+        protected override void Visit(ExprDotName exprDotName)
+        {
+        }
+
+        protected override void Visit(MemberSelectExpr memmMemberSelectExpr)
+        {
+        }
+
         protected bool IsInRange(int line, int column, int startLine, int starColumn, int endLine, int endColumn)
         {
             if (startLine == line && starColumn <= column)

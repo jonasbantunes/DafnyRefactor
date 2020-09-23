@@ -121,6 +121,9 @@ namespace Microsoft.DafnyRefactor.Utils
                 case ApplySuffix applySuffix:
                     Visit(applySuffix);
                     break;
+                case MemberSelectExpr memberSelectExpr:
+                    Visit(memberSelectExpr);
+                    break;
                 default:
                     Traverse(exp.SubExpressions?.ToList());
                     break;
@@ -147,6 +150,13 @@ namespace Microsoft.DafnyRefactor.Utils
 
             Visit(applySuffix.Lhs);
             Traverse(applySuffix.SubExpressions?.ToList());
+        }
+
+        protected virtual void Visit(MemberSelectExpr memberSelectExpr)
+        {
+            if (memberSelectExpr == null) throw new ArgumentNullException();
+
+            Traverse(memberSelectExpr.SubExpressions?.ToList());
         }
 
         protected virtual void Visit(AssignmentRhs rhs)

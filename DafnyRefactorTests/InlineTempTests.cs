@@ -77,6 +77,18 @@ namespace DafnyRefactorTests
         }
 
         [Test]
+        public void MethodCallT2()
+        {
+            testFileDir = $"{testDir}\\method_call";
+            testNumber = 2;
+            line = 34;
+            column = 5;
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
+        }
+
+        [Test]
         public void MultiDeclT1()
         {
             testFileDir = $"{testDir}\\multi_decl";
