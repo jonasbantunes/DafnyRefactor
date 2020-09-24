@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DafnyRefactor.InlineTemp.State;
 using Microsoft.Boogie;
 using Microsoft.Dafny;
@@ -28,10 +27,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         protected readonly IToken token;
         protected List<IInlineObject> inlineObjects = new List<IInlineObject>();
+        protected List<IRefactorMethod> methods = new List<IRefactorMethod>();
         protected IInlineScope parent;
         protected List<IInlineScope> subScopes = new List<IInlineScope>();
         protected List<IInlineVariable> variables = new List<IInlineVariable>();
-        protected List<IRefactorMethod> methods = new List<IRefactorMethod>();
 
         public InlineScope()
         {

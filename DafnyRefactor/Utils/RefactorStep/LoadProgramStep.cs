@@ -6,13 +6,13 @@ namespace Microsoft.DafnyRefactor.Utils
 {
     public class LoadProgramStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {
-        protected TState internalState;
+        protected TState stateRef;
 
         public override void Handle(TState state)
         {
             if (state == null || state.Errors == null || state.FilePath == null) throw new ArgumentException();
 
-            internalState = state;
+            stateRef = state;
             Load();
             base.Handle(state);
         }
@@ -22,34 +22,36 @@ namespace Microsoft.DafnyRefactor.Utils
             ErrorReporter reporter = new ConsoleErrorReporter();
             DafnyOptions.Install(new DafnyOptions(reporter));
 
-            internalState.Program = null;
+            stateRef.Program = null;
             if (!IsFileValid())
             {
-                internalState.AddError("Program is invalid");
+                stateRef.AddError("Program is invalid");
                 return;
             }
 
             var dafnyFiles = new List<DafnyFile>();
             try
             {
-                dafnyFiles.Add(new DafnyFile(internalState.FilePath));
+                dafnyFiles.Add(new DafnyFile(stateRef.FilePath));
             }
             catch (IllegalDafnyFile)
             {
-                internalState.AddError("Program is invalid");
+                stateRef.AddError("Program is invalid");
                 return;
             }
 
             var err = Main.ParseCheck(dafnyFiles, "the program", reporter, out var tempProgram);
-            if (err == null)
+            if (err != null)
             {
-                internalState.Program = tempProgram;
+                stateRef.AddError($"Can't open program: {err}");
             }
+
+            stateRef.Program = tempProgram;
         }
 
         protected bool IsFileValid()
         {
-            var res = DafnyDriver.Main(new[] {internalState.FilePath, "/compile:0"});
+            var res = DafnyDriver.Main(new[] {stateRef.FilePath, "/compile:0"});
             return res == 0;
         }
     }

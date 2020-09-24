@@ -26,8 +26,12 @@ namespace Microsoft.DafnyRefactor.Utils
 
         public override int GetHashCode()
         {
-            // TODO: Check if is better to use localVariable or localVariable.Tok
             return localVariable?.GetHashCode() ?? 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return GetHashCode() == obj?.GetHashCode();
         }
     }
 }

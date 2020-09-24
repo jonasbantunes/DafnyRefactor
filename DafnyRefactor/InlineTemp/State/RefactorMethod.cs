@@ -17,8 +17,8 @@ namespace DafnyRefactor.InlineTemp.State
 
     public class RefactorMethod : IRefactorMethod
     {
-        protected List<IMethodArg> args = new List<IMethodArg>();
         protected readonly Method method;
+        protected List<IMethodArg> args = new List<IMethodArg>();
 
         public RefactorMethod(Method method)
         {

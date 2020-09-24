@@ -12,6 +12,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             var parser = new ParseMethodVisitor(state.Program, state.RootScope);
             parser.Parse();
+
             base.Handle(state);
         }
     }
@@ -29,6 +30,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             this.rootScope = rootScope;
         }
 
+        protected IInlineScope CurScope => rootScope.FindInlineScope(nearestScopeToken?.GetHashCode() ?? 0);
+
         public void Parse()
         {
             Visit(program);
@@ -36,25 +39,22 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(Method mt)
         {
-            var curScope = rootScope.FindInlineScope(nearestScopeToken?.GetHashCode() ?? 0);
-            curScope.InsertMethod(mt);
-            var refactorMethod = curScope.LookupMethod(mt.GetHashCode());
-            if (refactorMethod != null)
+            CurScope.InsertMethod(mt);
+            var refactorMethod = CurScope.LookupMethod(mt.GetHashCode());
+
+            foreach (var @in in mt.Ins)
             {
-                foreach (var @in in mt.Ins)
+                var canBeModified = false;
+
+                foreach (var frameExpression in mt.Mod.Expressions)
                 {
-                    var canBeModified = false;
-
-                    foreach (var frameExpression in mt.Mod.Expressions)
+                    if (frameExpression.E is NameSegment nameSeg && @in.Name == nameSeg.Name)
                     {
-                        if (frameExpression.E is NameSegment nameSeg && @in.Name == nameSeg.Name)
-                        {
-                            canBeModified = true;
-                        }
+                        canBeModified = true;
                     }
-
-                    refactorMethod.InsertArg(@in.Name, @in.Type, true, false, canBeModified);
                 }
+
+                refactorMethod.InsertArg(@in.Name, @in.Type, true, false, canBeModified);
             }
 
             base.Visit(mt);

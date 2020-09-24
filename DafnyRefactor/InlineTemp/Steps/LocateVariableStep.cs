@@ -31,10 +31,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         protected Program program;
         protected IInlineScope rootScope;
-
         protected int varColumn;
-
-        // TODO: Analyse if varLine and varColumn should be an Location "struct"
         protected int varLine;
 
         public LocateVariableVisitor(Program program, IInlineScope rootScope, int varLine, int varColumn)
@@ -48,6 +45,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
 
         public IInlineVariable FoundDeclaration { get; protected set; }
+        protected IInlineScope CurTable => rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
 
         public virtual void Execute()
         {
@@ -60,12 +58,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             foreach (var local in vds.Locals)
             {
-                if (IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line, local.EndTok.col))
-                {
-                    // TODO: Avoid this repetition on source code
-                    var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
-                    FoundDeclaration = curTable.LookupInlineSymbol(local.Name);
-                }
+                if (!IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line,
+                    local.EndTok.col)) continue;
+
+                FoundDeclaration = CurTable.LookupInlineSymbol(local.Name);
             }
 
             base.Visit(vds);
@@ -75,13 +71,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         {
             if (nameSeg == null) throw new ArgumentNullException();
 
-            if (IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line,
-                nameSeg.tok.col + nameSeg.tok.val.Length - 1))
-            {
-                // TODO: Avoid this repetition on source code
-                var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
-                FoundDeclaration = curTable.LookupInlineSymbol(nameSeg.Name);
-            }
+            if (!IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line,
+                nameSeg.tok.col + nameSeg.tok.val.Length - 1)) return;
+
+            FoundDeclaration = CurTable.LookupInlineSymbol(nameSeg.Name);
         }
 
         protected override void Visit(ExprDotName exprDotName)
@@ -94,15 +87,9 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected bool IsInRange(int line, int column, int startLine, int starColumn, int endLine, int endColumn)
         {
-            if (startLine == line && starColumn <= column)
-            {
-                if (startLine < line && line < endLine || line == endLine && column <= endColumn)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            if (startLine != line || starColumn > column) return false;
+            if ((startLine >= line || line >= endLine) && (line != endLine || column > endColumn)) return false;
+            return true;
         }
     }
 }

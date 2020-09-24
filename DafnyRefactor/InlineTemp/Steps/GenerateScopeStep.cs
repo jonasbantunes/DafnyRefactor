@@ -7,13 +7,12 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
-            if (state?.Program == null) throw new ArgumentException();
+            if (state == null || state.Program == null) throw new ArgumentException();
 
-            // TODO: improve code
-            var tableGenerator =
-                new ScopeGenerator<InlineScope>(state.Program);
-            tableGenerator.Execute();
-            state.RootScope = tableGenerator.GeneratedTable;
+            var scopeGenerator = new ScopeGenerator<InlineScope>(state.Program);
+            scopeGenerator.Execute();
+            state.RootScope = scopeGenerator.GeneratedScope;
+
             base.Handle(state);
         }
     }

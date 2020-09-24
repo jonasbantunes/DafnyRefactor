@@ -10,6 +10,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     public class InlineRefactor
     {
         protected readonly ApplyInlineTempOptions options;
+        protected InlineState state;
+        protected List<RefactorStep<InlineState>> steps;
 
         public InlineRefactor(ApplyInlineTempOptions options)
         {
@@ -20,9 +22,15 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public void Apply()
         {
-            var state = new InlineState(options);
+            Setup();
+            Execute();
+        }
 
-            var steps = new List<RefactorStep<InlineState>>();
+        protected void Setup()
+        {
+            state = new InlineState(options);
+
+            steps = new List<RefactorStep<InlineState>>();
             if (options.Stdin)
             {
                 steps.Add(new StdinLoaderStep<InlineState>());
@@ -48,8 +56,12 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             {
                 steps[i].next = steps[i + 1];
             }
+        }
 
+        protected void Execute()
+        {
             steps.First().Handle(state);
+
             if (state.Errors.Count > 0)
             {
                 foreach (var error in state.Errors)

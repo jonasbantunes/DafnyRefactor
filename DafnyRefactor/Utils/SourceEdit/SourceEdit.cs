@@ -13,7 +13,7 @@ namespace Microsoft.DafnyRefactor.Utils
             if (startPos > endPos)
             {
                 throw new ArgumentOutOfRangeException(nameof(endPos),
-                    "Start position should be greater or equal than end position");
+                    "Start position should be lower or equal than end position");
             }
 
             this.startPos = startPos;

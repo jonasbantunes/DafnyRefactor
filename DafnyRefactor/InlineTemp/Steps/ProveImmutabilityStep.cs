@@ -52,41 +52,39 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             this.stmtDivisors = stmtDivisors;
         }
 
+        protected IRefactorScope CurScope => rootTable.FindScope(nearestScopeToken.GetHashCode());
         public List<SourceEdit> Edits { get; protected set; }
 
         public virtual void Execute()
         {
             Edits = new List<SourceEdit>();
-            var ghostStmtExpr =
-                $"\n ghost var {inlineVariable.Name}___RefactorGhostExpr := {Printer.ExprToString(inlineVariable.Expr)};\n";
-            Edits.Add(new SourceEdit(inlineVariable.InitStmt.EndTok.pos + 1, ghostStmtExpr));
+
+            var varName = inlineVariable.Name;
+            var varExprPrinted = Printer.ExprToString(inlineVariable.Expr);
+            var ghostStmt = $"\n ghost var {varName}___RefactorGhostExpr := {varExprPrinted};\n";
+
+            var pos = inlineVariable.InitStmt.EndTok.pos + 1;
+            var edit = new SourceEdit(pos, ghostStmt);
+            Edits.Add(edit);
+
             Visit(program);
-        }
-
-        protected override void Visit(UpdateStmt up)
-        {
-            if (up == null) throw new ArgumentNullException();
-
-            Traverse(up.Rhss);
         }
 
         protected override void Visit(NameSegment nameSeg)
         {
-            if (nameSeg == null) throw new ArgumentNullException();
+            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
+            if (divisorIndex <= 1) return;
 
-            // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindScope(nearestScopeToken.GetHashCode());
-            if (curTable.LookupVariable(nameSeg.Name)?.GetHashCode() == inlineVariable.GetHashCode())
-            {
-                var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
-                if (findIndex <= 1) return;
+            var variable = CurScope.LookupVariable(nameSeg.Name);
+            if (variable == null || !variable.Equals(inlineVariable)) return;
 
-                var assertStmtExpr =
-                    $"\n assert {inlineVariable.Name}___RefactorGhostExpr == {Printer.ExprToString(inlineVariable.Expr)};\n";
-                Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
-            }
+            var varName = inlineVariable.Name;
+            var varExprPrinted = Printer.ExprToString(inlineVariable.Expr);
+            var assertStmtExpr = $"\n assert {varName}___RefactorGhostExpr == {varExprPrinted};\n";
 
-            base.Visit(nameSeg);
+            var pos = stmtDivisors[divisorIndex - 1] + 1;
+            var edit = new SourceEdit(pos, assertStmtExpr);
+            Edits.Add(edit);
         }
     }
 
@@ -114,7 +112,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
             File.WriteAllText(tempPath, sourceEditor.Source);
 
-            var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});
+            var args = new[] {tempPath, "/compile:0"};
+            var res = DafnyDriver.Main(args);
             IsConstant = res == 0;
             File.Delete(tempPath);
         }

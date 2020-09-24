@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
@@ -14,21 +13,21 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
+            var remover = new RemoveDeclarationVisitor(state.Program, state.RootScope, state.InlineVariable);
+            remover.Execute();
+            state.SourceEdits.AddRange(remover.Edits);
 
-            var visitor = new RemoveRefactoredDeclarationVisitor(state.Program, state.RootScope, state.InlineVariable);
-            visitor.Execute();
-            state.SourceEdits.AddRange(visitor.Edits);
             base.Handle(state);
         }
     }
 
-    internal class RemoveRefactoredDeclarationVisitor : DafnyVisitorWithNearests
+    internal class RemoveDeclarationVisitor : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVar;
         protected Program program;
         protected IRefactorScope rootTable;
 
-        public RemoveRefactoredDeclarationVisitor(Program program, IRefactorScope rootTable, IInlineVariable inlineVar)
+        public RemoveDeclarationVisitor(Program program, IRefactorScope rootTable, IInlineVariable inlineVar)
         {
             if (program == null || rootTable == null || inlineVar == null) throw new ArgumentNullException();
 
@@ -37,6 +36,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             this.rootTable = rootTable;
         }
 
+        protected IRefactorScope CurScope => rootTable.FindScope(nearestScopeToken.GetHashCode());
         public List<SourceEdit> Edits { get; protected set; }
 
         public virtual void Execute()
@@ -47,101 +47,132 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(VarDeclStmt vds)
         {
-            if (vds == null) throw new ArgumentNullException();
-
-            // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindScope(nearestScopeToken.GetHashCode());
-            if (vds.Locals.Count == 1 && curTable.LookupVariable(vds.Locals[0].Name).GetHashCode() ==
-                inlineVar.GetHashCode())
+            if (vds.Locals.Count == 0) return;
+            if (vds.Locals.Count == 1)
             {
-                Edits.Add(new SourceEdit(vds.Tok.pos, vds.EndTok.pos + 1, ""));
-            }
-            else if (vds.Update == null)
-            {
-                var newVds = new VarDeclStmt(vds.Tok, vds.EndTok, vds.Locals.ToList(), null);
-
-                for (var i = vds.Locals.Count - 1; i >= 0; i--)
-                {
-                    if (vds.Locals[i].Name == inlineVar.Name &&
-                        curTable.LookupVariable(vds.Locals[i].Name).GetHashCode() ==
-                        inlineVar.GetHashCode())
-                    {
-                        newVds.Locals.RemoveAt(i);
-
-                        var stringWr = new StringWriter();
-                        var printer = new Printer(stringWr);
-                        printer.PrintStatement(newVds, 0);
-                        Edits.Add(new SourceEdit(vds.Tok.pos, vds.EndTok.pos + 1, stringWr.ToString()));
-
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                if (vds.Update is UpdateStmt up)
-                {
-                    var newUpdate = new UpdateStmt(up.Tok, up.EndTok, up.Lhss.ToList(), up.Rhss.ToList());
-                    var newVds = new VarDeclStmt(vds.Tok, vds.EndTok, vds.Locals.ToList(), newUpdate);
-
-                    for (var i = up.Lhss.Count - 1; i >= 0; i--)
-                    {
-                        if (up.Lhss[i] is AutoGhostIdentifierExpr agie && agie.Name == inlineVar.Name &&
-                            curTable.LookupVariable(agie.Name).GetHashCode() ==
-                            inlineVar.GetHashCode())
-                        {
-                            newUpdate.Lhss.RemoveAt(i);
-                            newUpdate.Rhss.RemoveAt(i);
-                            newVds.Locals.RemoveAt(i);
-
-                            var stringWr = new StringWriter();
-                            var printer = new Printer(stringWr);
-                            printer.PrintStatement(newVds, 0);
-                            Edits.Add(new SourceEdit(vds.Tok.pos, vds.EndTok.pos + 1, stringWr.ToString()));
-
-                            break;
-                        }
-                    }
-                }
+                RemoveSingleVds(vds);
+                return;
             }
 
-            base.Visit(vds);
+            if (vds.Update == null)
+            {
+                ChangeVdsWithoutUp(vds);
+                return;
+            }
+
+            ChangeVds(vds);
+        }
+
+        protected void RemoveSingleVds(VarDeclStmt vds)
+        {
+            var localName = vds.Locals[0].Name;
+            var variable = CurScope.LookupVariable(localName);
+            if (!variable.Equals(inlineVar)) return;
+
+            var startPos = vds.Tok.pos;
+            var endPos = vds.EndTok.pos + 1;
+            Edits.Add(new SourceEdit(startPos, endPos, ""));
+        }
+
+        protected void ChangeVdsWithoutUp(VarDeclStmt vds)
+        {
+            int index;
+            for (index = vds.Locals.Count - 1; index >= 0; index--)
+            {
+                var local = vds.Locals[index];
+                var variable = CurScope.LookupVariable(local.Name);
+                if (!variable.Equals(inlineVar)) continue;
+
+                break;
+            }
+
+            if (index < 0) return;
+
+            var newVds = new VarDeclStmt(vds.Tok, vds.EndTok, vds.Locals.ToList(), null);
+            newVds.Locals.RemoveAt(index);
+
+            var startPos = vds.Tok.pos;
+            var endPos = vds.EndTok.pos + 1;
+            var stringStmt = Printer.StatementToString(newVds);
+            Edits.Add(new SourceEdit(startPos, endPos, stringStmt));
+        }
+
+        protected void ChangeVds(VarDeclStmt vds)
+        {
+            if (!(vds.Update is UpdateStmt up)) return;
+
+            int index;
+            for (index = up.Lhss.Count - 1; index >= 0; index--)
+            {
+                if (!(up.Lhss[index] is AutoGhostIdentifierExpr agie)) continue;
+                var variable = CurScope.LookupVariable(agie.Name);
+                if (!variable.Equals(inlineVar)) continue;
+
+                break;
+            }
+
+            if (index < 0) return;
+
+            var newUpdate = new UpdateStmt(up.Tok, up.EndTok, up.Lhss.ToList(), up.Rhss.ToList());
+            var newVds = new VarDeclStmt(vds.Tok, vds.EndTok, vds.Locals.ToList(), newUpdate);
+            newUpdate.Lhss.RemoveAt(index);
+            newUpdate.Rhss.RemoveAt(index);
+            newVds.Locals.RemoveAt(index);
+
+            var startPos = vds.Tok.pos;
+            var endPos = vds.EndTok.pos + 1;
+            var stringStmt = Printer.StatementToString(newVds);
+            var edit = new SourceEdit(startPos, endPos, stringStmt);
+            Edits.Add(edit);
         }
 
         protected override void Visit(UpdateStmt up)
         {
             if (up == null) throw new ArgumentNullException();
 
-            // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindScope(nearestScopeToken.GetHashCode());
-            if (up.Lhss.Count == 1 && up.Lhss[0] is NameSegment upNm &&
-                curTable.LookupVariable(upNm.Name)?.GetHashCode() == inlineVar.GetHashCode())
+            if (up.Lhss.Count == 1)
             {
-                Edits.Add(new SourceEdit(upNm.tok.pos, up.EndTok.pos + 1, ""));
+                RemoveSingleUp(up);
             }
-            else
+            else if (up.Lhss.Count > 1)
             {
-                var newUpdate = new UpdateStmt(up.Tok, up.EndTok, up.Lhss.ToList(), up.Rhss.ToList());
+                ChangeMultiUp(up);
+            }
+        }
 
-                for (var i = up.Lhss.Count - 1; i >= 0; i--)
-                {
-                    if (up.Lhss[i] is NameSegment nm && nm.Name == inlineVar.Name &&
-                        curTable.LookupVariable(nm.Name).GetHashCode() == inlineVar.GetHashCode())
-                    {
-                        newUpdate.Lhss.RemoveAt(i);
-                        newUpdate.Rhss.RemoveAt(i);
+        protected void RemoveSingleUp(UpdateStmt up)
+        {
+            if (!(up.Lhss[0] is NameSegment upNm)) return;
+            var variable = CurScope.LookupVariable(upNm.Name);
+            if (variable == null || !variable.Equals(inlineVar)) return;
 
-                        var stringWr = new StringWriter();
-                        var printer = new Printer(stringWr);
-                        printer.PrintStatement(newUpdate, 0);
-                        Edits.Add(new SourceEdit(up.Lhss[0].tok.pos, up.EndTok.pos + 1, stringWr.ToString()));
+            var startPos = up.Tok.pos;
+            var endPos = up.EndTok.pos + 1;
+            Edits.Add(new SourceEdit(startPos, endPos, ""));
+        }
 
-                        break;
-                    }
-                }
+        protected void ChangeMultiUp(UpdateStmt up)
+        {
+            int index;
+            for (index = up.Lhss.Count - 1; index >= 0; index--)
+            {
+                if (!(up.Lhss[index] is NameSegment nm)) continue;
+                var variable = CurScope.LookupVariable(nm.Name);
+                if (!variable.Equals(inlineVar)) continue;
+
+                break;
             }
 
-            base.Visit(up);
+            if (index < 0) return;
+
+            var newUpdate = new UpdateStmt(up.Tok, up.EndTok, up.Lhss.ToList(), up.Rhss.ToList());
+            newUpdate.Lhss.RemoveAt(index);
+            newUpdate.Rhss.RemoveAt(index);
+
+            var startPos = up.Lhss[0].tok.pos;
+            var endPos = up.EndTok.pos + 1;
+            var stringStmt = Printer.StatementToString(newUpdate);
+            Edits.Add(new SourceEdit(startPos, endPos, stringStmt));
         }
     }
 }

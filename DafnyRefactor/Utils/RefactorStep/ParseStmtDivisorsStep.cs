@@ -9,11 +9,12 @@ namespace Microsoft.DafnyRefactor.Utils
     {
         public override void Handle(TState state)
         {
-            if (state?.Program == null) throw new ArgumentNullException();
+            if (state == null || state.Program == null) throw new ArgumentNullException();
 
-            var divisor = new ParseStmtDivisors(state.Program);
-            divisor.Execute();
-            state.StmtDivisors = divisor.StmtDivisors.ToList();
+            var parser = new ParseStmtDivisors(state.Program);
+            parser.Execute();
+            state.StmtDivisors = parser.StmtDivisors.ToList();
+
             base.Handle(state);
         }
     }

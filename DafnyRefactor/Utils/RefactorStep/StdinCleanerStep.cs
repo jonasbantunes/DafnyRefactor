@@ -7,9 +7,10 @@ namespace Microsoft.DafnyRefactor.Utils
     {
         public override void Handle(TState state)
         {
-            if (state?.TempFilePath == null) throw new ArgumentException();
+            if (state == null || state.TempFilePath == null) throw new ArgumentException();
 
             File.Delete(state.TempFilePath);
+
             base.Handle(state);
         }
     }

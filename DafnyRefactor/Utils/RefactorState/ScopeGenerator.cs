@@ -12,11 +12,11 @@ namespace Microsoft.DafnyRefactor.Utils
             this.program = program ?? throw new ArgumentNullException();
         }
 
-        public TScopeState GeneratedTable { get; protected set; }
+        public TScopeState GeneratedScope { get; protected set; }
 
         public virtual void Execute()
         {
-            GeneratedTable = new TScopeState();
+            GeneratedScope = new TScopeState();
             Visit(program);
         }
 
@@ -24,7 +24,7 @@ namespace Microsoft.DafnyRefactor.Utils
         {
             if (cd == null) throw new ArgumentNullException();
 
-            var curTable = GeneratedTable.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
+            var curTable = GeneratedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
             curTable.InsertScope(cd.tok);
 
             base.Visit(cd);
@@ -36,7 +36,7 @@ namespace Microsoft.DafnyRefactor.Utils
 
             foreach (var local in vds.Locals)
             {
-                var curTable = GeneratedTable.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
+                var curTable = GeneratedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
                 curTable.InsertVariable(local, vds);
             }
         }
@@ -45,7 +45,7 @@ namespace Microsoft.DafnyRefactor.Utils
         {
             if (block == null) throw new ArgumentNullException();
 
-            var curTable = GeneratedTable.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
+            var curTable = GeneratedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
             curTable.InsertScope(block.Tok);
 
             base.Visit(block);

@@ -6,8 +6,8 @@ namespace Microsoft.DafnyRefactor.Utils
 {
     public class DafnyVisitorWithNearests : DafnyVisitor
     {
-        protected Statement nearestStmt;
         protected IToken nearestScopeToken;
+        protected Statement nearestStmt;
 
         protected override void Visit(ClassDecl cd)
         {

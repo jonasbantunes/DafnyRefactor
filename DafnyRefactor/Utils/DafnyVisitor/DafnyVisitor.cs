@@ -11,19 +11,18 @@ namespace Microsoft.DafnyRefactor.Utils
         {
             if (prog == null) throw new ArgumentNullException();
 
-            foreach (var tld in prog.DefaultModuleDef.TopLevelDecls)
-            {
-                Visit(tld);
-            }
+            Traverse(prog.DefaultModuleDef.TopLevelDecls);
         }
 
         protected virtual void Visit(TopLevelDecl tld)
         {
             if (tld == null) throw new ArgumentNullException();
 
-            if (tld is ClassDecl cd)
+            switch (tld)
             {
-                Visit(cd);
+                case ClassDecl cd:
+                    Visit(cd);
+                    break;
             }
         }
 
@@ -38,9 +37,11 @@ namespace Microsoft.DafnyRefactor.Utils
         {
             if (md == null) throw new ArgumentNullException();
 
-            if (md is Method mt)
+            switch (md)
             {
-                Visit(mt);
+                case Method mt:
+                    Visit(mt);
+                    break;
             }
         }
 
@@ -170,16 +171,13 @@ namespace Microsoft.DafnyRefactor.Utils
             Traverse(memberSelectExpr.SubExpressions?.ToList());
         }
 
-        protected virtual void Visit(AssignmentRhs rhs)
+        protected virtual void Traverse(List<TopLevelDecl> topLevelDecls)
         {
-            if (rhs == null) throw new ArgumentNullException();
+            if (topLevelDecls == null) throw new ArgumentNullException();
 
-            switch (rhs)
+            foreach (var decl in topLevelDecls)
             {
-                default:
-                    Traverse(rhs.SubExpressions?.ToList());
-                    Traverse(rhs.SubStatements?.ToList());
-                    break;
+                Visit(decl);
             }
         }
 
@@ -210,16 +208,6 @@ namespace Microsoft.DafnyRefactor.Utils
             foreach (var expr in exprs)
             {
                 Visit(expr);
-            }
-        }
-
-        protected virtual void Traverse(List<AssignmentRhs> rhss)
-        {
-            if (rhss == null) throw new ArgumentNullException();
-
-            foreach (var rhs in rhss)
-            {
-                Visit(rhs);
             }
         }
     }

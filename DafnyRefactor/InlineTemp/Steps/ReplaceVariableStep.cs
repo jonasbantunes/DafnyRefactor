@@ -12,9 +12,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
-            var visitor = new InlineApplyVisitor(state.Program, state.RootScope, state.InlineVariable);
-            visitor.Execute();
-            state.SourceEdits.AddRange(visitor.Edits);
+            var applier = new InlineApplyVisitor(state.Program, state.RootScope, state.InlineVariable);
+            applier.Execute();
+            state.SourceEdits.AddRange(applier.Edits);
+
             base.Handle(state);
         }
     }
@@ -23,17 +24,18 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         protected IInlineVariable inlineVar;
         protected Program program;
-        protected IRefactorScope rootTable;
+        protected IRefactorScope rootScope;
 
-        public InlineApplyVisitor(Program program, IRefactorScope rootTable, IInlineVariable inlineVar)
+        public InlineApplyVisitor(Program program, IRefactorScope rootScope, IInlineVariable inlineVar)
         {
-            if (program == null || rootTable == null || inlineVar == null) throw new ArgumentNullException();
+            if (program == null || rootScope == null || inlineVar == null) throw new ArgumentNullException();
 
             this.program = program;
             this.inlineVar = inlineVar;
-            this.rootTable = rootTable;
+            this.rootScope = rootScope;
         }
 
+        protected IRefactorScope CurScope => rootScope.FindScope(nearestScopeToken.GetHashCode());
         public List<SourceEdit> Edits { get; protected set; }
 
         public virtual void Execute()
@@ -44,18 +46,14 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(NameSegment nameSeg)
         {
-            if (nameSeg == null) throw new ArgumentNullException();
+            var variable = CurScope.LookupVariable(nameSeg.Name);
+            if (variable == null || !variable.Equals(inlineVar)) return;
 
-            // TODO: Avoid this repetition on source code
-            var curTable = rootTable.FindScope(nearestScopeToken.GetHashCode());
-            if (nameSeg.Name == inlineVar.Name && curTable.LookupVariable(nameSeg.Name).GetHashCode() ==
-                inlineVar.GetHashCode())
-            {
-                Edits.Add(new SourceEdit(nameSeg.tok.pos, nameSeg.tok.pos + nameSeg.tok.val.Length,
-                    $"({Printer.ExprToString(inlineVar.Expr)})"));
-            }
-
-            base.Visit(nameSeg);
+            var startPos = nameSeg.tok.pos;
+            var endPos = nameSeg.tok.pos + nameSeg.tok.val.Length;
+            var exprPrinted = Printer.ExprToString(inlineVar.Expr);
+            var edit = new SourceEdit(startPos, endPos, $"({exprPrinted})");
+            Edits.Add(edit);
         }
     }
 }

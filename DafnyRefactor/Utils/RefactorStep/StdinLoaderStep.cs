@@ -6,10 +6,20 @@ namespace Microsoft.DafnyRefactor.Utils
 {
     public class StdinLoaderStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {
+        protected TState stateRef;
+
         public override void Handle(TState state)
         {
             if (state == null) throw new ArgumentException();
 
+            stateRef = state;
+            LoadFromStdin();
+
+            base.Handle(state);
+        }
+
+        protected void LoadFromStdin()
+        {
             var stdinBuilder = new StringBuilder();
             string s;
             while ((s = Console.ReadLine()) != null)
@@ -21,9 +31,7 @@ namespace Microsoft.DafnyRefactor.Utils
             var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
             File.WriteAllText(tempPath, stdinBuilder.ToString());
 
-            state.TempFilePath = tempPath;
-
-            base.Handle(state);
+            stateRef.TempFilePath = tempPath;
         }
     }
 }

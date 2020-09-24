@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 
@@ -18,17 +16,17 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             var parser = new ParseInlineSymbolExpr(state.InlineVariable, state.RootScope);
             parser.Execute();
-            var table = state.RootScope.FindScopeByVariable(state.InlineVariable);
+            var scope = state.RootScope.FindScopeByVariable(state.InlineVariable);
             foreach (var inlineObject in parser.InlineObjects)
             {
-                table.InsertInlineObject(inlineObject.Name, inlineObject.Type);
+                scope.InsertInlineObject(inlineObject.Name, inlineObject.Type);
             }
 
             var assertives = new AddAssertivesClassic(state.Program, state.StmtDivisors, state.RootScope,
                 state.InlineVariable);
             assertives.Execute();
 
-            var checker = new InlineImmutabilityCheckClassic(state.FilePath, assertives.Edits);
+            var checker = new InlineImmutabilityCheck(state.FilePath, assertives.Edits);
             checker.Execute();
 
             if (!checker.IsConstant)
@@ -42,10 +40,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class ParseInlineSymbolExpr : DafnyVisitor
+    public class ParseInlineSymbolExpr : DafnyVisitor
     {
-        protected IInlineVariable inlineVariable;
         protected IInlineScope inlineScope;
+        protected IInlineVariable inlineVariable;
 
         public ParseInlineSymbolExpr(IInlineVariable inlineVariable, IInlineScope inlineScope)
         {
@@ -83,11 +81,11 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class AddAssertivesClassic : DafnyVisitorWithNearests
+    public class AddAssertivesClassic : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVariable;
-        protected IInlineScope rootScope;
         protected Program program;
+        protected IInlineScope rootScope;
         protected List<int> stmtDivisors;
 
         public AddAssertivesClassic(Program program, List<int> stmtDivisors, IInlineScope rootScope,
@@ -102,6 +100,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             this.inlineVariable = inlineVariable;
         }
 
+        protected IInlineScope CurScope => rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
         public List<SourceEdit> Edits { get; protected set; }
 
         public virtual void Execute()
@@ -112,40 +111,31 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(AssignStmt assignStmt)
         {
-            if (assignStmt == null) throw new ArgumentNullException();
             if (nearestStmt.Tok.pos < inlineVariable.InitStmt.EndTok.pos) return;
-
-            if (assignStmt.Lhs is MemberSelectExpr memberSelectExpr)
-            {
-                var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
-                if (findIndex <= 1) return;
-
-                var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
-                if (curTable == null) return;
-
-                foreach (var inlineObject in curTable.GetInlineObjects())
-                {
-                    if (!memberSelectExpr.Obj.Type.Equals(inlineObject.Type)) continue;
-                    var assertStmtExpr =
-                        $"\n assert {Printer.ExprToString(memberSelectExpr.Obj)} != {inlineObject.Name};\n";
-                    Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
-                }
-            }
-
-            base.Visit(assignStmt);
-        }
-
-        protected override void Visit(CallStmt callStmt)
-        {
-            if (callStmt == null) throw new ArgumentNullException();
+            if (!(assignStmt.Lhs is MemberSelectExpr memberSelectExpr)) return;
 
             var findIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
             if (findIndex <= 1) return;
 
-            var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
-            if (curTable == null) return;
+            if (CurScope == null) return;
+            foreach (var inlineObject in CurScope.GetInlineObjects())
+            {
+                var obj = memberSelectExpr.Obj;
+                if (!obj.Type.Equals(inlineObject.Type)) continue;
 
-            var method = curTable.LookupMethod(callStmt.Method.GetHashCode());
+                var assertStmtExpr = $"\n assert {Printer.ExprToString(obj)} != {inlineObject.Name};";
+                var pos = stmtDivisors[findIndex - 1] + 1;
+                var edit = new SourceEdit(pos, assertStmtExpr);
+                Edits.Add(edit);
+            }
+        }
+
+        protected override void Visit(CallStmt callStmt)
+        {
+            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= nearestStmt.EndTok.pos);
+            if (divisorIndex <= 1) return;
+
+            var method = CurScope?.LookupMethod(callStmt.Method.GetHashCode());
             if (method == null) return;
 
             for (var i = 0; i < callStmt.Args.Count; i++)
@@ -153,51 +143,19 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 var arg = callStmt.Args[i];
                 var methodArg = method.Args[i];
 
-                if (methodArg.CanBeModified)
+                if (!methodArg.CanBeModified) continue;
+                foreach (var inlineObject in CurScope.GetInlineObjects())
                 {
-                    foreach (var inlineObject in curTable.GetInlineObjects())
-                    {
-                        if (methodArg.Type.Equals(inlineObject.Type))
-                        {
-                            var assertStmtExpr =
-                                $"\n assert {Printer.ExprToString(arg)} != {inlineObject.Name};\n";
-                            Edits.Add(new SourceEdit(stmtDivisors[findIndex - 1] + 1, assertStmtExpr));
-                        }
-                    }
+                    if (!methodArg.Type.Equals(inlineObject.Type)) continue;
+
+                    var argPrinted = Printer.ExprToString(arg);
+                    var assertStmtExpr = $"\n assert {argPrinted} != {inlineObject.Name};";
+
+                    var pos = stmtDivisors[divisorIndex - 1] + 1;
+                    var edit = new SourceEdit(pos, assertStmtExpr);
+                    Edits.Add(edit);
                 }
             }
-
-            base.Visit(callStmt);
-        }
-    }
-
-    internal class InlineImmutabilityCheckClassic
-    {
-        protected List<SourceEdit> edits;
-        protected string filePath;
-
-        public InlineImmutabilityCheckClassic(string filePath, List<SourceEdit> edits)
-        {
-            if (filePath == null || edits == null) throw new ArgumentNullException();
-
-            this.filePath = filePath;
-            this.edits = edits;
-        }
-
-        public bool IsConstant { get; protected set; }
-
-        public void Execute()
-        {
-            var source = File.ReadAllText(filePath);
-            var sourceEditor = new SourceEditor(source, edits);
-            sourceEditor.Apply();
-
-            var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
-            File.WriteAllText(tempPath, sourceEditor.Source);
-
-            var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});
-            IsConstant = res == 0;
-            File.Delete(tempPath);
         }
     }
 }

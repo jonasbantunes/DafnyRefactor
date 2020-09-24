@@ -12,8 +12,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
-            var visitor = new InlineRetrieveVisitor(state.Program, state.RootScope);
-            visitor.Execute();
+            var retriever = new InlineRetrieveVisitor(state.Program, state.RootScope);
+            retriever.Execute();
             if (state.InlineVariable.Expr == null)
             {
                 state.AddError(
@@ -45,6 +45,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             this.rootScope = rootScope;
         }
 
+        protected IInlineScope CurTable => rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
+
         public virtual void Execute()
         {
             Visit(program);
@@ -58,10 +60,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (!(up.Lhss[i] is AutoGhostIdentifierExpr agie)) continue;
-                // TODO: Avoid this repetition on source code
-                var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
-                var symbol = curTable.LookupInlineSymbol(agie.Name);
+
+                var symbol = CurTable.LookupInlineSymbol(agie.Name);
                 if (symbol == null) continue;
+
                 var assign = up.Rhss[i];
                 symbol.Expr = assign.SubExpressions.FirstOrDefault();
                 symbol.InitStmt = up;
@@ -75,9 +77,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (!(up.Lhss[i] is NameSegment nm)) continue;
-                var curTable = rootScope.FindInlineScope(nearestScopeToken.GetHashCode());
-                var symbol = curTable.LookupInlineSymbol(nm.Name);
+
+                var symbol = CurTable.LookupInlineSymbol(nm.Name);
                 if (symbol == null) continue;
+
                 if (symbol.Expr == null && up.Rhss[i] is ExprRhs erhs)
                 {
                     symbol.Expr = erhs.Expr;
