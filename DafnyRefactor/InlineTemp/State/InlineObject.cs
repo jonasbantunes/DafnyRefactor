@@ -4,19 +4,33 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public interface IInlineObject
     {
-        string Name { get; set; }
-        Type Type { get; set; }
+        string ObjPrinted { get; }
+        string LhsPrinted { get; }
+        Type ObjType { get; }
+        Type MemberType { get; }
     }
 
     public class InlineObject : IInlineObject
     {
-        public InlineObject(string name, Type type)
+        public InlineObject(string objPrinted, string lhsPrinted, Type objType, Type memberType)
         {
-            Name = name;
-            Type = type;
+            ObjPrinted = objPrinted;
+            LhsPrinted = lhsPrinted;
+            ObjType = objType;
+            MemberType = memberType;
         }
 
-        public string Name { get; set; }
-        public Type Type { get; set; }
+        public InlineObject(string printed, Type objType, Type memberType)
+        {
+            LhsPrinted = printed;
+            ObjPrinted = printed;
+            ObjType = objType;
+            MemberType = memberType;
+        }
+
+        public string ObjPrinted { get; }
+        public string LhsPrinted { get; }
+        public Type ObjType { get; }
+        public Type MemberType { get; }
     }
 }

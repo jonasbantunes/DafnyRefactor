@@ -19,7 +19,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             var scope = state.RootScope.FindScopeByVariable(state.InlineVariable);
             foreach (var inlineObject in parser.InlineObjects)
             {
-                scope.InsertInlineObject(inlineObject.Name, inlineObject.Type);
+                scope.InsertInlineObject(inlineObject.ObjPrinted, inlineObject.LhsPrinted, inlineObject.ObjType,
+                    inlineObject.MemberType);
             }
 
             var assertives = new AddAssertivesClassic(state.Program, state.StmtDivisors, state.RootScope,
@@ -62,21 +63,24 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(ExprDotName exprDotName)
         {
-            if (exprDotName == null) throw new ArgumentNullException();
+            var objPrinted = Printer.ExprToString(exprDotName);
+            var lhsPrinted = Printer.ExprToString(exprDotName.Lhs);
+            var objType = exprDotName.Lhs.Type;
+            var memberType = exprDotName.Type;
+            var inlineObject = new InlineObject(objPrinted, lhsPrinted, objType, memberType);
 
-            var name = Printer.ExprToString(exprDotName);
-            var type = exprDotName.Type;
-            InlineObjects.Add(new InlineObject(name, type));
+            InlineObjects.Add(inlineObject);
+
             base.Visit(exprDotName);
         }
 
         protected override void Visit(NameSegment nameSeg)
         {
-            if (nameSeg == null) throw new ArgumentNullException();
+            var printed = Printer.ExprToString(nameSeg);
+            var objType = nameSeg.Type;
+            var inlineObject = new InlineObject(printed, objType, null);
 
-            var name = Printer.ExprToString(nameSeg);
-            var type = nameSeg.Type;
-            InlineObjects.Add(new InlineObject(name, type));
+            InlineObjects.Add(inlineObject);
             base.Visit(nameSeg);
         }
     }
@@ -120,10 +124,12 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (CurScope == null) return;
             foreach (var inlineObject in CurScope.GetInlineObjects())
             {
+                if (inlineObject.MemberType == null) continue;
+                if (!memberSelectExpr.Type.Equals(inlineObject.MemberType)) continue;
                 var obj = memberSelectExpr.Obj;
-                if (!obj.Type.Equals(inlineObject.Type)) continue;
+                if (!obj.Type.Equals(inlineObject.ObjType)) continue;
 
-                var assertStmtExpr = $"\n assert {Printer.ExprToString(obj)} != {inlineObject.Name};";
+                var assertStmtExpr = $"\n assert {Printer.ExprToString(obj)} != {inlineObject.LhsPrinted};";
                 var pos = stmtDivisors[findIndex - 1] + 1;
                 var edit = new SourceEdit(pos, assertStmtExpr);
                 Edits.Add(edit);
@@ -146,10 +152,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 if (!methodArg.CanBeModified) continue;
                 foreach (var inlineObject in CurScope.GetInlineObjects())
                 {
-                    if (!methodArg.Type.Equals(inlineObject.Type)) continue;
+                    if (!methodArg.Type.Equals(inlineObject.ObjType)) continue;
 
                     var argPrinted = Printer.ExprToString(arg);
-                    var assertStmtExpr = $"\n assert {argPrinted} != {inlineObject.Name};";
+                    var assertStmtExpr = $"\n assert {argPrinted} != {inlineObject.ObjPrinted};";
 
                     var pos = stmtDivisors[divisorIndex - 1] + 1;
                     var edit = new SourceEdit(pos, assertStmtExpr);
