@@ -63,8 +63,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(VarDeclStmt vds)
         {
-            if (vds == null) throw new ArgumentNullException();
-
             if (!(vds.Update is UpdateStmt up)) return;
             for (var i = 0; i < up.Lhss.Count; i++)
             {
@@ -90,8 +88,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(UpdateStmt up)
         {
-            if (up?.Lhss == null) throw new ArgumentNullException();
-
             for (var i = 0; i < up.Lhss.Count; i++)
             {
                 if (!(up.Lhss[i] is NameSegment nm)) continue;

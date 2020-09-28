@@ -22,8 +22,6 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected override void Visit(ClassDecl cd)
         {
-            if (cd == null) throw new ArgumentNullException();
-
             var curTable = GeneratedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
             curTable.InsertScope(cd.tok);
 
@@ -32,8 +30,6 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected override void Visit(VarDeclStmt vds)
         {
-            if (vds == null) throw new ArgumentNullException();
-
             foreach (var local in vds.Locals)
             {
                 var curTable = GeneratedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
@@ -43,8 +39,6 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected override void Visit(BlockStmt block)
         {
-            if (block == null) throw new ArgumentNullException();
-
             var curTable = GeneratedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
             curTable.InsertScope(block.Tok);
 

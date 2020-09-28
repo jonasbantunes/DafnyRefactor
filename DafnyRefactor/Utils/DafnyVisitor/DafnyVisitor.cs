@@ -9,8 +9,6 @@ namespace Microsoft.DafnyRefactor.Utils
     {
         protected virtual void Visit(Program prog)
         {
-            if (prog == null) throw new ArgumentNullException();
-
             Traverse(prog.DefaultModuleDef.TopLevelDecls);
         }
 
@@ -28,8 +26,6 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Visit(ClassDecl cd)
         {
-            if (cd == null) throw new ArgumentNullException();
-
             Traverse(cd.Members);
         }
 
@@ -47,8 +43,6 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Visit(Method mt)
         {
-            if (mt == null) throw new ArgumentNullException();
-
             Visit(mt.Body);
         }
 
@@ -82,40 +76,30 @@ namespace Microsoft.DafnyRefactor.Utils
 
         protected virtual void Visit(VarDeclStmt vds)
         {
-            if (vds == null) throw new ArgumentNullException();
-
-            Traverse(vds.SubStatements?.ToList());
+            Traverse(vds.SubStatements.ToList());
         }
 
         protected virtual void Visit(UpdateStmt up)
         {
-            if (up == null) throw new ArgumentNullException();
-
-            Traverse(up.SubExpressions?.ToList());
-            Traverse(up.SubStatements?.ToList());
+            Traverse(up.SubExpressions.ToList());
+            Traverse(up.SubStatements.ToList());
         }
 
         protected virtual void Visit(BlockStmt block)
         {
-            if (block == null) throw new ArgumentNullException();
-
             Traverse(block.Body);
         }
 
         protected virtual void Visit(AssignStmt assignStmt)
         {
-            if (assignStmt == null) throw new ArgumentNullException();
-
-            Traverse(assignStmt.SubExpressions?.ToList());
-            Traverse(assignStmt.SubStatements?.ToList());
+            Traverse(assignStmt.SubExpressions.ToList());
+            Traverse(assignStmt.SubStatements.ToList());
         }
 
         protected virtual void Visit(CallStmt callStmt)
         {
-            if (callStmt == null) throw new ArgumentNullException();
-
-            Traverse(callStmt.SubExpressions?.ToList());
-            Traverse(callStmt.SubStatements?.ToList());
+            Traverse(callStmt.SubExpressions.ToList());
+            Traverse(callStmt.SubStatements.ToList());
         }
 
         protected virtual void Visit(Expression exp)
@@ -140,45 +124,35 @@ namespace Microsoft.DafnyRefactor.Utils
                     Visit(identifierExpr);
                     break;
                 default:
-                    Traverse(exp.SubExpressions?.ToList());
+                    Traverse(exp.SubExpressions.ToList());
                     break;
             }
         }
 
         protected virtual void Visit(NameSegment nameSeg)
         {
-            if (nameSeg == null) throw new ArgumentNullException();
-
-            Traverse(nameSeg.SubExpressions?.ToList());
+            Traverse(nameSeg.SubExpressions.ToList());
         }
 
         protected virtual void Visit(ExprDotName exprDotName)
         {
-            if (exprDotName == null) throw new ArgumentNullException();
-
-            Traverse(exprDotName.SubExpressions?.ToList());
+            Traverse(exprDotName.SubExpressions.ToList());
         }
 
         protected virtual void Visit(ApplySuffix applySuffix)
         {
-            if (applySuffix == null) throw new ArgumentNullException();
-
             Visit(applySuffix.Lhs);
-            Traverse(applySuffix.SubExpressions?.ToList());
+            Traverse(applySuffix.SubExpressions.ToList());
         }
 
         protected virtual void Visit(MemberSelectExpr memberSelectExpr)
         {
-            if (memberSelectExpr == null) throw new ArgumentNullException();
-
-            Traverse(memberSelectExpr.SubExpressions?.ToList());
+            Traverse(memberSelectExpr.SubExpressions.ToList());
         }
 
         protected virtual void Visit(IdentifierExpr identifierExpr)
         {
-            if (identifierExpr == null) throw new ArgumentNullException();
-
-            Traverse(identifierExpr.SubExpressions?.ToList());
+            Traverse(identifierExpr.SubExpressions.ToList());
         }
 
         protected virtual void Traverse(List<TopLevelDecl> topLevelDecls)

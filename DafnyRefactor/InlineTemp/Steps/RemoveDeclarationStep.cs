@@ -128,8 +128,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(UpdateStmt up)
         {
-            if (up == null) throw new ArgumentNullException();
-
             if (up.Lhss.Count == 1)
             {
                 RemoveSingleUp(up);

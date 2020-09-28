@@ -54,8 +54,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(VarDeclStmt vds)
         {
-            if (vds == null) throw new ArgumentNullException();
-
             foreach (var local in vds.Locals)
             {
                 if (!IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line,
@@ -69,8 +67,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         protected override void Visit(NameSegment nameSeg)
         {
-            if (nameSeg == null) throw new ArgumentNullException();
-
             if (!IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line,
                 nameSeg.tok.col + nameSeg.tok.val.Length - 1)) return;
 
