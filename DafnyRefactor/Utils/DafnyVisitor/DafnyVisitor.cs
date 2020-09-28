@@ -107,7 +107,7 @@ namespace Microsoft.DafnyRefactor.Utils
             if (assignStmt == null) throw new ArgumentNullException();
 
             Traverse(assignStmt.SubExpressions?.ToList());
-            Traverse(assignStmt.SubExpressions?.ToList());
+            Traverse(assignStmt.SubStatements?.ToList());
         }
 
         protected virtual void Visit(CallStmt callStmt)
@@ -135,6 +135,9 @@ namespace Microsoft.DafnyRefactor.Utils
                     break;
                 case MemberSelectExpr memberSelectExpr:
                     Visit(memberSelectExpr);
+                    break;
+                case IdentifierExpr identifierExpr:
+                    Visit(identifierExpr);
                     break;
                 default:
                     Traverse(exp.SubExpressions?.ToList());
@@ -169,6 +172,13 @@ namespace Microsoft.DafnyRefactor.Utils
             if (memberSelectExpr == null) throw new ArgumentNullException();
 
             Traverse(memberSelectExpr.SubExpressions?.ToList());
+        }
+
+        protected virtual void Visit(IdentifierExpr identifierExpr)
+        {
+            if (identifierExpr == null) throw new ArgumentNullException();
+
+            Traverse(identifierExpr.SubExpressions?.ToList());
         }
 
         protected virtual void Traverse(List<TopLevelDecl> topLevelDecls)

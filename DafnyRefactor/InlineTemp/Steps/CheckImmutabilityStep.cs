@@ -14,12 +14,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             var retriever = new InlineRetrieveVisitor(state.Program, state.RootScope);
             retriever.Execute();
-            if (state.InlineVariable.Expr == null)
-            {
-                state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is never initialized.");
-                return;
-            }
 
             if (state.InlineVariable.IsUpdated)
             {
@@ -27,6 +21,21 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                     $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant.");
                 return;
             }
+
+            if (state.InlineVariable.NotAnExpr)
+            {
+                state.AddError(
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is initialized with an object constructor.");
+                return;
+            }
+
+            if (state.InlineVariable.Expr == null)
+            {
+                state.AddError(
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is never initialized.");
+                return;
+            }
+
 
             base.Handle(state);
         }
@@ -61,12 +70,21 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             {
                 if (!(up.Lhss[i] is AutoGhostIdentifierExpr agie)) continue;
 
-                var symbol = CurTable.LookupInlineSymbol(agie.Name);
-                if (symbol == null) continue;
+                var variable = CurTable.LookupInlineVariable(agie.Name);
+                if (variable == null) continue;
 
                 var assign = up.Rhss[i];
-                symbol.Expr = assign.SubExpressions.FirstOrDefault();
-                symbol.InitStmt = up;
+                var expr = assign.SubExpressions.FirstOrDefault();
+                if (expr == null)
+                {
+                    variable.NotAnExpr = true;
+                }
+                else
+                {
+                    variable.Expr = expr;
+                }
+
+                variable.InitStmt = up;
             }
         }
 
@@ -78,17 +96,17 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             {
                 if (!(up.Lhss[i] is NameSegment nm)) continue;
 
-                var symbol = CurTable.LookupInlineSymbol(nm.Name);
-                if (symbol == null) continue;
+                var variable = CurTable.LookupInlineVariable(nm.Name);
+                if (variable == null) continue;
 
-                if (symbol.Expr == null && up.Rhss[i] is ExprRhs erhs)
+                if (variable.InitStmt == null && up.Rhss[i] is ExprRhs erhs)
                 {
-                    symbol.Expr = erhs.Expr;
-                    symbol.InitStmt = up;
+                    variable.Expr = erhs.Expr;
+                    variable.InitStmt = up;
                 }
                 else
                 {
-                    symbol.IsUpdated = true;
+                    variable.IsUpdated = true;
                 }
             }
         }

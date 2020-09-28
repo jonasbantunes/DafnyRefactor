@@ -14,7 +14,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         List<IInlineVariable> InlineVariables { get; }
         List<IInlineObject> InlineObjects { get; }
 
-        IInlineVariable LookupInlineSymbol(string name);
+        IInlineVariable LookupInlineVariable(string name);
         IInlineScope FindInlineScope(int hashCode);
         IInlineScope FindScopeByVariable(IInlineVariable variable);
         void InsertInlineObject(string objPrinted, string lhsPrinted, Type objType, Type memberType);
@@ -85,7 +85,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             return null;
         }
 
-        public IInlineVariable LookupInlineSymbol(string name)
+        public IInlineVariable LookupInlineVariable(string name)
         {
             // TODO: Find better way to implice type
             return LookupVariable(name) as IInlineVariable;

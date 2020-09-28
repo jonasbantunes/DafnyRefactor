@@ -5,9 +5,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 {
     public interface IInlineVariable : IRefactorVariable
     {
-        bool IsUpdated { get; set; }
         Expression Expr { get; set; }
         UpdateStmt InitStmt { get; set; }
+        bool IsUpdated { get; set; }
+        bool NotAnExpr { get; set; }
 
         bool IsConstant();
     }
@@ -19,6 +20,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
 
         public bool IsUpdated { get; set; } = false;
+        public bool NotAnExpr { get; set; } = false;
 
         public Expression Expr { get; set; }
 

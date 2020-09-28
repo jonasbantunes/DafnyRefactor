@@ -61,7 +61,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 if (!IsInRange(varLine, varColumn, local.Tok.line, local.Tok.col, local.EndTok.line,
                     local.EndTok.col)) continue;
 
-                FoundDeclaration = CurTable.LookupInlineSymbol(local.Name);
+                FoundDeclaration = CurTable.LookupInlineVariable(local.Name);
             }
 
             base.Visit(vds);
@@ -74,7 +74,17 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (!IsInRange(varLine, varColumn, nameSeg.tok.line, nameSeg.tok.col, nameSeg.tok.line,
                 nameSeg.tok.col + nameSeg.tok.val.Length - 1)) return;
 
-            FoundDeclaration = CurTable.LookupInlineSymbol(nameSeg.Name);
+            FoundDeclaration = CurTable.LookupInlineVariable(nameSeg.Name);
+        }
+
+        protected override void Visit(IdentifierExpr identifierExpr)
+        {
+            if (!IsInRange(varLine, varColumn, identifierExpr.tok.line, identifierExpr.tok.col, identifierExpr.tok.line,
+                identifierExpr.tok.col + identifierExpr.tok.val.Length - 1)) return;
+
+            FoundDeclaration = CurTable.LookupInlineVariable(identifierExpr.Name);
+
+            base.Visit(identifierExpr);
         }
 
         protected override void Visit(ExprDotName exprDotName)
