@@ -7,6 +7,10 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    // TODO: Verify if is possible to generalize this step.
+    /// <summary>
+    ///     A <c>RefactorStep</c> that saves a list of <c>SourceEdit</c> to a file.
+    /// </summary>
     public class SaveChangesStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
         public override void Handle(TState state)
@@ -14,7 +18,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (state == null || state.Errors == null || state.FilePath == null || state.InlineOptions == null ||
                 state.SourceEdits == null) throw new ArgumentNullException();
 
-            var changer = new SaveChanges(state.FilePath, state.SourceEdits, state.InlineOptions);
+            var changer = new ChangesSaver(state.FilePath, state.SourceEdits, state.InlineOptions);
             changer.Save();
 
             if (changer.ChangesInvalidateSource)
@@ -27,14 +31,14 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class SaveChanges
+    internal class ChangesSaver
     {
         protected List<SourceEdit> edits;
         protected string filePath;
         protected ApplyInlineTempOptions options;
         protected SourceEditor sourceEditor;
 
-        public SaveChanges(string filePath, List<SourceEdit> edits, ApplyInlineTempOptions options)
+        public ChangesSaver(string filePath, List<SourceEdit> edits, ApplyInlineTempOptions options)
         {
             if (edits == null || filePath == null || options == null) throw new ArgumentNullException();
 

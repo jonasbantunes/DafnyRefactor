@@ -104,8 +104,9 @@
     <Compile Include="InlineTemp\Steps\GenerateScopeStep.cs" />
     <Compile Include="InlineTemp\State\InlineObject.cs" />
     <Compile Include="InlineTemp\Steps\ParseMethodsStep.cs" />
-    <Compile Include="InlineTemp\Steps\ProveImmutabilityClassicStep.cs" />
-    <Compile Include="InlineTemp\Steps\ProveImmutabilityStep.cs" />
+    <Compile Include="InlineTemp\Steps\AssertImmutabilityStep.cs" />
+    <Compile Include="InlineTemp\Steps\AssertImmutabilitySimplifiedStep.cs" />
+    <Compile Include="Utils\SourceEdit\ValidateEdits.cs" />
     <Compile Include="Utils\DafnyVisitor\DafnyVisitorWithNearests.cs" />
     <Compile Include="Utils\RefactorStep\ParseStmtDivisorsStep.cs" />
     <Compile Include="Utils\RefactorState\IRefactorState.cs" />
@@ -115,7 +116,7 @@
     <Compile Include="Utils\CommandLineOptions\ApplyOptions.cs" />
     <Compile Include="InlineTemp\InlineRefactor.cs" />
     <Compile Include="InlineTemp\Steps\ReplaceVariableStep.cs" />
-    <Compile Include="InlineTemp\Steps\CheckImmutabilityStep.cs" />
+    <Compile Include="InlineTemp\Steps\ParseVariablesStep.cs" />
     <Compile Include="DafnyRefactorDriver.cs" />
     <Compile Include="InlineTemp\Steps\LocateVariableStep.cs" />
     <Compile Include="InlineTemp\Steps\RemoveDeclarationStep.cs" />

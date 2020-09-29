@@ -3,6 +3,9 @@ using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
+    /// <summary>
+    ///     Parse a <c>Dafny.Program</c> and generate it's respectives <c>IRefactorScope</c>.
+    /// </summary>
     public class ScopeGenerator<TScopeState> : DafnyVisitorWithNearests where TScopeState : IRefactorScope, new()
     {
         protected Program program;

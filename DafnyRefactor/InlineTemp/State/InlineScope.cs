@@ -8,6 +8,9 @@ using Type = Microsoft.Dafny.Type;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    /// <summary>
+    ///     Represents the state of a scope of a "Inline Temp" refactor.
+    /// </summary>
     public interface IInlineScope : IRefactorScope
     {
         IInlineScope InlineParent { get; }

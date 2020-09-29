@@ -3,6 +3,9 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    /// <summary>
+    ///     A <c>RefactorStep</c> that generate all <c>RefactorScope</c> from a <c>Dafny.Program</c>.
+    /// </summary>
     public class GenerateScopeStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
         public override void Handle(TState state)

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
+    /// <summary>
+    ///     Load source code from stdin and save to a temporary file.
+    /// </summary>
     public class StdinLoaderStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {
         protected TState stateRef;

@@ -3,6 +3,12 @@ using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
+    /// <summary>
+    ///     Represents the state of a refactor.
+    ///     <para>
+    ///         This object is normally passed between multiple <c>RefatorStep</c>.
+    ///     </para>
+    /// </summary>
     public interface IRefactorState
     {
         List<string> Errors { get; }

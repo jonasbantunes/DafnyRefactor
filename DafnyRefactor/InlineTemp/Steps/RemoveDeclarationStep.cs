@@ -6,6 +6,10 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    /// <summary>
+    ///     A <c>RefactorStep</c> that create a list of <c>SourceEdits</c>removing the declaration
+    ///     of the refactored variable.
+    /// </summary>
     public class RemoveDeclarationStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
         public override void Handle(TState state)
@@ -13,7 +17,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
-            var remover = new RemoveDeclarationVisitor(state.Program, state.RootScope, state.InlineVariable);
+            var remover = new DeclarationRemover(state.Program, state.RootScope, state.InlineVariable);
             remover.Execute();
             state.SourceEdits.AddRange(remover.Edits);
 
@@ -21,13 +25,13 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class RemoveDeclarationVisitor : DafnyVisitorWithNearests
+    internal class DeclarationRemover : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVar;
         protected Program program;
         protected IRefactorScope rootTable;
 
-        public RemoveDeclarationVisitor(Program program, IRefactorScope rootTable, IInlineVariable inlineVar)
+        public DeclarationRemover(Program program, IRefactorScope rootTable, IInlineVariable inlineVar)
         {
             if (program == null || rootTable == null || inlineVar == null) throw new ArgumentNullException();
 

@@ -5,6 +5,9 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    /// <summary>
+    ///     A <c>RefactorStep</c> that replace each occurrence of the located <c>InlineVariable</c> by its expression.
+    /// </summary>
     public class ReplaceVariableStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
         public override void Handle(TState state)
@@ -12,7 +15,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
-            var applier = new InlineApplyVisitor(state.Program, state.RootScope, state.InlineVariable);
+            var applier = new InlineTempApplier(state.Program, state.RootScope, state.InlineVariable);
             applier.Execute();
             state.SourceEdits.AddRange(applier.Edits);
 
@@ -20,13 +23,13 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class InlineApplyVisitor : DafnyVisitorWithNearests
+    internal class InlineTempApplier : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVar;
         protected Program program;
         protected IRefactorScope rootScope;
 
-        public InlineApplyVisitor(Program program, IRefactorScope rootScope, IInlineVariable inlineVar)
+        public InlineTempApplier(Program program, IRefactorScope rootScope, IInlineVariable inlineVar)
         {
             if (program == null || rootScope == null || inlineVar == null) throw new ArgumentNullException();
 

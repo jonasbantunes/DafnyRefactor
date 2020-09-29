@@ -3,6 +3,13 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    /// <summary>
+    ///     Represents a variable from AST that is used during the refactor process.
+    ///     <para>
+    ///         This specialized version of <c>IRefactorVariable</c> contains data neccessary to verify if
+    ///         is possible to refactor this variable.
+    ///     </para>
+    /// </summary>
     public interface IInlineVariable : IRefactorVariable
     {
         Expression Expr { get; set; }

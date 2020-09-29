@@ -5,6 +5,9 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    /// <summary>
+    ///     Represents the state of a "Inline Temp" refactor.
+    /// </summary>
     public interface IInlineState : IRefactorState
     {
         ApplyInlineTempOptions InlineOptions { get; }

@@ -4,6 +4,12 @@ using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
+    /// <summary>
+    ///     A step that loads and parse a program from a valid file.
+    ///     <para>
+    ///         Parsing is realized by Dafny compiler.
+    ///     </para>
+    /// </summary>
     public class LoadProgramStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {
         protected TState stateRef;

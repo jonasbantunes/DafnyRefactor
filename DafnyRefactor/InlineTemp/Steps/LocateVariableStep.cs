@@ -4,6 +4,9 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    /// <summary>
+    ///     A <c>RefactorStep</c> that locate the variable to be refactored.
+    /// </summary>
     public class LocateVariableStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
         public override void Handle(TState state)
@@ -11,30 +14,30 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             if (state == null || state.Errors == null || state.InlineOptions == null || state.Program == null ||
                 state.RootScope == null) throw new ArgumentNullException();
 
-            var visitor = new LocateVariableVisitor(state.Program, state.RootScope, state.InlineOptions.VarLine,
+            var locator = new VariableLocator(state.Program, state.RootScope, state.InlineOptions.VarLine,
                 state.InlineOptions.VarColumn);
-            visitor.Execute();
-            if (visitor.FoundDeclaration == null)
+            locator.Execute();
+            if (locator.FoundDeclaration == null)
             {
                 state.AddError(
                     $"Error: can't locate variable on line {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn}.");
                 return;
             }
 
-            state.InlineVariable = visitor.FoundDeclaration;
+            state.InlineVariable = locator.FoundDeclaration;
 
             base.Handle(state);
         }
     }
 
-    internal class LocateVariableVisitor : DafnyVisitorWithNearests
+    internal class VariableLocator : DafnyVisitorWithNearests
     {
         protected Program program;
         protected IInlineScope rootScope;
         protected int varColumn;
         protected int varLine;
 
-        public LocateVariableVisitor(Program program, IInlineScope rootScope, int varLine, int varColumn)
+        public VariableLocator(Program program, IInlineScope rootScope, int varLine, int varColumn)
         {
             if (program == null || rootScope == null) throw new ArgumentNullException();
 

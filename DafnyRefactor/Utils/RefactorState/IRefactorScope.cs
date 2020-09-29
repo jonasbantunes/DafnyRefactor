@@ -5,6 +5,13 @@ using LocalVariable = Microsoft.Dafny.LocalVariable;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
+    /// <summary>
+    ///     Represents the state of a scope.
+    ///     <para>
+    ///         An AST is divided in multiple scopes according to certain tokens from
+    ///         statements, like from <c>BlockStmt</c> or <c>MethodDecl</c>.
+    ///     </para>
+    /// </summary>
     public interface IRefactorScope
     {
         IRefactorScope Parent { get; }

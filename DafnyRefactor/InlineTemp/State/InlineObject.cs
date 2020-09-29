@@ -2,6 +2,13 @@
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    /// <summary>
+    ///     Represents an object from the expression to be refactored.
+    ///     <para>
+    ///         A special validation needed to be done with objects from expressions. This class contains
+    ///         the neccessary date to verify if is possible to apply the "Inline Temp" refactor.
+    ///     </para>
+    /// </summary>
     public interface IInlineObject
     {
         string ObjPrinted { get; }

@@ -2,6 +2,9 @@
 
 namespace DafnyRefactor.InlineTemp.State
 {
+    /// <summary>
+    ///     Represents a <c>RefactorMethod</c> argument info.
+    /// </summary>
     public interface IMethodArg
     {
         string Name { get; set; }

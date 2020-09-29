@@ -4,7 +4,11 @@ using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
-    public class DafnyVisitorWithNearests : DafnyVisitor
+    /// <summary>
+    ///     An extension of <c>DafnyVisitor</c> that saves some nearest objects from
+    ///     tree, such as the nearest statement or scope token.
+    /// </summary>
+    public abstract class DafnyVisitorWithNearests : DafnyVisitor
     {
         protected IToken nearestScopeToken;
         protected Statement nearestStmt;

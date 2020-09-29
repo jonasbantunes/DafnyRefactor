@@ -2,6 +2,9 @@
 
 namespace Microsoft.DafnyRefactor.Utils
 {
+    /// <summary>
+    ///     Represents a change to be applied on source code.
+    /// </summary>
     public class SourceEdit
     {
         public string content;

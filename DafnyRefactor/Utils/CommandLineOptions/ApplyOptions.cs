@@ -2,7 +2,10 @@
 
 namespace Microsoft.DafnyRefactor.Utils
 {
-    public class ApplyOptions
+    /// <summary>
+    ///     Represents a set of base CLI options that should be used on all refactors.
+    /// </summary>
+    public abstract class ApplyOptions
     {
         [Option('f', "filePath", Group = "input", Default = null)]
         public string FilePath { get; set; }

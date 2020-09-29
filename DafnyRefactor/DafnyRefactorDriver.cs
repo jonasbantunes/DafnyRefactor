@@ -11,6 +11,10 @@ using Type = System.Type;
 
 namespace DafnyRefactor
 {
+    /// <summary>
+    ///     The entrypoint of <c>DafnyRefactor</c> project.
+    ///     Parse args from CLI and call the adequate <c>Refactor</c> class.
+    /// </summary>
     public class DafnyRefactorDriver
     {
         protected static int exitCode = (int) DafnyDriver.ExitValue.VERIFIED;
@@ -20,18 +24,11 @@ namespace DafnyRefactor
         public static int Main(string[] args)
         {
             Type[] types = {typeof(ApplyInlineTempOptions)};
-            return Parser.Default.ParseArguments(args, types).MapResult(Run, HandleParseError);
+            var parsedArgs = Parser.Default.ParseArguments(args, types);
+            return parsedArgs.MapResult(Run, HandleParseError);
         }
 
-        public static void SetupConsole()
-        {
-            consoleOutput = Console.Out;
-            consoleError = Console.Error;
-            Console.SetOut(TextWriter.Null);
-            Console.SetError(TextWriter.Null);
-        }
-
-        public static int HandleParseError(IEnumerable<Error> errs)
+        protected static int HandleParseError(IEnumerable<Error> errs)
         {
             var errors = errs as Error[] ?? errs.ToArray();
             if (errors.IsVersion())
@@ -50,7 +47,7 @@ namespace DafnyRefactor
             return (int) DafnyDriver.ExitValue.DAFNY_ERROR;
         }
 
-        public static int Run(object obj)
+        protected static int Run(object obj)
         {
             switch (obj)
             {
@@ -58,10 +55,10 @@ namespace DafnyRefactor
                     return Run(applyOptions);
             }
 
-            return 0;
+            return (int) DafnyDriver.ExitValue.DAFNY_ERROR;
         }
 
-        public static int Run(ApplyOptions options)
+        protected static int Run(ApplyOptions options)
         {
             SetupConsole();
 
@@ -78,6 +75,18 @@ namespace DafnyRefactor
             }
 
             return exitCode;
+        }
+
+        /// <summary>
+        ///     Hide stdin and stdout references from third-party libraries.
+        ///     Without this, the Dafny compiler will output several log messages.
+        /// </summary>
+        protected static void SetupConsole()
+        {
+            consoleOutput = Console.Out;
+            consoleError = Console.Error;
+            Console.SetOut(TextWriter.Null);
+            Console.SetError(TextWriter.Null);
         }
     }
 }

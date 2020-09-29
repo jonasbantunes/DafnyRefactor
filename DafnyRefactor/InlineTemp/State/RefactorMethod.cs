@@ -6,6 +6,10 @@ using Type = Microsoft.Dafny.Type;
 
 namespace DafnyRefactor.InlineTemp.State
 {
+    /// <summary>
+    ///     Represents the neccesary information of method, from a <c>Dafny.Program</c>, to apply the
+    ///     "Inline Temp" refactor.
+    /// </summary>
     public interface IRefactorMethod
     {
         Method Method { get; }

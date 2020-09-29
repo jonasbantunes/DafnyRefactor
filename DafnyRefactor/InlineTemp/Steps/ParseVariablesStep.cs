@@ -5,14 +5,18 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
-    public class CheckImmutabilityStep<TState> : RefactorStep<TState> where TState : IInlineState
+    /// <summary>
+    ///     A <c>RefactorStep</c> that parses all variables of a <c>Dafny.Program</c> into <c>RefactorVariable</c>
+    ///     and save each variable into it's respective <c>RefactorState</c>.
+    /// </summary>
+    public class ParseVariablesStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
         public override void Handle(TState state)
         {
             if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
-            var retriever = new InlineRetrieveVisitor(state.Program, state.RootScope);
+            var retriever = new VariableParser(state.Program, state.RootScope);
             retriever.Execute();
 
             if (state.InlineVariable.IsUpdated)
@@ -41,12 +45,12 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    internal class InlineRetrieveVisitor : DafnyVisitorWithNearests
+    internal class VariableParser : DafnyVisitorWithNearests
     {
         protected Program program;
         protected IInlineScope rootScope;
 
-        public InlineRetrieveVisitor(Program program, IInlineScope rootScope)
+        public VariableParser(Program program, IInlineScope rootScope)
         {
             if (program == null || rootScope == null) throw new ArgumentNullException();
 

@@ -5,16 +5,18 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
-    public class ProveImmutabilityClassicStep<TInlineState> : RefactorStep<TInlineState>
-        where TInlineState : IInlineState
+    /// <summary>
+    ///     A <c>RefactorStep</c> that verifies if all usages of a <c>InlineVariable</c> are constant.
+    /// </summary>
+    public class AssertImmutabilityStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
-        public override void Handle(TInlineState state)
+        public override void Handle(TState state)
         {
             if (state == null || state.Errors == null || state.FilePath == null || state.InlineOptions == null ||
                 state.InlineVariable == null || state.Program == null || state.StmtDivisors == null ||
                 state.RootScope == null) throw new ArgumentNullException();
 
-            var parser = new ParseInlineSymbolExpr(state.InlineVariable, state.RootScope);
+            var parser = new InlineObjectsParser(state.InlineVariable, state.RootScope);
             parser.Execute();
             var scope = state.RootScope.FindScopeByVariable(state.InlineVariable);
             foreach (var inlineObject in parser.InlineObjects)
@@ -23,14 +25,13 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                     inlineObject.MemberType);
             }
 
-            var assertives = new AddAssertivesClassic(state.Program, state.StmtDivisors, state.RootScope,
-                state.InlineVariable);
-            assertives.Execute();
+            var adder = new AssertivesAdder(state.Program, state.StmtDivisors, state.RootScope, state.InlineVariable);
+            adder.Execute();
 
-            var checker = new InlineImmutabilityCheck(state.FilePath, assertives.Edits);
-            checker.Execute();
+            var validtor = new ValidateEdits(state.FilePath, adder.Edits);
+            validtor.Execute();
 
-            if (!checker.IsConstant)
+            if (!validtor.IsConstant)
             {
                 state.AddError(
                     $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
@@ -41,12 +42,15 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    public class ParseInlineSymbolExpr : DafnyVisitor
+    /// <summary>
+    ///     A utility that retrieves all objects present on <c>InlineVariable.Expr</c>.
+    /// </summary>
+    public class InlineObjectsParser : DafnyVisitor
     {
         protected IInlineScope inlineScope;
         protected IInlineVariable inlineVariable;
 
-        public ParseInlineSymbolExpr(IInlineVariable inlineVariable, IInlineScope inlineScope)
+        public InlineObjectsParser(IInlineVariable inlineVariable, IInlineScope inlineScope)
         {
             if (inlineVariable == null || inlineScope == null) throw new ArgumentNullException();
 
@@ -85,14 +89,17 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         }
     }
 
-    public class AddAssertivesClassic : DafnyVisitorWithNearests
+    /// <summary>
+    ///     A utility that adds asserves before usage of an <c>InlineObject</c>.
+    /// </summary>
+    public class AssertivesAdder : DafnyVisitorWithNearests
     {
         protected IInlineVariable inlineVariable;
         protected Program program;
         protected IInlineScope rootScope;
         protected List<int> stmtDivisors;
 
-        public AddAssertivesClassic(Program program, List<int> stmtDivisors, IInlineScope rootScope,
+        public AssertivesAdder(Program program, List<int> stmtDivisors, IInlineScope rootScope,
             IInlineVariable inlineVariable)
         {
             if (rootScope == null || program == null || stmtDivisors == null || inlineVariable == null)

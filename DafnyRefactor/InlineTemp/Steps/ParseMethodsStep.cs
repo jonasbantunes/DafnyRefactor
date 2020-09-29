@@ -4,25 +4,29 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.InlineTemp
 {
+    /// <summary>
+    ///     A <c>RefactorStep</c> that parse all method's info into <c>RefactorMethod</c> objects
+    ///     and save each method on it's respective <c>RefactorScope</c>.
+    /// </summary>
     public class ParseMethodsStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
         public override void Handle(TState state)
         {
             if (state == null || state.Program == null || state.RootScope == null) throw new ArgumentNullException();
 
-            var parser = new ParseMethodVisitor(state.Program, state.RootScope);
+            var parser = new MethodParser(state.Program, state.RootScope);
             parser.Parse();
 
             base.Handle(state);
         }
     }
 
-    internal class ParseMethodVisitor : DafnyVisitorWithNearests
+    internal class MethodParser : DafnyVisitorWithNearests
     {
         protected Program program;
         protected IInlineScope rootScope;
 
-        public ParseMethodVisitor(Program program, IInlineScope rootScope)
+        public MethodParser(Program program, IInlineScope rootScope)
         {
             if (program == null || rootScope == null) throw new ArgumentNullException();
 

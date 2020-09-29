@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
+    /// <summary>
+    ///     Apply changes to file according with a list of <c>SourceEdit</c>.
+    /// </summary>
     public class SourceEditor
     {
         protected List<SourceEdit> edits;

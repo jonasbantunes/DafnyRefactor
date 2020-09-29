@@ -5,7 +5,11 @@ using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
-    public class DafnyVisitor
+    /// <summary>
+    ///     A base class to navigate on AST. It uses the "Visitor" design pattern
+    ///     without modifying the original classes.
+    /// </summary>
+    public abstract class DafnyVisitor
     {
         protected virtual void Visit(Program prog)
         {
