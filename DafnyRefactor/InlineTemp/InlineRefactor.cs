@@ -43,8 +43,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             steps.Add(new ParseStmtDivisorsStep<InlineState>());
             steps.Add(new GenerateScopeStep<InlineState>());
             steps.Add(new ParseMethodsStep<InlineState>());
-            steps.Add(new LocateVariableStep<InlineState>());
             steps.Add(new ParseVariablesStep<InlineState>());
+            steps.Add(new LocateVariableStep<InlineState>());
             steps.Add(new AssertImmutabilitySimplifiedStep<InlineState>());
             steps.Add(new AssertImmutabilityStep<InlineState>());
             steps.Add(new ReplaceVariableStep<InlineState>());

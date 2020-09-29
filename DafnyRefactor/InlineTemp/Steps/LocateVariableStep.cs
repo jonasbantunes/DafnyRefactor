@@ -25,6 +25,33 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             }
 
             state.InlineVariable = locator.FoundDeclaration;
+            if (state.InlineVariable.IsUpdated)
+            {
+                state.AddError(
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant.");
+                return;
+            }
+
+            if (state.InlineVariable.NotAnExpr)
+            {
+                state.AddError(
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is initialized with an object constructor.");
+                return;
+            }
+
+            if (state.InlineVariable.Expr == null)
+            {
+                state.AddError(
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is never initialized.");
+                return;
+            }
+
+            if (state.InlineVariable.Expr is ApplySuffix)
+            {
+                state.AddError(
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} contains a method call.");
+                return;
+            }
 
             base.Handle(state);
         }

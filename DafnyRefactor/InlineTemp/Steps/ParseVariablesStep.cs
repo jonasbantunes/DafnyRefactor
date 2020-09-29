@@ -13,33 +13,11 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.InlineVariable == null || state.Program == null || state.RootScope == null)
+            if (state == null || state.Program == null || state.RootScope == null)
                 throw new ArgumentNullException();
 
             var retriever = new VariableParser(state.Program, state.RootScope);
             retriever.Execute();
-
-            if (state.InlineVariable.IsUpdated)
-            {
-                state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant.");
-                return;
-            }
-
-            if (state.InlineVariable.NotAnExpr)
-            {
-                state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is initialized with an object constructor.");
-                return;
-            }
-
-            if (state.InlineVariable.Expr == null)
-            {
-                state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is never initialized.");
-                return;
-            }
-
 
             base.Handle(state);
         }
@@ -75,18 +53,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 var variable = CurTable.LookupInlineVariable(agie.Name);
                 if (variable == null) continue;
 
-                var assign = up.Rhss[i];
-                var expr = assign.SubExpressions.FirstOrDefault();
-                if (expr == null)
-                {
-                    variable.NotAnExpr = true;
-                }
-                else
-                {
-                    variable.Expr = expr;
-                }
-
-                variable.InitStmt = up;
+                UpdateVariable(variable, up.Rhss[i], up);
             }
         }
 
@@ -99,16 +66,30 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 var variable = CurTable.LookupInlineVariable(nm.Name);
                 if (variable == null) continue;
 
-                if (variable.InitStmt == null && up.Rhss[i] is ExprRhs erhs)
+                if (variable.InitStmt == null)
                 {
-                    variable.Expr = erhs.Expr;
-                    variable.InitStmt = up;
+                    UpdateVariable(variable, up.Rhss[i], up);
                 }
                 else
                 {
                     variable.IsUpdated = true;
                 }
             }
+        }
+
+        protected virtual void UpdateVariable(IInlineVariable variable, AssignmentRhs assign, UpdateStmt initStmt)
+        {
+            var expr = assign.SubExpressions.FirstOrDefault();
+            if (expr == null)
+            {
+                variable.NotAnExpr = true;
+            }
+            else
+            {
+                variable.Expr = expr;
+            }
+
+            variable.InitStmt = initStmt;
         }
     }
 }
