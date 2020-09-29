@@ -23,9 +23,10 @@ namespace Microsoft.DafnyRefactor.Utils
         public void Apply()
         {
             var sourceBuilder = new StringBuilder(Source);
-            edits = edits.OrderByDescending(edit => edit.startPos).ToList();
-            foreach (var edit in edits)
+            var sortedEdits = edits.OrderBy(edit => edit.startPos).ToList();
+            for (var i = sortedEdits.Count - 1; i >= 0; i--)
             {
+                var edit = sortedEdits[i];
                 sourceBuilder.Remove(edit.startPos, edit.endPos - edit.startPos);
                 sourceBuilder.Insert(edit.startPos, edit.content);
             }

@@ -69,7 +69,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             var varName = inlineVariable.Name;
             var varExprPrinted = Printer.ExprToString(inlineVariable.Expr);
-            var ghostStmt = $"\n ghost var {varName}___RefactorGhostExpr := {varExprPrinted};\n";
+            var ghostStmt = $"\n ghost var {varName}___RefactorGhostExpr := {varExprPrinted};";
 
             var pos = inlineVariable.InitStmt.EndTok.pos + 1;
             var edit = new SourceEdit(pos, ghostStmt);
@@ -88,7 +88,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             var varName = inlineVariable.Name;
             var varExprPrinted = Printer.ExprToString(inlineVariable.Expr);
-            var assertStmtExpr = $"\n assert {varName}___RefactorGhostExpr == {varExprPrinted};\n";
+            var assertStmtExpr = $"\n assert {varName}___RefactorGhostExpr == {varExprPrinted};";
 
             var pos = stmtDivisors[divisorIndex - 1] + 1;
             var edit = new SourceEdit(pos, assertStmtExpr);
