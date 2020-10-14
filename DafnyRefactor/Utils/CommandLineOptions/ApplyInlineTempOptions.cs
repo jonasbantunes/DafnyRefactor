@@ -7,7 +7,7 @@ namespace Microsoft.DafnyRefactor.Utils
     /// <summary>
     ///     Represents a set of CLI options to apply an "Inline Temp" refactor.
     /// </summary>
-    [Verb("apply-inline-temp", HelpText = "Apply a refactor")]
+    [Verb("apply-inline-temp")]
     public class ApplyInlineTempOptions : ApplyOptions
     {
         [Option('l', "line", Required = true)] public int VarLine { get; set; }

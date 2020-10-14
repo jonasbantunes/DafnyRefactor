@@ -96,6 +96,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
+    <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
     <Compile Include="InlineTemp\State\InlineState.cs" />
     <Compile Include="InlineTemp\State\InlineVariable.cs" />
     <Compile Include="InlineTemp\State\InlineScope.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="InlineTemp\Steps\ParseMethodsStep.cs" />
     <Compile Include="InlineTemp\Steps\AssertImmutabilityStep.cs" />
     <Compile Include="InlineTemp\Steps\AssertImmutabilitySimplifiedStep.cs" />
+    <Compile Include="Utils\CommandLineOptions\ApplyExtractVariableOptions.cs" />
     <Compile Include="Utils\SourceEdit\ValidateEdits.cs" />
     <Compile Include="Utils\DafnyVisitor\DafnyVisitorWithNearests.cs" />
     <Compile Include="Utils\RefactorStep\ParseStmtDivisorsStep.cs" />
@@ -156,6 +159,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ExtractVariable\Steps\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -89,6 +89,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="ExtractVariableTests.cs" />
     <Compile Include="InlineTempTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
