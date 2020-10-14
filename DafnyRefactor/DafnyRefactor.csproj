@@ -98,6 +98,10 @@
   <ItemGroup>
     <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
+    <Compile Include="ExtractVariable\State\Range.cs" />
+    <Compile Include="ExtractVariable\Steps\FindStatementStep.cs" />
+    <Compile Include="ExtractVariable\Steps\LoadRawProgramStep.cs" />
+    <Compile Include="ExtractVariable\Steps\ParseSelectionStep.cs" />
     <Compile Include="InlineTemp\State\InlineState.cs" />
     <Compile Include="InlineTemp\State\InlineVariable.cs" />
     <Compile Include="InlineTemp\State\InlineScope.cs" />
@@ -159,8 +163,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ExtractVariable\Steps\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

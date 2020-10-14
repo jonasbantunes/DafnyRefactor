@@ -7,6 +7,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 {
     public interface IExtractVariableState : IRefactorState
     {
+        string RawProgram { get; set; }
+        Range Range { get; set; }
+        ApplyExtractVariableOptions ExtractVariableOptions { get; }
     }
 
     public class ExtractVariableState : IExtractVariableState
@@ -34,5 +37,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         {
             errors.Add(description);
         }
+
+        public string RawProgram { get; set; }
+        public Range Range { get; set; }
+        public ApplyExtractVariableOptions ExtractVariableOptions => options;
     }
 }
