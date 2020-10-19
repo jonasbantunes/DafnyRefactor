@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DafnyRefactor;
-using DafnyRefactor.ExtractVariable.Steps;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 
@@ -42,6 +41,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             steps.Add(new ParseStmtDivisorsStep<ExtractVariableState>());
             steps.Add(new ParseSelectionStep<ExtractVariableState>());
             steps.Add(new FindStatementStep<ExtractVariableState>());
+            steps.Add(new FindExpressionStep<ExtractVariableState>());
             //steps.Add(new GenerateScopeStep<ExtractVariableState>());
             //steps.Add(new SaveChangesStep<ExtractVariableState>());
             if (options.Stdin)

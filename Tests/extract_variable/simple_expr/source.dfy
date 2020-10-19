@@ -1,3 +1,3 @@
 method Main() {
-  var x: int := 2 + 1 + 7;
+  var x: int := 2 - -(2*7) + 1 + 7;
 }

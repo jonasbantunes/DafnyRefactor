@@ -15,14 +15,14 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var startCol = int.Parse(state.ExtractVariableOptions.StartPosition.Split(':')[1]);
             var endLine = int.Parse(state.ExtractVariableOptions.EndPosition.Split(':')[0]);
             var endCol = int.Parse(state.ExtractVariableOptions.EndPosition.Split(':')[1]);
-            var startIndex = state.RawProgram.IndexOfNth("\n", startLine);
+            var startIndex = state.RawProgram.IndexOfNth("\n", startLine - 1);
             if (startIndex == -1)
             {
                 state.Errors.Add("Error: Range is invalid");
                 return;
             }
 
-            var endIndex = state.RawProgram.IndexOfNth("\n", endLine);
+            var endIndex = state.RawProgram.IndexOfNth("\n", endLine - 1);
             if (endIndex == -1)
             {
                 state.Errors.Add("Error: Range is invalid");
@@ -31,6 +31,12 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
             var start = startIndex + startCol;
             var end = endIndex + endCol;
+            if (start >= end)
+            {
+                state.Errors.Add("Error: Range is invalid");
+                return;
+            }
+
             state.Range = new Range(start, end);
 
             base.Handle(state);
@@ -43,11 +49,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         {
             if (nth <= 0) throw new ArgumentException();
 
-            var curIndex = 0;
+            var curIndex = -1;
             var count = 0;
             do
             {
-                curIndex = str.IndexOf(sub, curIndex, StringComparison.Ordinal);
+                curIndex = str.IndexOf(sub, curIndex + 1, StringComparison.Ordinal);
                 if (curIndex == -1) return -1;
                 count++;
             } while (count < nth);

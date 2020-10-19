@@ -127,6 +127,15 @@ namespace Microsoft.DafnyRefactor.Utils
                 case IdentifierExpr identifierExpr:
                     Visit(identifierExpr);
                     break;
+                case NegationExpression negationExpression:
+                    Visit(negationExpression);
+                    break;
+                case BinaryExpr binaryExpr:
+                    Visit(binaryExpr);
+                    break;
+                case LiteralExpr literalExpr:
+                    Visit(literalExpr);
+                    break;
                 default:
                     Traverse(exp.SubExpressions.ToList());
                     break;
@@ -157,6 +166,21 @@ namespace Microsoft.DafnyRefactor.Utils
         protected virtual void Visit(IdentifierExpr identifierExpr)
         {
             Traverse(identifierExpr.SubExpressions.ToList());
+        }
+
+        protected virtual void Visit(NegationExpression negationExpression)
+        {
+            Traverse(negationExpression.SubExpressions.ToList());
+        }
+
+        protected virtual void Visit(BinaryExpr binaryExpr)
+        {
+            Traverse(binaryExpr.SubExpressions.ToList());
+        }
+
+        protected virtual void Visit(LiteralExpr literalExpr)
+        {
+            Traverse(literalExpr.SubExpressions.ToList());
         }
 
         protected virtual void Traverse(List<TopLevelDecl> topLevelDecls)

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.ExtractVariable;
 using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.ExtractVariable.Steps
+namespace Microsoft.DafnyRefactor.ExtractVariable
 {
     public class FindStatementStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
@@ -15,6 +14,13 @@ namespace DafnyRefactor.ExtractVariable.Steps
 
             var visitor = new FindStatementVisitor(state.Program, state.Range, state.StmtDivisors);
             visitor.Execute();
+            if (visitor.FoundStmt == null)
+            {
+                state.Errors.Add("Error: Couldn't find selected expression.");
+                return;
+            }
+
+            state.ExtractStmt = visitor.FoundStmt;
 
             base.Handle(state);
         }

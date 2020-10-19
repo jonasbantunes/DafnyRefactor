@@ -1,0 +1,18 @@
+class Node
+{
+    var next: Node?;
+    var value: int;
+
+    constructor()
+    ensures this.next == null
+    {
+        this.next := null;
+    }
+}
+
+method Main() {
+    var node := new Node();
+    node.value := 5;
+    
+    var x: int := 2 + node.value + -(2*7) + 1 + 7;
+}
