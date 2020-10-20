@@ -25,7 +25,7 @@ namespace DafnyRefactorTests
         protected string TestExpectedPath => $"{testFileDir}\\test{testNumber}.expected";
 
         protected string[] Args => new[]
-            {"apply-extract-variable", "-f", TestFilePath, "-s", startRange, "-e", endRange, "-o", TestOutputPath};
+            {"apply-extract-variable", "-f", TestFilePath, "-s", startRange, "-e", endRange, "-o", TestOutputPath, "-v", "extractedVar"};
 
         [Test]
         public void ClassExprT1()
@@ -36,8 +36,7 @@ namespace DafnyRefactorTests
             endRange = "17:39";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
-            Assert.AreEqual(0, exitCode);
-            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+            Assert.AreEqual(2, exitCode);
         }
 
         [Test]

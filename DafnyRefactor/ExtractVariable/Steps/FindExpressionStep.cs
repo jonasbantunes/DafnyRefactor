@@ -26,8 +26,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
                 : exprEnd.tok.pos + exprEnd.tok.val.Length;
             state.ExprRange = new Range(startPos, endPos);
 
-            var exprString = state.RawProgram.Substring(startPos, endPos - startPos);
-
             base.Handle(state);
         }
     }

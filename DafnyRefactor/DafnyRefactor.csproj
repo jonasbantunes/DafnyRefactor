@@ -99,6 +99,7 @@
     <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
     <Compile Include="ExtractVariable\State\Range.cs" />
+    <Compile Include="ExtractVariable\Steps\ExtractVariableStep.cs" />
     <Compile Include="ExtractVariable\Steps\FindExpressionStep.cs" />
     <Compile Include="ExtractVariable\Steps\FindStatementStep.cs" />
     <Compile Include="ExtractVariable\Steps\LoadRawProgramStep.cs" />
@@ -114,7 +115,7 @@
     <Compile Include="InlineTemp\Steps\AssertImmutabilityStep.cs" />
     <Compile Include="InlineTemp\Steps\AssertImmutabilitySimplifiedStep.cs" />
     <Compile Include="Utils\CommandLineOptions\ApplyExtractVariableOptions.cs" />
-    <Compile Include="Utils\SourceEdit\ValidateEdits.cs" />
+    <Compile Include="Utils\SourceEdit\EditsValidator.cs" />
     <Compile Include="Utils\DafnyVisitor\DafnyVisitorWithNearests.cs" />
     <Compile Include="Utils\RefactorStep\ParseStmtDivisorsStep.cs" />
     <Compile Include="Utils\RefactorState\IRefactorState.cs" />
@@ -128,7 +129,7 @@
     <Compile Include="DafnyRefactorDriver.cs" />
     <Compile Include="InlineTemp\Steps\LocateVariableStep.cs" />
     <Compile Include="InlineTemp\Steps\RemoveDeclarationStep.cs" />
-    <Compile Include="InlineTemp\Steps\SaveChangesStep.cs" />
+    <Compile Include="Utils\RefactorStep\SaveChangesStep.cs" />
     <Compile Include="Utils\SourceEdit\SourceEdit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\DafnyVisitor\DafnyVisitor.cs" />

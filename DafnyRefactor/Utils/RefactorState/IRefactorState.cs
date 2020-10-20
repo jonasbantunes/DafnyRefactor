@@ -17,6 +17,7 @@ namespace Microsoft.DafnyRefactor.Utils
         string TempFilePath { get; set; }
         string FilePath { get; }
         List<int> StmtDivisors { get; set; }
+        List<SourceEdit> SourceEdits { get; }
 
         void AddError(string description);
     }

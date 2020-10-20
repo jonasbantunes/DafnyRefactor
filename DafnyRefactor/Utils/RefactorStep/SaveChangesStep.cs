@@ -3,22 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using DafnyRefactor;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace Microsoft.DafnyRefactor.Utils
 {
-    // TODO: Verify if is possible to generalize this step.
     /// <summary>
     ///     A <c>RefactorStep</c> that saves a list of <c>SourceEdit</c> to a file.
     /// </summary>
-    public class SaveChangesStep<TState> : RefactorStep<TState> where TState : IInlineState
+    public class SaveChangesStep<TState> : RefactorStep<TState> where TState : IRefactorState
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.Errors == null || state.FilePath == null || state.InlineOptions == null ||
+            if (state == null || state.Errors == null || state.FilePath == null || state.Options == null ||
                 state.SourceEdits == null) throw new ArgumentNullException();
 
-            var changer = new ChangesSaver(state.FilePath, state.SourceEdits, state.InlineOptions);
+            var changer = new ChangesSaver(state.FilePath, state.SourceEdits, state.Options);
             changer.Save();
 
             if (changer.ChangesInvalidateSource)
@@ -35,10 +33,10 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         protected List<SourceEdit> edits;
         protected string filePath;
-        protected ApplyInlineTempOptions options;
+        protected ApplyOptions options;
         protected SourceEditor sourceEditor;
 
-        public ChangesSaver(string filePath, List<SourceEdit> edits, ApplyInlineTempOptions options)
+        public ChangesSaver(string filePath, List<SourceEdit> edits, ApplyOptions options)
         {
             if (edits == null || filePath == null || options == null) throw new ArgumentNullException();
 

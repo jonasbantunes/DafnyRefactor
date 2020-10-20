@@ -1,0 +1,4 @@
+method Main() {
+var extractedVar := 23*7;
+  var x: int := 2 - -(extractedVar) + 1 + 7;
+}

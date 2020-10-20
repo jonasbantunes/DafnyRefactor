@@ -24,7 +24,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         {
             this.options = options ?? throw new ArgumentNullException();
 
-            sourceEdits = new List<SourceEdit>();
+            SourceEdits = new List<SourceEdit>();
             errors = new List<string>();
         }
 
@@ -34,6 +34,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         public string TempFilePath { get; set; }
         public string FilePath => options.Stdin ? TempFilePath : options.FilePath;
         public List<int> StmtDivisors { get; set; }
+
+        public List<SourceEdit> SourceEdits { get; }
 
         public void AddError(string description)
         {

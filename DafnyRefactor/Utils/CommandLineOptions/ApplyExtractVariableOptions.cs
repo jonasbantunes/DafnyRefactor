@@ -10,5 +10,8 @@ namespace Microsoft.DafnyRefactor.Utils
 
         [Option('e', "endPosition", Required = true)]
         public string EndPosition { get; set; }
+
+        [Option('v', "varName", Required = true)]
+        public string VarName { get; set; }
     }
 }

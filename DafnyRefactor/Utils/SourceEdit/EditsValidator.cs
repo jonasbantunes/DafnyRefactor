@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace Microsoft.DafnyRefactor.Utils
 {
-    internal class ValidateEdits
+    internal class EditsValidator
     {
         protected List<SourceEdit> edits;
         protected string filePath;
 
-        public ValidateEdits(string filePath, List<SourceEdit> edits)
+        public EditsValidator(string filePath, List<SourceEdit> edits)
         {
             if (filePath == null || edits == null) throw new ArgumentNullException();
 
@@ -19,7 +18,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
             this.edits = edits;
         }
 
-        public bool IsConstant { get; protected set; }
+        public bool IsValid { get; protected set; }
 
         public void Execute()
         {
@@ -32,7 +31,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
             var args = new[] {tempPath, "/compile:0"};
             var res = DafnyDriver.Main(args);
-            IsConstant = res == 0;
+            IsValid = res == 0;
             File.Delete(tempPath);
         }
     }

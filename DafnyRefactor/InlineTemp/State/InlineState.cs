@@ -12,7 +12,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
     {
         ApplyInlineTempOptions InlineOptions { get; }
         IInlineVariable InlineVariable { get; set; }
-        List<SourceEdit> SourceEdits { get; }
         IInlineScope RootScope { get; set; }
     }
 
