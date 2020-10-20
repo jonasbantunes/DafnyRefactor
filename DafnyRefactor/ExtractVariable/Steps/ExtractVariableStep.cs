@@ -17,7 +17,7 @@ namespace DafnyRefactor.ExtractVariable.Steps
             internalState = state;
 
             ExtractVariable();
-            var validator = new EditsValidator(state.Options.FilePath, state.SourceEdits);
+            var validator = new EditsValidator(state.FilePath, state.SourceEdits);
             validator.Execute();
             if (!validator.IsValid)
             {

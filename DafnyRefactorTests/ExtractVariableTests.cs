@@ -44,8 +44,8 @@ namespace DafnyRefactorTests
         {
             testFileDir = $"{testDir}\\simple_expr";
             testNumber = 1;
-            startRange = "2:24";
-            endRange = "2:26";
+            startRange = "2:18";
+            endRange = "2:20";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(0, exitCode);
