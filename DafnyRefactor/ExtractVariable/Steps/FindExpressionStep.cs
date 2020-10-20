@@ -8,16 +8,25 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.Program == null || state.Range == null || state.ExtractStmt == null)
+            if (state == null || state.Program == null || state.RawProgram == null || state.Range == null ||
+                state.ExtractStmt == null)
                 throw new ArgumentNullException();
 
             var startFinder = new FindExprVisitor(state.ExtractStmt, state.Range.start);
             startFinder.Execute();
-            state.ExprStart = startFinder.RightExpr is BinaryExpr ? startFinder.LeftExpr : startFinder.RightExpr;
+            var exprStart = startFinder.RightExpr is BinaryExpr ? startFinder.LeftExpr : startFinder.RightExpr;
 
             var endFinder = new FindExprVisitor(state.ExtractStmt, state.Range.end);
             endFinder.Execute();
-            state.ExprEnd = endFinder.LeftExpr is BinaryExpr ? endFinder.RightExpr : endFinder.LeftExpr;
+            var exprEnd = endFinder.LeftExpr is BinaryExpr ? endFinder.RightExpr : endFinder.LeftExpr;
+
+            var startPos = state.Range.start <= exprStart.tok.pos ? state.Range.start : exprStart.tok.pos;
+            var endPos = state.Range.end >= exprEnd.tok.pos + exprEnd.tok.val.Length
+                ? state.Range.end
+                : exprEnd.tok.pos + exprEnd.tok.val.Length;
+            state.ExprRange = new Range(startPos, endPos);
+
+            var exprString = state.RawProgram.Substring(startPos, endPos - startPos);
 
             base.Handle(state);
         }
@@ -81,10 +90,45 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             if (endTokPos < position)
             {
                 LeftExpr = exprDotName;
+                // base.Visit(exprDotName);
+                //Visit(exprDotName.Lhs);
+
+                //var lhs = exprDotName.Lhs;
+                //while (lhs != null && !(lhs is NameSegment))
+                //{
+                //    if (lhs is ExprDotName exprDot)
+                //    {
+                //        lhs = exprDot.Lhs;
+                //    }
+                //    else
+                //    {
+                //        lhs = null;
+                //    }
+                //}
+
+                //LeftExpr = lhs;
             }
             else if (RightExpr == null)
             {
-                RightExpr = exprDotName;
+                //RightExpr = exprDotName;
+                //base.Visit(exprDotName);
+                //RightExpr = LeftExpr;
+                //RightExpr = null;
+
+                var lhs = exprDotName.Lhs;
+                while (lhs != null && !(lhs is NameSegment))
+                {
+                    if (lhs is ExprDotName exprDot)
+                    {
+                        lhs = exprDot.Lhs;
+                    }
+                    else
+                    {
+                        lhs = null;
+                    }
+                }
+
+                RightExpr = lhs;
             }
         }
 
