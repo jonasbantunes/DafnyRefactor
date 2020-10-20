@@ -32,8 +32,8 @@ namespace DafnyRefactorTests
         {
             testFileDir = $"{testDir}\\class_expr";
             testNumber = 1;
-            startRange = "17:27";
-            endRange = "17:39";
+            startRange = "17:23";
+            endRange = "17:27";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);

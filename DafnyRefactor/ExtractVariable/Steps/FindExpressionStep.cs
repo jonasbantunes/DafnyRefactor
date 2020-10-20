@@ -6,62 +6,98 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 {
     public class FindExpressionStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
+        protected FindExprVisitor startFinder;
+        protected FindExprVisitor endFinder;
+        protected Expression exprStart;
+        protected Expression exprEnd;
+        protected TState inState;
+
+
         public override void Handle(TState state)
         {
             if (state == null || state.Program == null || state.RawProgram == null || state.Range == null ||
                 state.ExtractStmt == null)
                 throw new ArgumentNullException();
 
-            /* START FINDER */
-            var startFinder = new FindExprVisitor(state.ExtractStmt, state.Range.start);
+            inState = state;
+
+            Setup();
+            FindEnd();
+            if (state.Errors.Count > 0) return;
+            FindStart();
+            if (state.Errors.Count > 0) return;
+            CalcExprRange();
+
+            base.Handle(state);
+        }
+
+        protected void Setup()
+        {
+            startFinder = new FindExprVisitor(inState.ExtractStmt, inState.Range.start);
             startFinder.Execute();
+            endFinder = new FindExprVisitor(inState.ExtractStmt, inState.Range.end);
+            endFinder.Execute();
+        }
+
+        protected void FindStart()
+        {
             if (startFinder.RightExpr is BinaryExpr)
             {
-                state.Errors.Add("Error: selected expression starts with a binary operand.");
+                inState.Errors.Add("Error: selected expression starts with a binary operand.");
                 return;
             }
 
-            var exprStart = startFinder.RightExpr;
+            if (startFinder.LeftExpr is NegationExpression negationExpr && !IsSubExpr(exprEnd, negationExpr))
+            {
+                inState.Errors.Add("Error: Selected expression is invalid");
+                return;
+            }
 
-            /* END FINDER */
-            var endFinder = new FindExprVisitor(state.ExtractStmt, state.Range.end);
-            endFinder.Execute();
-            Expression exprEnd;
+            exprStart = startFinder.RightExpr;
+        }
+
+        protected void FindEnd()
+        {
             if (endFinder.LeftExpr is BinaryExpr || endFinder.LeftExpr is NegationExpression)
             {
                 var tokPos = endFinder.RightExpr.tok.pos;
                 var endTokPos = endFinder.RightExpr.tok.pos + endFinder.RightExpr.tok.val.Length;
-                if (tokPos < state.Range.end && state.Range.end < endTokPos)
+                if (tokPos < inState.Range.end && inState.Range.end < endTokPos)
                 {
                     exprEnd = endFinder.RightExpr;
                 }
                 else
                 {
-                    state.Errors.Add("Error: selected expression ends with a operand.");
-                    return;
+                    inState.Errors.Add("Error: selected expression ends with a operand.");
                 }
             }
             else
             {
                 exprEnd = endFinder.LeftExpr;
             }
+        }
 
-
-            /* EXPR RANGE */
-            var startPos = state.Range.start <= exprStart.tok.pos ? state.Range.start : exprStart.tok.pos;
-            var endPos = state.Range.end >= exprEnd.tok.pos + exprEnd.tok.val.Length
-                ? state.Range.end
+        protected void CalcExprRange()
+        {
+            var startPos = inState.Range.start <= exprStart.tok.pos ? inState.Range.start : exprStart.tok.pos;
+            var endPos = inState.Range.end >= exprEnd.tok.pos + exprEnd.tok.val.Length
+                ? inState.Range.end
                 : exprEnd.tok.pos + exprEnd.tok.val.Length;
-            state.ExprRange = new Range(startPos, endPos);
+            inState.ExprRange = new Range(startPos, endPos);
 
-            var exprString = state.RawProgram.Substring(startPos, endPos - startPos);
-            var x = -23 - -(   23* -7456 ) + 1 + 77;
+            var exprString = inState.RawProgram.Substring(startPos, endPos - startPos);
+            var x = -(23 + 15) - -(23 * -7456) + 1 + 77;
+        }
 
-            base.Handle(state);
+        protected bool IsSubExpr(Expression subExpr, Expression rootExpr)
+        {
+            var checker = new IsSubExprVisitor(subExpr, rootExpr);
+            checker.Execute();
+            return checker.IsSubExpr;
         }
     }
 
-    internal class FindExprVisitor : DafnyVisitor
+    public class FindExprVisitor : DafnyVisitor
     {
         protected Statement rootStmt;
         protected int position;
@@ -109,8 +145,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             {
                 RightExpr = nameSeg;
             }
-
-            base.Visit(nameSeg);
         }
 
         protected override void Visit(ExprDotName exprDotName)
@@ -122,20 +156,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             }
             else if (RightExpr == null)
             {
-                var lhs = exprDotName.Lhs;
-                while (lhs != null && !(lhs is NameSegment))
-                {
-                    if (lhs is ExprDotName exprDot)
-                    {
-                        lhs = exprDot.Lhs;
-                    }
-                    else
-                    {
-                        lhs = null;
-                    }
-                }
-
-                RightExpr = lhs;
+                RightExpr = exprDotName;
             }
         }
 
@@ -150,31 +171,48 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             {
                 RightExpr = literalExpr;
             }
-
-            base.Visit(literalExpr);
         }
 
         protected override void Visit(NegationExpression negationExpr)
         {
-            var oldLeftExpr = LeftExpr;
-
             if (negationExpr.tok.pos < position)
             {
                 LeftExpr = negationExpr;
             }
-            //else if (RightExpr == null)
-            //{
-            //    RightExpr = negationExpr;
-            //}
 
             Visit(negationExpr.E);
-            // base.Visit(negationExpr);
+        }
+    }
 
-            //if (RightExpr == negationExpr.E)
-            //{
-            //    RightExpr = negationExpr;
-            //    LeftExpr = oldLeftExpr;
-            //}
+    public class IsSubExprVisitor : DafnyVisitor
+    {
+        protected readonly Expression subExpr;
+        protected readonly Expression rootExpr;
+        public bool IsSubExpr { get; protected set; }
+
+        public IsSubExprVisitor(Expression subExpr, Expression rootExpr)
+        {
+            if (subExpr == null || rootExpr == null) throw new ArgumentNullException();
+
+            this.subExpr = subExpr;
+            this.rootExpr = rootExpr;
+        }
+
+        public void Execute()
+        {
+            IsSubExpr = false;
+            Visit(rootExpr);
+        }
+
+        protected override void Visit(Expression exp)
+        {
+            if (exp == subExpr)
+            {
+                IsSubExpr = true;
+                return;
+            }
+
+            base.Visit(exp);
         }
     }
 }
