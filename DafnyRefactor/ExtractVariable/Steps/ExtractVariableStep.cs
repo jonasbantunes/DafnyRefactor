@@ -42,8 +42,8 @@ namespace DafnyRefactor.ExtractVariable.Steps
             var extractedPos = internalState.StmtDivisors[divisorIndex - 1] + 1;
             var extracteVarEdit = new SourceEdit(extractedPos, extractedVarPrinted);
             internalState.SourceEdits.Add(extracteVarEdit);
-            var removedVarEdit = new SourceEdit(startPos, endPos, varName);
-            internalState.SourceEdits.Add(removedVarEdit);
+            //var removedVarEdit = new SourceEdit(startPos, endPos, varName);
+            //internalState.SourceEdits.Add(removedVarEdit);
         }
     }
 }

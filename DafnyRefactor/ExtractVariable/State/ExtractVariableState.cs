@@ -17,7 +17,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     public class ExtractVariableState : IExtractVariableState
     {
         protected List<string> errors;
-        protected List<SourceEdit> sourceEdits;
         protected ApplyExtractVariableOptions options;
 
         public ExtractVariableState(ApplyExtractVariableOptions options)

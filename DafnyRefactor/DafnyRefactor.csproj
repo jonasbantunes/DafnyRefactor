@@ -104,6 +104,7 @@
     <Compile Include="ExtractVariable\Steps\FindStatementStep.cs" />
     <Compile Include="ExtractVariable\Steps\LoadRawProgramStep.cs" />
     <Compile Include="ExtractVariable\Steps\ParseSelectionStep.cs" />
+    <Compile Include="ExtractVariable\Steps\ReplaceOccurrencesStep.cs" />
     <Compile Include="InlineTemp\State\InlineState.cs" />
     <Compile Include="InlineTemp\State\InlineVariable.cs" />
     <Compile Include="InlineTemp\State\InlineScope.cs" />

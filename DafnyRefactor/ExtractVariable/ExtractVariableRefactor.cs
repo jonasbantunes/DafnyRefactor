@@ -44,6 +44,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             steps.Add(new FindStatementStep<ExtractVariableState>());
             steps.Add(new FindExpressionStep<ExtractVariableState>());
             steps.Add(new ExtractVariableStep<ExtractVariableState>());
+            steps.Add(new ReplaceOccurrencesStep<ExtractVariableState>());
             steps.Add(new SaveChangesStep<ExtractVariableState>());
             if (options.Stdin)
             {

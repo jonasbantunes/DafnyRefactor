@@ -84,9 +84,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
                 ? inState.Range.end
                 : exprEnd.tok.pos + exprEnd.tok.val.Length;
             inState.ExprRange = new Range(startPos, endPos);
-
-            var exprString = inState.RawProgram.Substring(startPos, endPos - startPos);
-            var x = -(23 + 15) - -(23 * -7456) + 1 + 77;
         }
 
         protected bool IsSubExpr(Expression subExpr, Expression rootExpr)
@@ -97,9 +94,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         }
     }
 
+    // TODO: Change this to accept rootExpr only.
     public class FindExprVisitor : DafnyVisitor
     {
         protected Statement rootStmt;
+        protected Expression rootExpr;
         protected int position;
         public Expression LeftExpr { get; protected set; }
         public Expression RightExpr { get; protected set; }
@@ -110,12 +109,25 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             this.position = position;
         }
 
+        public FindExprVisitor(Expression rootExpr, int position)
+        {
+            this.rootExpr = rootExpr;
+            this.position = position;
+        }
+
         public void Execute()
         {
             LeftExpr = null;
             RightExpr = null;
 
-            Visit(rootStmt);
+            if (rootStmt != null)
+            {
+                Visit(rootStmt);
+            }
+            else
+            {
+                Visit(rootExpr);
+            }
         }
 
         protected override void Visit(BinaryExpr binaryExpr)
@@ -178,6 +190,10 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             if (negationExpr.tok.pos < position)
             {
                 LeftExpr = negationExpr;
+            }
+            else if (RightExpr == null)
+            {
+                RightExpr = negationExpr;
             }
 
             Visit(negationExpr.E);
