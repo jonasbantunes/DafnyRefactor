@@ -14,5 +14,5 @@ method Main() {
     var node := new Node();
     node.value := 5;
     
-    var x: int := 2 + node.value + -(2*7) + 1 + 7;
+    var x: int := 22 + node.value + -(2*7) + 1 + 7;
 }

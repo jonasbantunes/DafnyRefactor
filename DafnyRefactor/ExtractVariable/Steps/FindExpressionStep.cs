@@ -22,9 +22,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             inState = state;
 
             Setup();
-            FindEnd();
-            if (state.Errors.Count > 0) return;
             FindStart();
+            if (state.Errors.Count > 0) return;
+            FindEnd();
             if (state.Errors.Count > 0) return;
             CalcExprRange();
 
@@ -47,7 +47,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
                 return;
             }
 
-            if (startFinder.LeftExpr is NegationExpression negationExpr && !IsSubExpr(exprEnd, negationExpr))
+            if (startFinder.LeftExpr is NegationExpression negationExpr &&
+                !IsSubExpr(endFinder.LeftExpr, negationExpr))
             {
                 inState.Errors.Add("Error: Selected expression is invalid");
                 return;
@@ -58,7 +59,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected void FindEnd()
         {
-            if (endFinder.LeftExpr is BinaryExpr || endFinder.LeftExpr is NegationExpression)
+            if (endFinder.LeftExpr == null)
+            {
+                exprEnd = endFinder.RightExpr;
+            }
+            else if (endFinder.LeftExpr is BinaryExpr || endFinder.LeftExpr is NegationExpression)
             {
                 var tokPos = endFinder.RightExpr.tok.pos;
                 var endTokPos = endFinder.RightExpr.tok.pos + endFinder.RightExpr.tok.val.Length;
