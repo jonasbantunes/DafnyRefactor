@@ -5,7 +5,7 @@ using Microsoft.Dafny;
 
 namespace Microsoft.DafnyRefactor.Utils
 {
-    internal class EditsValidator
+    public class EditsValidator
     {
         protected List<SourceEdit> edits;
         protected string filePath;

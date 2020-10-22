@@ -192,5 +192,18 @@ namespace DafnyRefactorTests
             Assert.AreEqual(0, exitCode);
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
         }
+
+        [Test]
+        public void SimpleExprT8()
+        {
+            testFileDir = $"{testDir}\\simple_expr";
+            testNumber = 8;
+            startRange = "2:16";
+            endRange = "2:48";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(0, exitCode);
+            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
     }
 }

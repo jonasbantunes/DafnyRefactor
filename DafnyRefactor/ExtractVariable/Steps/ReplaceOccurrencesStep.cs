@@ -7,45 +7,54 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 {
     public class ReplaceOccurrencesStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
+        protected TState inState;
+        protected ReplaceOcurrencesVisitor replacer;
+        protected EditsValidator validator;
+
         public override void Handle(TState state)
         {
             if (state == null || state.ExprRange == null || state.Program == null || state.RawProgram == null ||
                 state.ExtractVariableOptions == null || state.StmtDivisors == null || state.SourceEdits == null)
                 throw new ArgumentNullException();
 
-            var replacer = new ReplaceOcurrencesVisitor(state.Program, state.RawProgram, state.ExprRange,
-                state.ExtractVariableOptions.VarName, state.StmtDivisors);
-            replacer.Execute();
+            inState = state;
 
-            var replacerEdits = new List<SourceEdit>();
-            replacerEdits.AddRange(state.SourceEdits);
-            replacerEdits.AddRange(replacer.SourceEdits);
-            replacerEdits.AddRange(replacer.AssertSourceEdits);
-            var validator = new EditsValidator(state.FilePath, replacerEdits);
-            validator.Execute();
-            if (!validator.IsValid)
-            {
-                state.Errors.Add("Error: Invalid selection");
-                return;
-            }
+            Replace();
+            Validate();
+            if (state.Errors.Count > 0) return;
 
             state.SourceEdits.AddRange(replacer.SourceEdits);
-
             base.Handle(state);
+        }
+
+        protected void Replace()
+        {
+            replacer = new ReplaceOcurrencesVisitor(inState.Program, inState.RawProgram, inState.ExprRange,
+                inState.ExtractVariableOptions.VarName, inState.StmtDivisors);
+            replacer.Execute();
+        }
+
+        protected void Validate()
+        {
+            var edits = new List<SourceEdit>();
+            edits.AddRange(inState.SourceEdits);
+            edits.AddRange(replacer.SourceEdits);
+            edits.AddRange(replacer.AssertSourceEdits);
+            validator = new EditsValidator(inState.FilePath, edits);
+            validator.Execute();
+
+            if (!validator.IsValid) inState.Errors.Add("Error: Invalid selection");
         }
     }
 
-    internal class ReplaceOcurrencesVisitor : DafnyVisitor
+    public class ReplaceOcurrencesVisitor : DafnyVisitor
     {
+        protected Range exprRange;
+        protected Expression furtherstExpr;
         protected Program program;
         protected string rawProgram;
-        protected Range exprRange;
-        protected string exprString;
-        protected Expression furtherstExpr;
-        protected string varName;
         protected List<int> stmtDivisors;
-        public List<SourceEdit> SourceEdits { get; protected set; }
-        public List<SourceEdit> AssertSourceEdits { get; protected set; }
+        protected string varName;
 
         public ReplaceOcurrencesVisitor(Program program, string rawProgram, Range exprRange, string varName,
             List<int> stmtDivisors)
@@ -60,20 +69,21 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             this.stmtDivisors = stmtDivisors;
         }
 
+        public List<SourceEdit> SourceEdits { get; protected set; }
+        public List<SourceEdit> AssertSourceEdits { get; protected set; }
+
         public void Execute()
         {
-            var startPos = exprRange.start;
-            var endPos = exprRange.end;
-            exprString = rawProgram.Substring(startPos, endPos - startPos);
-
             furtherstExpr = null;
             SourceEdits = new List<SourceEdit>();
             AssertSourceEdits = new List<SourceEdit>();
+
             Visit(program);
         }
 
         protected override void Visit(Expression exp)
         {
+            /* FIND START AND END OF EXPRESSION */
             var startFinder = new FindExprVisitor(exp, 0);
             startFinder.Execute();
             var startExpr = startFinder.RightExpr;
@@ -87,24 +97,28 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var startPos = startExpr.tok.pos;
             var endPos = endExpr.tok.pos + endExpr.tok.val.Length;
             if (startPos >= endPos) return;
-            if (startPos > exprRange.start || exprRange.end > endPos) return;
 
+            /* REPLACEMENT */
+            //if (startPos > exprRange.start || exprRange.end > endPos) return;
+            if (exprRange.end < startPos || exprRange.start > endPos) return;
             SourceEdits.Add(new SourceEdit(exprRange.start, exprRange.end, varName));
 
             /* ASSERTIVE */
-            var rawExprString = rawProgram.Substring(startPos, endPos - startPos);
+            var rawExpr = rawProgram.Substring(startPos, endPos - startPos);
 
-            var replaceStart = exprRange.start - startPos;
-            var replaceEnd = exprRange.end - startPos;
-            var replacedExprString = rawProgram.Substring(startPos, endPos - startPos);
-            replacedExprString = replacedExprString.Remove(replaceStart, replaceEnd - replaceStart)
+            //var replaceStart = exprRange.start - startPos;
+            //var replaceEnd = exprRange.end - startPos;
+            var replaceStart = exprRange.start >= startPos ? exprRange.start - startPos : 0;
+            var replaceEnd = exprRange.end <= endPos ? exprRange.end - startPos : rawExpr.Length;
+            var replacedRawExpr = rawExpr.Remove(replaceStart, replaceEnd - replaceStart)
                 .Insert(replaceStart, varName);
-            var assert = $"\n assert {replacedExprString} == {rawExprString};";
+            var assert = $"\n assert {replacedRawExpr} == {rawExpr};";
 
             var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= exp.tok.pos);
             if (divisorIndex < 1) return;
             var assertPos = stmtDivisors[divisorIndex - 1] + 1;
 
+            /* SAVE EDITS */
             AssertSourceEdits.Add(new SourceEdit(assertPos, assert));
         }
     }

@@ -6,7 +6,7 @@ namespace DafnyRefactor.ExtractVariable.Steps
 {
     public class ExtractVariableStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
-        protected TState internalState;
+        protected TState inState;
 
         public override void Handle(TState state)
         {
@@ -14,36 +14,40 @@ namespace DafnyRefactor.ExtractVariable.Steps
                 state.ExtractVariableOptions == null || state.Program == null || state.RawProgram == null ||
                 state.StmtDivisors == null)
                 throw new ArgumentNullException();
-            internalState = state;
+
+            inState = state;
 
             ExtractVariable();
-            var validator = new EditsValidator(state.FilePath, state.SourceEdits);
-            validator.Execute();
-            if (!validator.IsValid)
-            {
-                state.Errors.Add("Error: Selected expression is invalid");
-                return;
-            }
+            Validate();
+            if (state.Errors.Count > 0) return;
 
             base.Handle(state);
         }
 
         protected void ExtractVariable()
         {
-            var startPos = internalState.ExprRange.start;
-            var endPos = internalState.ExprRange.end;
-            var exprString = internalState.RawProgram.Substring(startPos, endPos - startPos);
+            var startPos = inState.ExprRange.start;
+            var endPos = inState.ExprRange.end;
+            var rawExpr = inState.RawProgram.Substring(startPos, endPos - startPos);
 
-            var varName = internalState.ExtractVariableOptions.VarName;
-            var extractedVarPrinted = $"\nvar {varName} := {exprString};";
+            var varName = inState.ExtractVariableOptions.VarName;
+            var extractedVarPrinted = $"\nvar {varName} := {rawExpr};";
 
             var divisorIndex =
-                internalState.StmtDivisors.FindIndex(divisor => divisor >= internalState.ExtractStmt.EndTok.pos);
-            var extractedPos = internalState.StmtDivisors[divisorIndex - 1] + 1;
+                inState.StmtDivisors.FindIndex(divisor => divisor >= inState.ExtractStmt.EndTok.pos);
+            var extractedPos = inState.StmtDivisors[divisorIndex - 1] + 1;
             var extracteVarEdit = new SourceEdit(extractedPos, extractedVarPrinted);
-            internalState.SourceEdits.Add(extracteVarEdit);
-            //var removedVarEdit = new SourceEdit(startPos, endPos, varName);
-            //internalState.SourceEdits.Add(removedVarEdit);
+            inState.SourceEdits.Add(extracteVarEdit);
+        }
+
+        protected void Validate()
+        {
+            var validator = new EditsValidator(inState.FilePath, inState.SourceEdits);
+            validator.Execute();
+            if (!validator.IsValid)
+            {
+                inState.Errors.Add("Error: Selected expression is invalid");
+            }
         }
     }
 }
