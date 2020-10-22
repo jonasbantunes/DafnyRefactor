@@ -15,5 +15,6 @@ method Main() {
     node.value := 5;
     
     var x: int := 22 + node.value + -(2*7) + 1 + 7;
-    var y := node.value;
+var extractedVar := node;
+    var y := extractedVar.value;
 }

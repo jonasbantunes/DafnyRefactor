@@ -22,6 +22,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             inState = state;
 
             Setup();
+            if (state.Errors.Count > 0) return;
             FindStart();
             if (state.Errors.Count > 0) return;
             FindEnd();
@@ -37,6 +38,12 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             startFinder.Execute();
             endFinder = new FindExprVisitor(inState.ExtractStmt, inState.Range.end);
             endFinder.Execute();
+
+            if ((startFinder.LeftExpr == null && startFinder.RightExpr == null) ||
+                (endFinder.LeftExpr == null && endFinder.RightExpr == null))
+            {
+                inState.Errors.Add("Error: selection is not an expression.");
+            }
         }
 
         protected void FindStart()

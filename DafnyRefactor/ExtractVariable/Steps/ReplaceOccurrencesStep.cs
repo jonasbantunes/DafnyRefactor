@@ -94,7 +94,23 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
             if (startExpr == null || endExpr == null) return;
 
-            var startPos = startExpr.tok.pos;
+            int startPos;
+            if (startExpr is ExprDotName exprDotName)
+            {
+                var lhs = exprDotName.Lhs;
+                while (!(lhs is NameSegment))
+                {
+                    var subDotExpr = (ExprDotName) lhs;
+                    lhs = subDotExpr.Lhs;
+                }
+
+                startPos = lhs.tok.pos;
+            }
+            else
+            {
+                startPos = startExpr.tok.pos;
+            }
+
             var endPos = endExpr.tok.pos + endExpr.tok.val.Length;
             if (startPos >= endPos) return;
 

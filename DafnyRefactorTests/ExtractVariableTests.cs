@@ -41,6 +41,31 @@ namespace DafnyRefactorTests
         }
 
         [Test]
+        public void ClassExprT2()
+        {
+            testFileDir = $"{testDir}\\class_expr";
+            testNumber = 2;
+            startRange = "18:14";
+            endRange = "18:15";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(0, exitCode);
+            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
+
+        [Test]
+        public void ClassExprT3()
+        {
+            testFileDir = $"{testDir}\\class_expr";
+            testNumber = 3;
+            startRange = "14:17";
+            endRange = "14:27";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
+        }
+
+        [Test]
         public void MethodCallT1()
         {
             testFileDir = $"{testDir}\\method_call";
