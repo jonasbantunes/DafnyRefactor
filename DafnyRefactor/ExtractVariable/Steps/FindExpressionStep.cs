@@ -40,17 +40,40 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         }
 
         protected void FindStart()
+
         {
+            if (startFinder.LeftExpr is NegationExpression negationExpr &&
+                !IsSubExpr(endFinder.LeftExpr, negationExpr))
+            {
+                inState.Errors.Add("Error: Selected expression is invalid");
+                return;
+            }
+
             if (startFinder.RightExpr is BinaryExpr)
             {
                 inState.Errors.Add("Error: selected expression starts with a binary operand.");
                 return;
             }
 
-            if (startFinder.LeftExpr is NegationExpression negationExpr &&
-                !IsSubExpr(endFinder.LeftExpr, negationExpr))
+            if (startFinder.RightExpr is ExprDotName exprDotName)
             {
-                inState.Errors.Add("Error: Selected expression is invalid");
+                var lhs = exprDotName.Lhs;
+                while (!(lhs is NameSegment))
+                {
+                    var subDotName = (ExprDotName) lhs;
+                    lhs = subDotName.Lhs;
+                }
+
+                var startPos = lhs.tok.pos;
+                var endPos = lhs.tok.pos + lhs.tok.val.Length;
+
+                if (startPos > inState.Range.start || inState.Range.start > endPos)
+                {
+                    inState.Errors.Add("Error: Selection should start on beginning of object");
+                    return;
+                }
+
+                exprStart = lhs;
                 return;
             }
 
@@ -59,12 +82,26 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected void FindEnd()
         {
-            if (endFinder.LeftExpr == null)
+            if (endFinder.LeftExpr == null || endFinder.LeftExpr is BinaryExpr ||
+                endFinder.LeftExpr is NegationExpression)
             {
-                exprEnd = endFinder.RightExpr;
-            }
-            else if (endFinder.LeftExpr is BinaryExpr || endFinder.LeftExpr is NegationExpression)
-            {
+                if (endFinder.RightExpr is ExprDotName)
+                {
+                    var lhs = endFinder.RightExpr;
+                    while (!(lhs is NameSegment))
+                    {
+                        var subDotName = (ExprDotName) lhs;
+                        var lhsPos = subDotName.tok.pos;
+                        var lhsEndPos = subDotName.tok.pos + subDotName.tok.val.Length;
+                        if (lhsPos < inState.Range.end && inState.Range.end < lhsEndPos) break;
+
+                        lhs = subDotName.Lhs;
+                    }
+
+                    exprEnd = lhs;
+                    return;
+                }
+
                 var tokPos = endFinder.RightExpr.tok.pos;
                 var endTokPos = endFinder.RightExpr.tok.pos + endFinder.RightExpr.tok.val.Length;
                 if (tokPos < inState.Range.end && inState.Range.end < endTokPos)
