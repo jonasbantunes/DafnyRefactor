@@ -17,27 +17,27 @@ namespace DafnyRefactor.ExtractVariable.Steps
 
             inState = state;
 
-            ExtractVariable();
+            Extract();
             Validate();
             if (state.Errors.Count > 0) return;
 
             base.Handle(state);
         }
 
-        protected void ExtractVariable()
+        protected void Extract()
         {
-            var startPos = inState.ExprRange.start;
-            var endPos = inState.ExprRange.end;
-            var rawExpr = inState.RawProgram.Substring(startPos, endPos - startPos);
+            var exprStart = inState.ExprRange.start;
+            var exprEnd = inState.ExprRange.end;
+            var exprRaw = inState.RawProgram.Substring(exprStart, exprEnd - exprStart);
 
             var varName = inState.ExtractVariableOptions.VarName;
-            var extractedVarPrinted = $"\nvar {varName} := {rawExpr};";
+            var editRaw = $"\nvar {varName} := {exprRaw};";
 
             var divisorIndex =
                 inState.StmtDivisors.FindIndex(divisor => divisor >= inState.ExtractStmt.EndTok.pos);
-            var extractedPos = inState.StmtDivisors[divisorIndex - 1] + 1;
-            var extracteVarEdit = new SourceEdit(extractedPos, extractedVarPrinted);
-            inState.SourceEdits.Add(extracteVarEdit);
+            var editPos = inState.StmtDivisors[divisorIndex - 1] + 1;
+            var edit = new SourceEdit(editPos, editRaw);
+            inState.SourceEdits.Add(edit);
         }
 
         protected void Validate()

@@ -101,6 +101,7 @@
     <Compile Include="ExtractVariable\State\Range.cs" />
     <Compile Include="ExtractVariable\Steps\ExtractVariableStep.cs" />
     <Compile Include="ExtractVariable\Steps\FindExpressionStep.cs" />
+    <Compile Include="Utils\FindExprNeighbours.cs" />
     <Compile Include="ExtractVariable\Steps\FindStatementStep.cs" />
     <Compile Include="ExtractVariable\Steps\LoadRawProgramStep.cs" />
     <Compile Include="ExtractVariable\Steps\ParseSelectionStep.cs" />

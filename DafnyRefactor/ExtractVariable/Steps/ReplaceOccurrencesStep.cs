@@ -84,11 +84,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         protected override void Visit(Expression exp)
         {
             /* FIND START AND END OF EXPRESSION */
-            var startFinder = new FindExprVisitor(exp, 0);
+            var startFinder = new FindExprNeighbours(exp, 0);
             startFinder.Execute();
             var startExpr = startFinder.RightExpr;
 
-            var endFinder = new FindExprVisitor(exp, int.MaxValue);
+            var endFinder = new FindExprNeighbours(exp, int.MaxValue);
             endFinder.Execute();
             var endExpr = endFinder.LeftExpr;
 
@@ -113,17 +113,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
             var endPos = endExpr.tok.pos + endExpr.tok.val.Length;
             if (startPos >= endPos) return;
-
-            /* REPLACEMENT */
-            //if (startPos > exprRange.start || exprRange.end > endPos) return;
             if (exprRange.end < startPos || exprRange.start > endPos) return;
-            SourceEdits.Add(new SourceEdit(exprRange.start, exprRange.end, varName));
 
             /* ASSERTIVE */
             var rawExpr = rawProgram.Substring(startPos, endPos - startPos);
 
-            //var replaceStart = exprRange.start - startPos;
-            //var replaceEnd = exprRange.end - startPos;
             var replaceStart = exprRange.start >= startPos ? exprRange.start - startPos : 0;
             var replaceEnd = exprRange.end <= endPos ? exprRange.end - startPos : rawExpr.Length;
             var replacedRawExpr = rawExpr.Remove(replaceStart, replaceEnd - replaceStart)
@@ -135,6 +129,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var assertPos = stmtDivisors[divisorIndex - 1] + 1;
 
             /* SAVE EDITS */
+            SourceEdits.Add(new SourceEdit(exprRange.start, exprRange.end, varName));
             AssertSourceEdits.Add(new SourceEdit(assertPos, assert));
         }
     }

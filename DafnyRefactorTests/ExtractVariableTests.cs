@@ -25,7 +25,10 @@ namespace DafnyRefactorTests
         protected string TestExpectedPath => $"{testFileDir}\\test{testNumber}.expected";
 
         protected string[] Args => new[]
-            {"apply-extract-variable", "-f", TestFilePath, "-s", startRange, "-e", endRange, "-o", TestOutputPath, "-v", "extractedVar"};
+        {
+            "apply-extract-variable", "-f", TestFilePath, "-s", startRange, "-e", endRange, "-o", TestOutputPath, "-v",
+            "extractedVar"
+        };
 
         [Test]
         public void ClassExprT1()

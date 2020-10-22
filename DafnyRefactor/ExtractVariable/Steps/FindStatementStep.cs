@@ -9,10 +9,10 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.FilePath == null || state.Range == null || state.StmtDivisors == null)
+            if (state == null || state.FilePath == null || state.Selection == null || state.StmtDivisors == null)
                 throw new ArgumentNullException();
 
-            var visitor = new FindStatementVisitor(state.Program, state.Range, state.StmtDivisors);
+            var visitor = new FindStatementVisitor(state.Program, state.Selection, state.StmtDivisors);
             visitor.Execute();
             if (visitor.FoundStmt == null)
             {
@@ -29,16 +29,17 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     internal class FindStatementVisitor : DafnyVisitorWithNearests
     {
         protected Program program;
-        protected Range range;
+        protected Range selection;
         protected List<int> stmtDivisors;
-        public Statement FoundStmt { get; protected set; }
 
-        public FindStatementVisitor(Program program, Range range, List<int> stmtDivisors)
+        public FindStatementVisitor(Program program, Range selection, List<int> stmtDivisors)
         {
             this.program = program;
-            this.range = range;
+            this.selection = selection;
             this.stmtDivisors = stmtDivisors;
         }
+
+        public Statement FoundStmt { get; protected set; }
 
         public void Execute()
         {
@@ -47,7 +48,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected override void Visit(Statement stmt)
         {
-            if (IsInStmt(range, stmt, stmtDivisors))
+            if (IsInStmt(stmt))
             {
                 FoundStmt = stmt;
             }
@@ -55,15 +56,16 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             base.Visit(stmt);
         }
 
-        protected bool IsInStmt(Range range, Statement stmt, List<int> stmtDivisors)
+        // TODO: Choose a better name
+        protected bool IsInStmt(Statement stmt)
         {
             var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= stmt.EndTok.pos);
             if (divisorIndex < 1) return false;
 
-            var start = stmtDivisors[divisorIndex - 1];
-            var end = stmtDivisors[divisorIndex];
+            var stmtStart = stmtDivisors[divisorIndex - 1];
+            var stmtEnd = stmtDivisors[divisorIndex];
 
-            return start.CompareTo(range.start) <= 0 && end.CompareTo(range.end) >= 0;
+            return stmtStart <= selection.start && selection.end <= stmtEnd;
         }
     }
 }

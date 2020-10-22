@@ -5,27 +5,34 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 {
     public class ParseSelectionStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
-        // TODO: Improve options validation
-        // TODO: Improve source
         public override void Handle(TState state)
         {
             if (state == null || state.Options == null || state.RawProgram == null) throw new ArgumentNullException();
 
-            var startLine = int.Parse(state.ExtractVariableOptions.StartPosition.Split(':')[0]);
-            var startCol = int.Parse(state.ExtractVariableOptions.StartPosition.Split(':')[1]);
-            var endLine = int.Parse(state.ExtractVariableOptions.EndPosition.Split(':')[0]);
-            var endCol = int.Parse(state.ExtractVariableOptions.EndPosition.Split(':')[1]);
+            var startRawSplitted = state.ExtractVariableOptions.StartPosition.Split(':');
+            var endRawSplitted = state.ExtractVariableOptions.EndPosition.Split(':');
+            if (startRawSplitted.Length != 2 || endRawSplitted.Length != 2)
+            {
+                state.Errors.Add("Error: Incorrect selection range syntax.");
+                return;
+            }
+
+            var startLine = int.Parse(startRawSplitted[0]);
+            var startCol = int.Parse(startRawSplitted[1]);
+            var endLine = int.Parse(endRawSplitted[0]);
+            var endCol = int.Parse(endRawSplitted[1]);
+
             var startIndex = state.RawProgram.IndexOfNth("\n", startLine - 1);
             if (startIndex == -1)
             {
-                state.Errors.Add("Error: Range is invalid");
+                state.Errors.Add("Error: Selection is invalid");
                 return;
             }
 
             var endIndex = state.RawProgram.IndexOfNth("\n", endLine - 1);
             if (endIndex == -1)
             {
-                state.Errors.Add("Error: Range is invalid");
+                state.Errors.Add("Error: Selection is invalid");
                 return;
             }
 
@@ -33,11 +40,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var end = endIndex + endCol;
             if (start >= end)
             {
-                state.Errors.Add("Error: Range is invalid");
+                state.Errors.Add("Error: Selection is invalid");
                 return;
             }
 
-            state.Range = new Range(start, end);
+            state.Selection = new Range(start, end);
 
             base.Handle(state);
         }
