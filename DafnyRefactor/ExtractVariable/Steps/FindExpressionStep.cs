@@ -113,6 +113,10 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
                     inState.Errors.Add("Error: selected expression ends with a operand.");
                 }
             }
+            else if (endFinder.LeftExpr == startFinder.LeftExpr && endFinder.RightExpr == startFinder.RightExpr)
+            {
+                exprEnd = endFinder.RightExpr;
+            }
             else
             {
                 exprEnd = endFinder.LeftExpr;

@@ -1,0 +1,11 @@
+method Sum(a: int, b: int, c: int)
+returns (res: int)
+{
+    res := a + b +c;
+}
+
+method Main()
+{
+var extractedVar := 3543;
+    var sumResult := Sum(extractedVar, 3452313, 3423);
+}
