@@ -80,6 +80,12 @@ namespace Microsoft.DafnyRefactor.Utils
             Visit(negationExpr.E);
         }
 
+        protected override void Visit(ITEExpr iteExpr)
+        {
+            VerifyExpr(iteExpr);
+            base.Visit(iteExpr);
+        }
+
         protected void VerifyExpr(Expression expr)
         {
             var endTokPos = expr.tok.pos + expr.tok.val.Length - 1;

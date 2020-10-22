@@ -69,6 +69,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             this.stmtDivisors = stmtDivisors;
         }
 
+        //protected string VarName => $"({varName})";
+        protected string VarName => varName;
         public List<SourceEdit> SourceEdits { get; protected set; }
         public List<SourceEdit> AssertSourceEdits { get; protected set; }
 
@@ -121,15 +123,15 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var replaceStart = exprRange.start >= startPos ? exprRange.start - startPos : 0;
             var replaceEnd = exprRange.end <= endPos ? exprRange.end - startPos : rawExpr.Length;
             var replacedRawExpr = rawExpr.Remove(replaceStart, replaceEnd - replaceStart)
-                .Insert(replaceStart, varName);
-            var assert = $"\n assert {replacedRawExpr} == {rawExpr};";
+                .Insert(replaceStart, VarName);
+            var assert = $"\n assert ({replacedRawExpr}) == ({rawExpr});";
 
             var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= exp.tok.pos);
             if (divisorIndex < 1) return;
             var assertPos = stmtDivisors[divisorIndex - 1] + 1;
 
             /* SAVE EDITS */
-            SourceEdits.Add(new SourceEdit(exprRange.start, exprRange.end, varName));
+            SourceEdits.Add(new SourceEdit(exprRange.start, exprRange.end, VarName));
             AssertSourceEdits.Add(new SourceEdit(assertPos, assert));
         }
     }

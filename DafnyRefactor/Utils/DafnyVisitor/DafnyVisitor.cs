@@ -136,6 +136,9 @@ namespace Microsoft.DafnyRefactor.Utils
                 case LiteralExpr literalExpr:
                     Visit(literalExpr);
                     break;
+                case ITEExpr iteExpr:
+                    Visit(iteExpr);
+                    break;
                 default:
                     Traverse(exp.SubExpressions.ToList());
                     break;
@@ -181,6 +184,11 @@ namespace Microsoft.DafnyRefactor.Utils
         protected virtual void Visit(LiteralExpr literalExpr)
         {
             Traverse(literalExpr.SubExpressions.ToList());
+        }
+
+        protected virtual void Visit(ITEExpr iteExpr)
+        {
+            Traverse(iteExpr.SubExpressions.ToList());
         }
 
         protected virtual void Traverse(List<TopLevelDecl> topLevelDecls)

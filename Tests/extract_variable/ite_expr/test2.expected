@@ -1,0 +1,5 @@
+method Main()
+{
+var extractedVar := 3 == 3;
+    var y: int := if extractedVar then 2 else 4;
+}
