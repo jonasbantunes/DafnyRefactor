@@ -5,6 +5,10 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.ExtractVariable
 {
+    /// <summary>
+    ///     A <c>RefactorStep</c> that replaces all occurences of extracted expression.
+    ///     <para>Currently is replacing only the original selection.</para>
+    /// </summary>
     public class ReplaceOccurrencesStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
         protected TState inState;

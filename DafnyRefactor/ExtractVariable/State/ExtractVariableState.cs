@@ -5,6 +5,9 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.ExtractVariable
 {
+    /// <summary>
+    ///     Represents the state of a "Extract Variable" refactor.
+    /// </summary>
     public interface IExtractVariableState : IRefactorState
     {
         // TODO: Think on a better name

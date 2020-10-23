@@ -3,6 +3,9 @@
 namespace Microsoft.DafnyRefactor.Utils
 {
     // TODO: Change this to accept rootExpr only.
+    /// <summary>
+    ///     Finds the leftmost and rightmost expressions of a informed expression on AST>
+    /// </summary>
     public class FindExprNeighbours : DafnyVisitor
     {
         protected int position;

@@ -5,6 +5,9 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.ExtractVariable
 {
+    /// <summary>
+    ///     A <c>RefactorStep</c> that finds the statement with informed selection.
+    /// </summary>
     public class FindStatementStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
         public override void Handle(TState state)

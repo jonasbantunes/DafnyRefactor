@@ -42,7 +42,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             steps.Add(new ParseStmtDivisorsStep<ExtractVariableState>());
             steps.Add(new ParseSelectionStep<ExtractVariableState>());
             steps.Add(new FindStatementStep<ExtractVariableState>());
-            steps.Add(new FindExpressionStep<ExtractVariableState>());
+            steps.Add(new FindExprRangeStep<ExtractVariableState>());
             steps.Add(new ExtractVariableStep<ExtractVariableState>());
             steps.Add(new ReplaceOccurrencesStep<ExtractVariableState>());
             steps.Add(new SaveChangesStep<ExtractVariableState>());

@@ -3,6 +3,9 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.ExtractVariable
 {
+    /// <summary>
+    ///     A <c>RefactorStep</c> that parses the selection range informed by user.
+    /// </summary>
     public class ParseSelectionStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
         public override void Handle(TState state)

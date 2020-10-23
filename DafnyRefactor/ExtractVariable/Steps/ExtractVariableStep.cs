@@ -4,6 +4,9 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace DafnyRefactor.ExtractVariable.Steps
 {
+    /// <summary>
+    ///     A <c>RefactorStep</c> that extracts the selected expression from <c>state.ExtractStmt</c>.
+    /// </summary>
     public class ExtractVariableStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
         protected TState inState;

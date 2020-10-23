@@ -4,12 +4,15 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.ExtractVariable
 {
-    public class FindExpressionStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
+    /// <summary>
+    ///     A <c>RefactorStep</c> that locate the start and end of selected expression, according with AST.
+    /// </summary>
+    public class FindExprRangeStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
-        protected FindExprNeighbours endFinder;
         protected Expression endExpr;
-        protected Expression startExpr;
+        protected FindExprNeighbours endFinder;
         protected TState inState;
+        protected Expression startExpr;
         protected FindExprNeighbours startFinder;
 
 
