@@ -17,8 +17,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         public override void Handle(TState state)
         {
-            if (state == null || state.ExprRange == null || state.Program == null || state.RawProgram == null ||
-                state.ExtractVariableOptions == null || state.StmtDivisors == null || state.SourceEdits == null)
+            if (state == null || state.ExprRange == null || state.ExtractStmt == null || state.Program == null ||
+                state.RawProgram == null || state.ExtractVariableOptions == null || state.StmtDivisors == null ||
+                state.SourceEdits == null)
                 throw new ArgumentNullException();
 
             inState = state;
@@ -34,7 +35,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         protected void Replace()
         {
             replacer = new ReplaceOcurrencesVisitor(inState.Program, inState.RawProgram, inState.ExprRange,
-                inState.ExtractVariableOptions.VarName, inState.StmtDivisors);
+                inState.ExtractVariableOptions.VarName, inState.StmtDivisors, inState.ExtractStmt);
             replacer.Execute();
         }
 
@@ -42,7 +43,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         {
             var edits = new List<SourceEdit>();
             edits.AddRange(inState.SourceEdits);
-            edits.AddRange(replacer.SourceEdits);
             edits.AddRange(replacer.AssertSourceEdits);
             validator = new EditsValidator(inState.FilePath, edits);
             validator.Execute();
@@ -59,9 +59,10 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         protected string rawProgram;
         protected List<int> stmtDivisors;
         protected string varName;
+        protected Statement extractStmt;
 
         public ReplaceOcurrencesVisitor(Program program, string rawProgram, Range exprRange, string varName,
-            List<int> stmtDivisors)
+            List<int> stmtDivisors, Statement extractStmt)
         {
             if (program == null || rawProgram == null || exprRange == null || varName == null)
                 throw new ArgumentNullException();
@@ -71,6 +72,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             this.exprRange = exprRange;
             this.varName = varName;
             this.stmtDivisors = stmtDivisors;
+            this.extractStmt = extractStmt;
         }
 
         //protected string VarName => $"({varName})";
@@ -84,21 +86,60 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             SourceEdits = new List<SourceEdit>();
             AssertSourceEdits = new List<SourceEdit>();
 
+            AddDeclAssertive();
             Visit(program);
+        }
+
+        protected void AddDeclAssertive()
+        {
+            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= extractStmt.Tok.pos);
+            if (divisorIndex < 1) return;
+            var ghostPos = stmtDivisors[divisorIndex - 1] + 1;
+
+            var varRaw = rawProgram.Substring(exprRange.start, exprRange.end - exprRange.start);
+            var ghostRaw = $"\n ghost var {varName}___RefactorGhostExpr := {varRaw};";
+            AssertSourceEdits.Add(new SourceEdit(ghostPos, ghostRaw));
         }
 
         protected override void Visit(Expression exp)
         {
-            /* FIND START AND END OF EXPRESSION */
-            var startFinder = new FindExprNeighbours(exp, 0);
+            var range = FindExprRange(exp);
+            if (range.start == 0 && range.end == 0) return;
+
+            var expRaw = rawProgram.Substring(range.start, range.end - range.start);
+            var varRaw = rawProgram.Substring(exprRange.start, exprRange.end - exprRange.start).Trim();
+
+            var ranges = SubExprRawRanges(expRaw, varRaw);
+            if (ranges.Count == 0) return;
+
+            var replacedRaw = expRaw;
+            for (var i = ranges.Count - 1; i >= 0; i--)
+            {
+                var subRange = ranges[i];
+                replacedRaw = replacedRaw.Remove(subRange.start, subRange.end - subRange.start)
+                    .Insert(subRange.start, VarName);
+            }
+
+            SourceEdits.Add(new SourceEdit(range.start, range.end, replacedRaw));
+
+            var assert = $"\n assert ({varName}___RefactorGhostExpr) == ( {varRaw} );";
+            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= exp.tok.pos);
+            if (divisorIndex < 1) return;
+            var assertPos = stmtDivisors[divisorIndex - 1] + 1;
+            AssertSourceEdits.Add(new SourceEdit(assertPos, assert));
+        }
+
+        public Range FindExprRange(Expression exp)
+        {
+            var startFinder = new FindExprNeighbourWithParens(exp, 0);
             startFinder.Execute();
             var startExpr = startFinder.RightExpr;
 
-            var endFinder = new FindExprNeighbours(exp, int.MaxValue);
+            var endFinder = new FindExprNeighbourWithParens(exp, int.MaxValue);
             endFinder.Execute();
             var endExpr = endFinder.LeftExpr;
 
-            if (startExpr == null || endExpr == null) return;
+            if (startExpr == null || endExpr == null) return new Range(0, 0);
 
             int startPos;
             if (startExpr is ExprDotName exprDotName)
@@ -117,26 +158,68 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
                 startPos = startExpr.tok.pos;
             }
 
-            var endPos = endExpr.tok.pos + endExpr.tok.val.Length;
-            if (startPos >= endPos) return;
-            if (exprRange.end < startPos || exprRange.start > endPos) return;
+            var endPos = FindRealEnd(startPos, endExpr.tok.pos + endExpr.tok.val.Length);
+            return new Range(startPos, endPos);
+        }
 
-            /* ASSERTIVE */
-            var rawExpr = rawProgram.Substring(startPos, endPos - startPos);
+        public int FindRealEnd(int realStart, int end)
+        {
+            var openedParens = 0;
+            var i = realStart;
+            while (i < end || openedParens > 0)
+            {
+                var c = rawProgram[i];
 
-            var replaceStart = exprRange.start >= startPos ? exprRange.start - startPos : 0;
-            var replaceEnd = exprRange.end <= endPos ? exprRange.end - startPos : rawExpr.Length;
-            var replacedRawExpr = rawExpr.Remove(replaceStart, replaceEnd - replaceStart)
-                .Insert(replaceStart, VarName);
-            var assert = $"\n assert ({replacedRawExpr}) == ({rawExpr});";
+                switch (c)
+                {
+                    case '(':
+                        openedParens++;
+                        break;
+                    case ')':
+                        openedParens--;
+                        break;
+                }
 
-            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= exp.tok.pos);
-            if (divisorIndex < 1) return;
-            var assertPos = stmtDivisors[divisorIndex - 1] + 1;
+                i++;
+            }
 
-            /* SAVE EDITS */
-            SourceEdits.Add(new SourceEdit(exprRange.start, exprRange.end, VarName));
-            AssertSourceEdits.Add(new SourceEdit(assertPos, assert));
+            return i;
+        }
+
+        public List<Range> SubExprRawRanges(string rawExpr, string rawSub)
+        {
+            var ranges = new List<Range>();
+
+            var i = 0;
+            while (i < rawExpr.Length)
+            {
+                var range = SubExprRawRange(rawExpr, rawSub, i);
+                if (range == null) break;
+                ranges.Add(range);
+                i = range.end;
+            }
+
+            return ranges;
+        }
+
+        public Range SubExprRawRange(string rawExpr, string rawSub, int offset)
+        {
+            var start = rawExpr.IndexOf(rawSub, offset, StringComparison.Ordinal);
+            if (start == -1) return null;
+            return new Range(start, start + rawSub.Length);
+        }
+    }
+
+    public class FindExprNeighbourWithParens : FindExprNeighbours
+    {
+        public FindExprNeighbourWithParens(Expression rootExpr, int position) : base(rootExpr, position)
+        {
+        }
+
+        protected override void Visit(ParensExpression parensExpression)
+        {
+            VerifyExpr(parensExpression);
+            base.Visit(parensExpression);
         }
     }
 }

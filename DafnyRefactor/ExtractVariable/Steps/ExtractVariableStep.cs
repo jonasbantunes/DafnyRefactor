@@ -31,7 +31,7 @@ namespace DafnyRefactor.ExtractVariable.Steps
         {
             var exprStart = inState.ExprRange.start;
             var exprEnd = inState.ExprRange.end;
-            var exprRaw = inState.RawProgram.Substring(exprStart, exprEnd - exprStart);
+            var exprRaw = inState.RawProgram.Substring(exprStart, exprEnd - exprStart).Trim();
 
             var varName = inState.ExtractVariableOptions.VarName;
             var editRaw = $"\nvar {varName} := {exprRaw};";

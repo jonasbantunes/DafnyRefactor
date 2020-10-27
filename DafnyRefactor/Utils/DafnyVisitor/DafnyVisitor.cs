@@ -139,6 +139,9 @@ namespace Microsoft.DafnyRefactor.Utils
                 case ITEExpr iteExpr:
                     Visit(iteExpr);
                     break;
+                case ParensExpression parensExpression:
+                    Visit(parensExpression);
+                    break;
                 default:
                     Traverse(exp.SubExpressions.ToList());
                     break;
@@ -189,6 +192,11 @@ namespace Microsoft.DafnyRefactor.Utils
         protected virtual void Visit(ITEExpr iteExpr)
         {
             Traverse(iteExpr.SubExpressions.ToList());
+        }
+
+        protected virtual void Visit(ParensExpression parensExpression)
+        {
+            Traverse(parensExpression.SubExpressions.ToList());
         }
 
         protected virtual void Traverse(List<TopLevelDecl> topLevelDecls)
