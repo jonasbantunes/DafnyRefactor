@@ -97,8 +97,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
+    <Compile Include="ExtractVariable\State\EvScope.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
     <Compile Include="ExtractVariable\State\Range.cs" />
+    <Compile Include="ExtractVariable\Steps\EvGenerateScopeStep.cs" />
     <Compile Include="ExtractVariable\Steps\ExtractVariableStep.cs" />
     <Compile Include="ExtractVariable\Steps\FindExprRangeStep.cs" />
     <Compile Include="Utils\FindExprNeighbours.cs" />

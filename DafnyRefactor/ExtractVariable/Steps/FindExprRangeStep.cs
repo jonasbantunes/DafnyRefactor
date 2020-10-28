@@ -18,8 +18,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         public override void Handle(TState state)
         {
-            if (state == null || state.Program == null || state.RawProgram == null || state.Selection == null ||
-                state.ExtractStmt == null)
+            if (state == null || state.Program == null || state.EvSourceCode == null || state.EvUserSelection == null ||
+                state.EvStmt == null)
                 throw new ArgumentNullException();
 
             inState = state;
@@ -37,9 +37,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected void Setup()
         {
-            startFinder = new FindExprNeighbours(inState.ExtractStmt, inState.Selection.start);
+            startFinder = new FindExprNeighbours(inState.EvStmt, inState.EvUserSelection.start);
             startFinder.Execute();
-            endFinder = new FindExprNeighbours(inState.ExtractStmt, inState.Selection.end);
+            endFinder = new FindExprNeighbours(inState.EvStmt, inState.EvUserSelection.end);
             endFinder.Execute();
 
             if (startFinder.LeftExpr == null && startFinder.RightExpr == null ||
@@ -86,9 +86,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var startPos = lhs.tok.pos;
             var endPos = lhs.tok.pos + lhs.tok.val.Length;
 
-            if (startPos > inState.Selection.start || inState.Selection.start > endPos)
+            if (startPos > inState.EvUserSelection.start || inState.EvUserSelection.start > endPos)
             {
-                inState.Errors.Add("Error: Selection should start on beginning of object");
+                inState.Errors.Add("Error: EvUserSelection should start on beginning of object");
                 return;
             }
 
@@ -123,7 +123,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
             var tokPos = endFinder.RightExpr.tok.pos;
             var endTokPos = endFinder.RightExpr.tok.pos + endFinder.RightExpr.tok.val.Length;
-            if (tokPos < inState.Selection.end && inState.Selection.end < endTokPos)
+            if (tokPos < inState.EvUserSelection.end && inState.EvUserSelection.end < endTokPos)
             {
                 endExpr = endFinder.RightExpr;
             }
@@ -141,7 +141,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
                 var subDotName = (ExprDotName) lhs;
                 var lhsPos = subDotName.tok.pos;
                 var lhsEndPos = subDotName.tok.pos + subDotName.tok.val.Length;
-                if (lhsPos < inState.Selection.end && inState.Selection.end < lhsEndPos) break;
+                if (lhsPos < inState.EvUserSelection.end && inState.EvUserSelection.end < lhsEndPos) break;
 
                 lhs = subDotName.Lhs;
             }
@@ -151,14 +151,14 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected void CalcExprRange()
         {
-            var selectionStart = inState.Selection.start;
-            var selectionEnd = inState.Selection.end;
+            var selectionStart = inState.EvUserSelection.start;
+            var selectionEnd = inState.EvUserSelection.end;
             var exprStart = startExpr.tok.pos;
             var exprEnd = endExpr.tok.pos + endExpr.tok.val.Length;
 
             var startPos = selectionStart <= exprStart ? selectionStart : exprStart;
             var endPos = selectionEnd >= exprEnd ? selectionEnd : exprEnd;
-            inState.ExprRange = new Range(startPos, endPos);
+            inState.EvExprRange = new Range(startPos, endPos);
         }
 
         protected bool IsSubExpr(Expression subExpr, Expression rootExpr)

@@ -12,10 +12,10 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.FilePath == null || state.Selection == null || state.StmtDivisors == null)
+            if (state == null || state.FilePath == null || state.EvUserSelection == null || state.StmtDivisors == null)
                 throw new ArgumentNullException();
 
-            var visitor = new FindStatementVisitor(state.Program, state.Selection, state.StmtDivisors);
+            var visitor = new FindStatementVisitor(state.Program, state.EvUserSelection, state.StmtDivisors);
             visitor.Execute();
             if (visitor.FoundStmt == null)
             {
@@ -23,7 +23,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
                 return;
             }
 
-            state.ExtractStmt = visitor.FoundStmt;
+            state.EvStmt = visitor.FoundStmt;
 
             base.Handle(state);
         }

@@ -38,6 +38,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             }
 
             steps.Add(new LoadProgramStep<ExtractVariableState>());
+            steps.Add(new EvGenerateScopeStep<ExtractVariableState>());
             steps.Add(new LoadRawProgramStep<ExtractVariableState>());
             steps.Add(new ParseStmtDivisorsStep<ExtractVariableState>());
             steps.Add(new ParseSelectionStep<ExtractVariableState>());

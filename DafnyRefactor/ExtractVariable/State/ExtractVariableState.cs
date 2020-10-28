@@ -10,12 +10,13 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     /// </summary>
     public interface IExtractVariableState : IRefactorState
     {
-        // TODO: Think on a better name
-        string RawProgram { get; set; }
-        Range Selection { get; set; }
-        Range ExprRange { get; set; }
-        ApplyExtractVariableOptions ExtractVariableOptions { get; }
-        Statement ExtractStmt { get; set; }
+        string EvSourceCode { get; set; }
+        Range EvUserSelection { get; set; }
+        Range EvExprRange { get; set; }
+        ApplyExtractVariableOptions EvOptions { get; }
+        Statement EvStmt { get; set; }
+        IEvScope EvRootScope { get; set; }
+        List<IRefactorVariable> EvExprVariables { get; }
     }
 
     public class ExtractVariableState : IExtractVariableState
@@ -28,6 +29,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             this.options = options ?? throw new ArgumentNullException();
 
             SourceEdits = new List<SourceEdit>();
+            EvExprVariables = new List<IRefactorVariable>();
             errors = new List<string>();
         }
 
@@ -45,10 +47,12 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             errors.Add(description);
         }
 
-        public string RawProgram { get; set; }
-        public Range Selection { get; set; }
-        public Range ExprRange { get; set; }
-        public ApplyExtractVariableOptions ExtractVariableOptions => options;
-        public Statement ExtractStmt { get; set; }
+        public string EvSourceCode { get; set; }
+        public Range EvUserSelection { get; set; }
+        public Range EvExprRange { get; set; }
+        public ApplyExtractVariableOptions EvOptions => options;
+        public Statement EvStmt { get; set; }
+        public IEvScope EvRootScope { get; set; }
+        public List<IRefactorVariable> EvExprVariables { get; }
     }
 }

@@ -171,6 +171,19 @@ namespace DafnyRefactorTests
         }
 
         [Test]
+        public void ScopeDiffT1()
+        {
+            testFileDir = $"{testDir}\\scope_diff";
+            testNumber = 1;
+            startRange = "3:18";
+            endRange = "3:23";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(0, exitCode);
+            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
+
+        [Test]
         public void SimpleExprT1()
         {
             testFileDir = $"{testDir}\\simple_expr";

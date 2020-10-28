@@ -13,7 +13,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         {
             if (state == null || state.FilePath == null) throw new ArgumentNullException();
 
-            state.RawProgram = File.ReadAllText(state.FilePath);
+            state.EvSourceCode = File.ReadAllText(state.FilePath);
 
             base.Handle(state);
         }

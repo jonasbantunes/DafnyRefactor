@@ -10,10 +10,10 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.Options == null || state.RawProgram == null) throw new ArgumentNullException();
+            if (state == null || state.Options == null || state.EvSourceCode == null) throw new ArgumentNullException();
 
-            var startRawSplitted = state.ExtractVariableOptions.StartPosition.Split(':');
-            var endRawSplitted = state.ExtractVariableOptions.EndPosition.Split(':');
+            var startRawSplitted = state.EvOptions.StartPosition.Split(':');
+            var endRawSplitted = state.EvOptions.EndPosition.Split(':');
             if (startRawSplitted.Length != 2 || endRawSplitted.Length != 2)
             {
                 state.Errors.Add("Error: Incorrect selection range syntax.");
@@ -25,17 +25,17 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var endLine = int.Parse(endRawSplitted[0]);
             var endCol = int.Parse(endRawSplitted[1]);
 
-            var startIndex = state.RawProgram.IndexOfNth("\n", startLine - 1);
+            var startIndex = state.EvSourceCode.IndexOfNth("\n", startLine - 1);
             if (startIndex == -1)
             {
-                state.Errors.Add("Error: Selection is invalid");
+                state.Errors.Add("Error: EvUserSelection is invalid");
                 return;
             }
 
-            var endIndex = state.RawProgram.IndexOfNth("\n", endLine - 1);
+            var endIndex = state.EvSourceCode.IndexOfNth("\n", endLine - 1);
             if (endIndex == -1)
             {
-                state.Errors.Add("Error: Selection is invalid");
+                state.Errors.Add("Error: EvUserSelection is invalid");
                 return;
             }
 
@@ -43,11 +43,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var end = endIndex + endCol;
             if (start >= end)
             {
-                state.Errors.Add("Error: Selection is invalid");
+                state.Errors.Add("Error: EvUserSelection is invalid");
                 return;
             }
 
-            state.Selection = new Range(start, end);
+            state.EvUserSelection = new Range(start, end);
 
             base.Handle(state);
         }

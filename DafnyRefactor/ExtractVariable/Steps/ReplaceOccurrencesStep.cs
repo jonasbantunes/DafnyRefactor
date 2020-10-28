@@ -17,9 +17,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         public override void Handle(TState state)
         {
-            if (state == null || state.ExprRange == null || state.ExtractStmt == null || state.Program == null ||
-                state.RawProgram == null || state.ExtractVariableOptions == null || state.StmtDivisors == null ||
-                state.SourceEdits == null)
+            if (state == null || state.EvExprRange == null || state.EvStmt == null || state.Program == null ||
+                state.EvSourceCode == null || state.EvOptions == null || state.StmtDivisors == null ||
+                state.SourceEdits == null || state.EvRootScope == null)
                 throw new ArgumentNullException();
 
             inState = state;
@@ -34,8 +34,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected void Replace()
         {
-            replacer = new ReplaceOcurrencesVisitor(inState.Program, inState.RawProgram, inState.ExprRange,
-                inState.ExtractVariableOptions.VarName, inState.StmtDivisors, inState.ExtractStmt);
+            replacer = new ReplaceOcurrencesVisitor(inState.Program, inState.EvSourceCode, inState.EvExprRange,
+                inState.EvOptions.VarName, inState.StmtDivisors, inState.EvStmt, inState.EvRootScope,
+                inState.EvExprVariables);
             replacer.Execute();
         }
 
@@ -60,11 +61,14 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         protected List<int> stmtDivisors;
         protected string varName;
         protected Statement extractStmt;
+        protected IEvScope rootScope;
+        protected List<IRefactorVariable> variables;
 
         public ReplaceOcurrencesVisitor(Program program, string rawProgram, Range exprRange, string varName,
-            List<int> stmtDivisors, Statement extractStmt)
+            List<int> stmtDivisors, Statement extractStmt, IEvScope rootScope, List<IRefactorVariable> variables)
         {
-            if (program == null || rawProgram == null || exprRange == null || varName == null)
+            if (program == null || rawProgram == null || exprRange == null || varName == null || rootScope == null ||
+                variables == null)
                 throw new ArgumentNullException();
 
             this.program = program;
@@ -73,6 +77,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             this.varName = varName;
             this.stmtDivisors = stmtDivisors;
             this.extractStmt = extractStmt;
+            this.rootScope = rootScope;
+            this.variables = variables;
         }
 
         //protected string VarName => $"({varName})";
@@ -103,6 +109,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected override void Visit(Expression exp)
         {
+            if (exp is AutoGhostIdentifierExpr) return;
+
             var range = FindExprRange(exp);
             if (range.start == 0 && range.end == 0) return;
 
@@ -116,10 +124,14 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             for (var i = ranges.Count - 1; i >= 0; i--)
             {
                 var subRange = ranges[i];
+                if (!ExpIsReplaceable(new Range(range.start + subRange.start, range.start + subRange.end)))
+                    continue;
+
                 replacedRaw = replacedRaw.Remove(subRange.start, subRange.end - subRange.start)
                     .Insert(subRange.start, VarName);
             }
 
+            if (replacedRaw.Equals(expRaw)) return;
             SourceEdits.Add(new SourceEdit(range.start, range.end, replacedRaw));
 
             var assert = $"\n assert ({varName}___RefactorGhostExpr) == ( {varRaw} );";
@@ -208,6 +220,14 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             if (start == -1) return null;
             return new Range(start, start + rawSub.Length);
         }
+
+        // TODO: move this to static method
+        protected bool ExpIsReplaceable(Range subRange)
+        {
+            var checker = new EvExpIsReplaceable(program, subRange, rootScope, variables);
+            checker.Execute();
+            return checker.IsReplaceable;
+        }
     }
 
     public class FindExprNeighbourWithParens : FindExprNeighbours
@@ -220,6 +240,50 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         {
             VerifyExpr(parensExpression);
             base.Visit(parensExpression);
+        }
+    }
+
+    internal class EvExpIsReplaceable : DafnyVisitorWithNearests
+    {
+        protected Program program;
+        protected Range expRange;
+        protected IEvScope rootScope;
+        protected List<IRefactorVariable> variables;
+        public bool IsReplaceable { get; protected set; }
+
+        public EvExpIsReplaceable(Program program, Range expRange, IEvScope rootScope,
+            List<IRefactorVariable> variables)
+        {
+            this.program = program;
+            this.expRange = expRange;
+            this.rootScope = rootScope;
+            this.variables = variables;
+        }
+
+        public void Execute()
+        {
+            IsReplaceable = true;
+            Visit(program);
+        }
+
+        protected override void Visit(NameSegment nameSeg)
+        {
+            if (expRange.start > nameSeg.tok.pos || nameSeg.tok.pos > expRange.end) return;
+
+            var curScope = rootScope.FindScope(nearestScopeToken.GetHashCode());
+            if (curScope == null) return;
+
+            var variable = curScope.LookupVariable(nameSeg.Name);
+            if (variable == null) return;
+
+            var found = variables.FindIndex(v => v.Equals(variable));
+            if (found == -1)
+            {
+                IsReplaceable = false;
+                return;
+            }
+
+            base.Visit(nameSeg);
         }
     }
 }
