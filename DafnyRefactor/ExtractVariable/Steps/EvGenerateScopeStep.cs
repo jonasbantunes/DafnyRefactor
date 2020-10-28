@@ -9,7 +9,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         {
             if (state == null || state.Program == null) throw new ArgumentException();
 
-            var scopeGenerator = new ScopeGenerator<EvScope>(state.Program);
+            var scopeGenerator = new ScopeGenerator<RefactorScope>(state.Program);
             scopeGenerator.Execute();
             state.EvRootScope = scopeGenerator.GeneratedScope;
 

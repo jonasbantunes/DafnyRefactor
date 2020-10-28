@@ -61,11 +61,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         protected List<int> stmtDivisors;
         protected string varName;
         protected Statement extractStmt;
-        protected IEvScope rootScope;
+        protected IRefactorScope rootScope;
         protected List<IRefactorVariable> variables;
 
         public ReplaceOcurrencesVisitor(Program program, string rawProgram, Range exprRange, string varName,
-            List<int> stmtDivisors, Statement extractStmt, IEvScope rootScope, List<IRefactorVariable> variables)
+            List<int> stmtDivisors, Statement extractStmt, IRefactorScope rootScope, List<IRefactorVariable> variables)
         {
             if (program == null || rawProgram == null || exprRange == null || varName == null || rootScope == null ||
                 variables == null)
@@ -248,11 +248,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     {
         protected Program program;
         protected Range expRange;
-        protected IEvScope rootScope;
+        protected IRefactorScope rootScope;
         protected List<IRefactorVariable> variables;
         public bool IsReplaceable { get; protected set; }
 
-        public EvExpIsReplaceable(Program program, Range expRange, IEvScope rootScope,
+        public EvExpIsReplaceable(Program program, Range expRange, IRefactorScope rootScope,
             List<IRefactorVariable> variables)
         {
             this.program = program;

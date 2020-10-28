@@ -1,28 +1,42 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Boogie;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 using LocalVariable = Microsoft.Dafny.LocalVariable;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace Microsoft.DafnyRefactor.Utils
 {
-    public interface IEvScope : IRefactorScope
+    /// <summary>
+    ///     Represents the state of a scope.
+    ///     <para>
+    ///         An AST is divided in multiple scopes according to certain tokens from
+    ///         statements, like from <c>BlockStmt</c> or <c>MethodDecl</c>.
+    ///     </para>
+    /// </summary>
+    public interface IRefactorScope
     {
-        IEvScope EvParent { get; }
+        IRefactorScope Parent { get; }
+        IToken Token { get; }
+        List<IRefactorVariable> Variables { get; }
+
+        void InsertVariable(LocalVariable localVariable, VarDeclStmt varDeclStmt);
+        void InsertScope(IToken tok);
+        IRefactorVariable LookupVariable(string name);
+        IRefactorScope LookupScope(int hashCode);
+        IRefactorScope FindScope(int hashCode);
     }
 
-    public class EvScope : IEvScope
+    public class RefactorScope : IRefactorScope
     {
         protected readonly IToken token;
-        protected IEvScope parent;
-        protected List<IEvScope> subScopes = new List<IEvScope>();
+        protected IRefactorScope parent;
+        protected List<IRefactorScope> subScopes = new List<IRefactorScope>();
         protected List<IRefactorVariable> variables = new List<IRefactorVariable>();
 
-        public EvScope()
+        public RefactorScope()
         {
         }
 
-        public EvScope(IToken token = null, IEvScope parent = null)
+        public RefactorScope(IToken token = null, IRefactorScope parent = null)
         {
             this.token = token;
             this.parent = parent;
@@ -40,7 +54,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         public void InsertScope(IToken tok)
         {
-            var table = new EvScope(tok, this);
+            var table = new RefactorScope(tok, this);
             subScopes.Add(table);
         }
 
@@ -81,9 +95,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             return null;
         }
 
-        public IEvScope EvParent => parent;
-
-        protected IRefactorVariable LookupSymbol(string name, IEvScope scope)
+        protected IRefactorVariable LookupSymbol(string name, IRefactorScope scope)
         {
             foreach (var decl in scope.Variables)
             {
@@ -98,7 +110,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
                 return null;
             }
 
-            return LookupSymbol(name, scope.EvParent);
+            return LookupSymbol(name, scope.Parent);
         }
 
         public override int GetHashCode()

@@ -97,9 +97,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
-    <Compile Include="ExtractVariable\State\EvScope.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
-    <Compile Include="ExtractVariable\State\Range.cs" />
+    <Compile Include="Utils\Range.cs" />
     <Compile Include="ExtractVariable\Steps\EvGenerateScopeStep.cs" />
     <Compile Include="ExtractVariable\Steps\ExtractVariableStep.cs" />
     <Compile Include="ExtractVariable\Steps\FindExprRangeStep.cs" />
@@ -140,7 +139,7 @@
     <Compile Include="Utils\SourceEdit\SourceEditor.cs" />
     <Compile Include="Utils\RefactorStep\StdinCleanerStep.cs" />
     <Compile Include="Utils\RefactorStep\StdinLoaderStep.cs" />
-    <Compile Include="Utils\RefactorState\IRefactorScope.cs" />
+    <Compile Include="Utils\RefactorState\RefactorScope.cs" />
     <Compile Include="Utils\RefactorState\RefactorVariable.cs" />
     <Compile Include="Utils\RefactorState\ScopeGenerator.cs" />
   </ItemGroup>

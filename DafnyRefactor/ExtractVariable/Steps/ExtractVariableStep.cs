@@ -68,10 +68,10 @@ namespace DafnyRefactor.ExtractVariable.Steps
     {
         protected Program program;
         protected Range expRange;
-        protected IEvScope rootScope;
+        protected IRefactorScope rootScope;
         public List<IRefactorVariable> Variables { get; protected set; }
 
-        public EvParseVisitor(Program program, Range expRange, IEvScope rootScope)
+        public EvParseVisitor(Program program, Range expRange, IRefactorScope rootScope)
         {
             this.program = program;
             this.expRange = expRange;
