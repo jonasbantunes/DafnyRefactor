@@ -109,6 +109,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected override void Visit(Expression exp)
         {
+            if (extractStmt.Tok.pos > exp.tok.pos) return;
             if (exp is AutoGhostIdentifierExpr) return;
 
             var range = FindExprRange(exp);
