@@ -173,7 +173,26 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         {
             var start = rawExpr.IndexOf(rawSub, offset, StringComparison.Ordinal);
             if (start == -1) return null;
+            if (rawExpr[start] == '-' && !StartsWithUnary(rawExpr, start)) return null;
             return new Range(start, start + rawSub.Length);
+        }
+
+        protected bool StartsWithUnary(string rawExpr, int exprStart)
+        {
+            if (rawExpr[exprStart] != '-') return false;
+
+            var i = exprStart - 1;
+            while (0 <= i && i < rawExpr.Length)
+            {
+                var c = rawExpr[i];
+                if (char.IsLetterOrDigit(c))
+                    return false;
+                if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')') return true;
+
+                i--;
+            }
+
+            return true;
         }
 
         public static (List<SourceEdit> edits, List<SourceEdit> asserts) Replace(Program program, string rawProgram,
