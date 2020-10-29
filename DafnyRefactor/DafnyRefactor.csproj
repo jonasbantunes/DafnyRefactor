@@ -107,14 +107,14 @@
     <Compile Include="Utils\StringIndexOfNthExtension.cs" />
     <Compile Include="ExtractVariable\Steps\FindStatement\StmtFinder.cs" />
     <Compile Include="ExtractVariable\Steps\FindExprRange\IsSubExprChecker.cs" />
-    <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExpRangeVarsExtractor.cs" />
+    <Compile Include="ExtractVariable\Steps\ExtractExpr\ExprVarsExtractor.cs" />
     <Compile Include="Utils\Range.cs" />
     <Compile Include="ExtractVariable\Steps\GenerateScope\EvGenerateScopeStep.cs" />
-    <Compile Include="ExtractVariable\Steps\ExtractVariable\ExtractVariableStep.cs" />
+    <Compile Include="ExtractVariable\Steps\ExtractExpr\ExtractExprStep.cs" />
     <Compile Include="ExtractVariable\Steps\FindExprRange\FindExprRangeStep.cs" />
     <Compile Include="Utils\FindExprNeighbours.cs" />
     <Compile Include="ExtractVariable\Steps\FindStatement\FindStatementStep.cs" />
-    <Compile Include="ExtractVariable\Steps\LoadRawProgram\LoadRawProgramStep.cs" />
+    <Compile Include="ExtractVariable\Steps\LoadRawProgram\LoadRawSourceStep.cs" />
     <Compile Include="ExtractVariable\Steps\ParseSelection\ParseSelectionStep.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ReplaceOccurrencesStep.cs" />
     <Compile Include="InlineTemp\State\InlineState.cs" />

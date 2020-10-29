@@ -14,7 +14,7 @@ namespace DafnyRefactor
 {
     /// <summary>
     ///     The entrypoint of <c>DafnyRefactor</c> project.
-    ///     Parse args from CLI and call the adequate <c>Refactor</c> class.
+    ///     ParseVariables args from CLI and call the adequate <c>Refactor</c> class.
     /// </summary>
     public class DafnyRefactorDriver
     {

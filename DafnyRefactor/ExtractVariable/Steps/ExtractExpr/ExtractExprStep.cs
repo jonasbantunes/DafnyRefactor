@@ -6,7 +6,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     /// <summary>
     ///     A <c>RefactorStep</c> that extracts the selected expression from <c>state.EvStmt</c>.
     /// </summary>
-    public class ExtractVariableStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
+    public class ExtractExprStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
         protected TState inState;
 
@@ -19,15 +19,15 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
             inState = state;
 
-            Extract();
-            Parse();
-            Validate();
+            ExtractExpr();
+            ExtractVarsFromExpr();
+            ValidateExpr();
             if (state.Errors.Count > 0) return;
 
             base.Handle(state);
         }
 
-        protected void Extract()
+        protected void ExtractExpr()
         {
             var exprStart = inState.EvExprRange.start;
             var exprEnd = inState.EvExprRange.end;
@@ -43,17 +43,16 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             inState.SourceEdits.Add(edit);
         }
 
-        protected void Parse()
+        protected void ExtractVarsFromExpr()
         {
-            var variables = ExpRangeVarsExtractor.Extract(inState.Program, inState.EvExprRange, inState.EvRootScope);
+            var variables = ExprVarsExtractor.Extract(inState.Program, inState.EvExprRange, inState.EvRootScope);
             inState.EvExprVariables.AddRange(variables);
         }
 
-        protected void Validate()
+        protected void ValidateExpr()
         {
-            var validator = new EditsValidator(inState.FilePath, inState.SourceEdits);
-            validator.Execute();
-            if (!validator.IsValid)
+            var isValid = EditsValidator.IsValid(inState.SourceEdits, inState.FilePath);
+            if (!isValid)
             {
                 inState.Errors.Add("Error: Selected expression is invalid");
             }

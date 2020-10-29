@@ -13,7 +13,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         protected List<SourceEdit> assertEdits;
         protected TState inState;
         protected List<SourceEdit> sourceEdits;
-        protected EditsValidator validator;
 
         public override void Handle(TState state)
         {
@@ -44,10 +43,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var edits = new List<SourceEdit>();
             edits.AddRange(inState.SourceEdits);
             edits.AddRange(assertEdits);
-            validator = new EditsValidator(inState.FilePath, edits);
-            validator.Execute();
+            var isValid = EditsValidator.IsValid(edits, inState.FilePath);
 
-            if (!validator.IsValid)
+            if (!isValid)
             {
                 inState.Errors.Add("Error: Invalid selection");
             }

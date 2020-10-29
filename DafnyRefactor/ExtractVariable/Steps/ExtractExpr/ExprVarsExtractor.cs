@@ -4,17 +4,17 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.ExtractVariable
 {
-    public class ExpRangeVarsExtractor : DafnyVisitorWithNearests
+    public class ExprVarsExtractor : DafnyVisitorWithNearests
     {
-        protected Range expRange;
+        protected Range exprRange;
         protected Program program;
         protected IRefactorScope rootScope;
         protected List<IRefactorVariable> variables;
 
-        protected ExpRangeVarsExtractor(Program program, Range expRange, IRefactorScope rootScope)
+        protected ExprVarsExtractor(Program program, Range exprRange, IRefactorScope rootScope)
         {
             this.program = program;
-            this.expRange = expRange;
+            this.exprRange = exprRange;
             this.rootScope = rootScope;
         }
 
@@ -26,7 +26,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected override void Visit(NameSegment nameSeg)
         {
-            if (expRange.start > nameSeg.tok.pos || nameSeg.tok.pos > expRange.end) return;
+            if (exprRange.start > nameSeg.tok.pos || nameSeg.tok.pos > exprRange.end) return;
 
             var curScope = rootScope.FindScope(nearestScopeToken.GetHashCode());
             if (curScope == null) return;
@@ -41,7 +41,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         public static List<IRefactorVariable> Extract(Program program, Range expRange, IRefactorScope rootScope)
         {
-            var extractor = new ExpRangeVarsExtractor(program, expRange, rootScope);
+            var extractor = new ExprVarsExtractor(program, expRange, rootScope);
             extractor.Execute();
             return extractor.variables;
         }

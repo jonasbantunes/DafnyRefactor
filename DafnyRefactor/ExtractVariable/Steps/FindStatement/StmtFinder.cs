@@ -25,7 +25,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected override void Visit(Statement stmt)
         {
-            if (IsInStmt(stmt))
+            if (StmtContainsSelection(stmt))
             {
                 foundStmt = stmt;
             }
@@ -33,8 +33,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             base.Visit(stmt);
         }
 
-        // TODO: Choose a better name
-        protected bool IsInStmt(Statement stmt)
+        protected bool StmtContainsSelection(Statement stmt)
         {
             var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= stmt.EndTok.pos);
             if (divisorIndex < 1) return false;

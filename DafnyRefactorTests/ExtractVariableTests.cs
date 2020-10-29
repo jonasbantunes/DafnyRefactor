@@ -69,7 +69,7 @@ namespace DafnyRefactorTests
         }
 
         [Test]
-        public void ITEExprT1()
+        public void IteExprT1()
         {
             testFileDir = $"{testDir}\\ite_expr";
             testNumber = 1;
@@ -82,7 +82,7 @@ namespace DafnyRefactorTests
         }
 
         [Test]
-        public void ITEExprT2()
+        public void IteExprT2()
         {
             testFileDir = $"{testDir}\\ite_expr";
             testNumber = 2;
@@ -95,7 +95,7 @@ namespace DafnyRefactorTests
         }
 
         [Test]
-        public void ITEExprT3()
+        public void IteExprT3()
         {
             testFileDir = $"{testDir}\\ite_expr";
             testNumber = 3;

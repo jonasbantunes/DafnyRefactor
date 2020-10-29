@@ -6,7 +6,7 @@ using Microsoft.Dafny;
 namespace Microsoft.DafnyRefactor.Utils
 {
     /// <summary>
-    ///     Parse a <c>Dafny.Program</c> and generate a list of statement divisors (<c>StmtDivisors</c>).
+    ///     ParseVariables a <c>Dafny.Program</c> and generate a list of statement divisors (<c>StmtDivisors</c>).
     ///     <para>
     ///         A "divisor" is a source code position where a statement ends or where a block starts or ends.
     ///     </para>

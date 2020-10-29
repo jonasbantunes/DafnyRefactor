@@ -24,10 +24,8 @@ namespace Microsoft.DafnyRefactor.InlineTemp
                 state.StmtDivisors);
             addAssertives.Execute();
 
-            var checker = new EditsValidator(state.FilePath, addAssertives.Edits);
-            checker.Execute();
-
-            if (!checker.IsValid)
+            var isValid = EditsValidator.IsValid(addAssertives.Edits, state.FilePath);
+            if (!isValid)
             {
                 state.AddError(
                     $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");

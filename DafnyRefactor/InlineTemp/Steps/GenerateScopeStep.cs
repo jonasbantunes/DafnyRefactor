@@ -12,9 +12,7 @@ namespace Microsoft.DafnyRefactor.InlineTemp
         {
             if (state == null || state.Program == null) throw new ArgumentException();
 
-            var scopeGenerator = new ScopeGenerator<InlineScope>(state.Program);
-            scopeGenerator.Execute();
-            state.RootScope = scopeGenerator.GeneratedScope;
+            state.RootScope = ScopeGenerator<InlineScope>.Generate(state.Program);
 
             base.Handle(state);
         }

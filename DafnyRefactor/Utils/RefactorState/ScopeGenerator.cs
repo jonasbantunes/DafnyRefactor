@@ -4,28 +4,27 @@ using Microsoft.Dafny;
 namespace Microsoft.DafnyRefactor.Utils
 {
     /// <summary>
-    ///     Parse a <c>Dafny.Program</c> and generate it's respectives <c>IRefactorScope</c>.
+    ///     ParseVariables a <c>Dafny.Program</c> and generate it's respectives <c>IRefactorScope</c>.
     /// </summary>
-    public class ScopeGenerator<TScopeState> : DafnyVisitorWithNearests where TScopeState : IRefactorScope, new()
+    public class ScopeGenerator<TScope> : DafnyVisitorWithNearests where TScope : IRefactorScope, new()
     {
+        protected TScope generatedScope;
         protected Program program;
 
-        public ScopeGenerator(Program program)
+        protected ScopeGenerator(Program program)
         {
             this.program = program ?? throw new ArgumentNullException();
         }
 
-        public TScopeState GeneratedScope { get; protected set; }
-
-        public virtual void Execute()
+        protected virtual void Execute()
         {
-            GeneratedScope = new TScopeState();
+            generatedScope = new TScope();
             Visit(program);
         }
 
         protected override void Visit(ClassDecl cd)
         {
-            var curTable = GeneratedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
+            var curTable = generatedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
             curTable.InsertScope(cd.tok);
 
             base.Visit(cd);
@@ -35,17 +34,24 @@ namespace Microsoft.DafnyRefactor.Utils
         {
             foreach (var local in vds.Locals)
             {
-                var curTable = GeneratedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
+                var curTable = generatedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
                 curTable.InsertVariable(local, vds);
             }
         }
 
         protected override void Visit(BlockStmt block)
         {
-            var curTable = GeneratedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
+            var curTable = generatedScope.FindScope(nearestScopeToken?.GetHashCode() ?? 0);
             curTable.InsertScope(block.Tok);
 
             base.Visit(block);
+        }
+
+        public static TScope Generate(Program program)
+        {
+            var generator = new ScopeGenerator<TScope>(program);
+            generator.Execute();
+            return generator.generatedScope;
         }
     }
 }

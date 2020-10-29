@@ -7,7 +7,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     /// <summary>
     ///     A <c>RefactorStep</c> that loads a string, non-parsed, version of Program.
     /// </summary>
-    public class LoadRawProgramStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
+    public class LoadRawSourceStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
         public override void Handle(TState state)
         {

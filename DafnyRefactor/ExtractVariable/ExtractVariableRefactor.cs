@@ -38,12 +38,12 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
             steps.Add(new LoadProgramStep<ExtractVariableState>());
             steps.Add(new EvGenerateScopeStep<ExtractVariableState>());
-            steps.Add(new LoadRawProgramStep<ExtractVariableState>());
+            steps.Add(new LoadRawSourceStep<ExtractVariableState>());
             steps.Add(new ParseStmtDivisorsStep<ExtractVariableState>());
             steps.Add(new ParseSelectionStep<ExtractVariableState>());
             steps.Add(new FindStatementStep<ExtractVariableState>());
             steps.Add(new FindExprRangeStep<ExtractVariableState>());
-            steps.Add(new ExtractVariableStep<ExtractVariableState>());
+            steps.Add(new ExtractExprStep<ExtractVariableState>());
             steps.Add(new ReplaceOccurrencesStep<ExtractVariableState>());
             steps.Add(new SaveChangesStep<ExtractVariableState>());
             if (options.Stdin)
