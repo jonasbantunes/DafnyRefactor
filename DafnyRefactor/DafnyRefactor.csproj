@@ -88,6 +88,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -98,15 +101,22 @@
   <ItemGroup>
     <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
+    <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprOcurrencesReplacer.cs" />
+    <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprIsReplaceableChecker.cs" />
+    <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\FindExprNeighbourWithParens.cs" />
+    <Compile Include="Utils\StringIndexOfNthExtension.cs" />
+    <Compile Include="ExtractVariable\Steps\FindStatement\StmtFinder.cs" />
+    <Compile Include="ExtractVariable\Steps\FindExprRange\IsSubExprChecker.cs" />
+    <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExpRangeVarsExtractor.cs" />
     <Compile Include="Utils\Range.cs" />
-    <Compile Include="ExtractVariable\Steps\EvGenerateScopeStep.cs" />
-    <Compile Include="ExtractVariable\Steps\ExtractVariableStep.cs" />
-    <Compile Include="ExtractVariable\Steps\FindExprRangeStep.cs" />
+    <Compile Include="ExtractVariable\Steps\GenerateScope\EvGenerateScopeStep.cs" />
+    <Compile Include="ExtractVariable\Steps\ExtractVariable\ExtractVariableStep.cs" />
+    <Compile Include="ExtractVariable\Steps\FindExprRange\FindExprRangeStep.cs" />
     <Compile Include="Utils\FindExprNeighbours.cs" />
-    <Compile Include="ExtractVariable\Steps\FindStatementStep.cs" />
-    <Compile Include="ExtractVariable\Steps\LoadRawProgramStep.cs" />
-    <Compile Include="ExtractVariable\Steps\ParseSelectionStep.cs" />
-    <Compile Include="ExtractVariable\Steps\ReplaceOccurrencesStep.cs" />
+    <Compile Include="ExtractVariable\Steps\FindStatement\FindStatementStep.cs" />
+    <Compile Include="ExtractVariable\Steps\LoadRawProgram\LoadRawProgramStep.cs" />
+    <Compile Include="ExtractVariable\Steps\ParseSelection\ParseSelectionStep.cs" />
+    <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ReplaceOccurrencesStep.cs" />
     <Compile Include="InlineTemp\State\InlineState.cs" />
     <Compile Include="InlineTemp\State\InlineVariable.cs" />
     <Compile Include="InlineTemp\State\InlineScope.cs" />
@@ -117,14 +127,14 @@
     <Compile Include="InlineTemp\Steps\ParseMethodsStep.cs" />
     <Compile Include="InlineTemp\Steps\AssertImmutabilityStep.cs" />
     <Compile Include="InlineTemp\Steps\AssertImmutabilitySimplifiedStep.cs" />
-    <Compile Include="Utils\CommandLineOptions\ApplyExtractVariableOptions.cs" />
+    <Compile Include="ExtractVariable\ApplyExtractVariableOptions.cs" />
     <Compile Include="Utils\SourceEdit\EditsValidator.cs" />
     <Compile Include="Utils\DafnyVisitor\DafnyVisitorWithNearests.cs" />
     <Compile Include="Utils\RefactorStep\ParseStmtDivisorsStep.cs" />
     <Compile Include="Utils\RefactorState\IRefactorState.cs" />
     <Compile Include="Utils\RefactorStep\RefactorStep.cs" />
     <Compile Include="Utils\RefactorStep\LoadProgramStep.cs" />
-    <Compile Include="Utils\CommandLineOptions\ApplyInlineTempOptions.cs" />
+    <Compile Include="InlineTemp\ApplyInlineTempOptions.cs" />
     <Compile Include="Utils\CommandLineOptions\ApplyOptions.cs" />
     <Compile Include="InlineTemp\InlineRefactor.cs" />
     <Compile Include="InlineTemp\Steps\ReplaceVariableStep.cs" />

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.ExtractVariable;
 using Microsoft.DafnyRefactor.Utils;
 
-namespace DafnyRefactor.ExtractVariable.Steps
+namespace Microsoft.DafnyRefactor.ExtractVariable
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that extracts the selected expression from <c>state.EvStmt</c>.
@@ -48,9 +45,8 @@ namespace DafnyRefactor.ExtractVariable.Steps
 
         protected void Parse()
         {
-            var parser = new EvParseVisitor(inState.Program, inState.EvExprRange, inState.EvRootScope);
-            parser.Execute();
-            inState.EvExprVariables.AddRange(parser.Variables);
+            var variables = ExpRangeVarsExtractor.Extract(inState.Program, inState.EvExprRange, inState.EvRootScope);
+            inState.EvExprVariables.AddRange(variables);
         }
 
         protected void Validate()
@@ -61,42 +57,6 @@ namespace DafnyRefactor.ExtractVariable.Steps
             {
                 inState.Errors.Add("Error: Selected expression is invalid");
             }
-        }
-    }
-
-    internal class EvParseVisitor : DafnyVisitorWithNearests
-    {
-        protected Program program;
-        protected Range expRange;
-        protected IRefactorScope rootScope;
-        public List<IRefactorVariable> Variables { get; protected set; }
-
-        public EvParseVisitor(Program program, Range expRange, IRefactorScope rootScope)
-        {
-            this.program = program;
-            this.expRange = expRange;
-            this.rootScope = rootScope;
-        }
-
-        public void Execute()
-        {
-            Variables = new List<IRefactorVariable>();
-            Visit(program);
-        }
-
-        protected override void Visit(NameSegment nameSeg)
-        {
-            if (expRange.start > nameSeg.tok.pos || nameSeg.tok.pos > expRange.end) return;
-
-            var curScope = rootScope.FindScope(nearestScopeToken.GetHashCode());
-            if (curScope == null) return;
-
-            var variable = curScope.LookupVariable(nameSeg.Name);
-            if (variable == null) return;
-
-            Variables.Add(variable);
-
-            base.Visit(nameSeg);
         }
     }
 }

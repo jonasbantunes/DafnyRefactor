@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DafnyRefactor;
-using DafnyRefactor.ExtractVariable.Steps;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 

@@ -53,7 +53,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         {
             if (startFinder.LeftExpr is NegationExpression negationExpr &&
-                !IsSubExpr(endFinder.LeftExpr, negationExpr))
+                !IsSubExprChecker.IsSubExpr(endFinder.LeftExpr, negationExpr))
             {
                 inState.Errors.Add("Error: Selected expression is invalid");
                 return;
@@ -72,6 +72,36 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             }
 
             startExpr = startFinder.RightExpr;
+        }
+
+        protected void FindEnd()
+        {
+            if (endFinder.LeftExpr == null || endFinder.LeftExpr is BinaryExpr ||
+                endFinder.LeftExpr is NegationExpression)
+            {
+                FindEndInvalidLeft();
+                return;
+            }
+
+            if (endFinder.LeftExpr == startFinder.LeftExpr && endFinder.RightExpr == startFinder.RightExpr)
+            {
+                endExpr = endFinder.RightExpr;
+                return;
+            }
+
+            endExpr = endFinder.LeftExpr;
+        }
+
+        protected void CalcExprRange()
+        {
+            var selectionStart = inState.EvUserSelection.start;
+            var selectionEnd = inState.EvUserSelection.end;
+            var exprStart = startExpr.tok.pos;
+            var exprEnd = endExpr.tok.pos + endExpr.tok.val.Length;
+
+            var startPos = selectionStart <= exprStart ? selectionStart : exprStart;
+            var endPos = selectionEnd >= exprEnd ? selectionEnd : exprEnd;
+            inState.EvExprRange = new Range(startPos, endPos);
         }
 
         protected void FindStartExprDotName(ExprDotName exprDotName)
@@ -95,23 +125,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             startExpr = lhs;
         }
 
-        protected void FindEnd()
-        {
-            if (endFinder.LeftExpr == null || endFinder.LeftExpr is BinaryExpr ||
-                endFinder.LeftExpr is NegationExpression)
-            {
-                FindEndInvalidLeft();
-                return;
-            }
-
-            if (endFinder.LeftExpr == startFinder.LeftExpr && endFinder.RightExpr == startFinder.RightExpr)
-            {
-                endExpr = endFinder.RightExpr;
-                return;
-            }
-
-            endExpr = endFinder.LeftExpr;
-        }
 
         protected void FindEndInvalidLeft()
         {
@@ -147,58 +160,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             }
 
             endExpr = lhs;
-        }
-
-        protected void CalcExprRange()
-        {
-            var selectionStart = inState.EvUserSelection.start;
-            var selectionEnd = inState.EvUserSelection.end;
-            var exprStart = startExpr.tok.pos;
-            var exprEnd = endExpr.tok.pos + endExpr.tok.val.Length;
-
-            var startPos = selectionStart <= exprStart ? selectionStart : exprStart;
-            var endPos = selectionEnd >= exprEnd ? selectionEnd : exprEnd;
-            inState.EvExprRange = new Range(startPos, endPos);
-        }
-
-        protected bool IsSubExpr(Expression subExpr, Expression rootExpr)
-        {
-            var checker = new IsSubExprVisitor(subExpr, rootExpr);
-            checker.Execute();
-            return checker.IsSubExpr;
-        }
-    }
-
-    internal class IsSubExprVisitor : DafnyVisitor
-    {
-        protected readonly Expression rootExpr;
-        protected readonly Expression subExpr;
-
-        public IsSubExprVisitor(Expression subExpr, Expression rootExpr)
-        {
-            if (subExpr == null || rootExpr == null) throw new ArgumentNullException();
-
-            this.subExpr = subExpr;
-            this.rootExpr = rootExpr;
-        }
-
-        public bool IsSubExpr { get; protected set; }
-
-        public void Execute()
-        {
-            IsSubExpr = false;
-            Visit(rootExpr);
-        }
-
-        protected override void Visit(Expression exp)
-        {
-            if (exp == subExpr)
-            {
-                IsSubExpr = true;
-                return;
-            }
-
-            base.Visit(exp);
         }
     }
 }
