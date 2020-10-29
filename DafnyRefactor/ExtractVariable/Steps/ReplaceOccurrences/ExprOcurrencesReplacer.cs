@@ -171,10 +171,17 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected Range SubExprRawRange(string rawExpr, string rawSub, int offset)
         {
-            var start = rawExpr.IndexOf(rawSub, offset, StringComparison.Ordinal);
-            if (start == -1) return null;
-            if (rawExpr[start] == '-' && !StartsWithUnary(rawExpr, start)) return null;
-            return new Range(start, start + rawSub.Length);
+            //var start = rawExpr.IndexOf(rawSub, offset, StringComparison.Ordinal);
+            //if (start == -1) return null;
+            //if (rawExpr[start] == '-' && !StartsWithUnary(rawExpr, start)) return null;
+            //return new Range(start, start + rawSub.Length);
+
+            var range = rawExpr.IndexOfWithIgnores(rawSub, offset);
+            if (range == null) return null;
+            if (rawExpr[range.start] == '-' && !StartsWithUnary(rawExpr, range.start)) return null;
+            return range;
+
+            
         }
 
         protected bool StartsWithUnary(string rawExpr, int exprStart)
@@ -203,6 +210,67 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
                 extractStmt, rootScope, variables);
             replacer.Execute();
             return (replacer.sourceEdits, replacer.assertSourceEdits);
+        }
+    }
+
+    public static class IndexOfWithIgnoresExtension
+    {
+        public static Range IndexOfWithIgnores(this string str, string sub, int offset)
+        {
+            var strStart = offset;
+            while (strStart < str.Length && str[strStart] == ' ')
+            {
+                strStart++;
+            }
+
+            if (strStart >= str.Length) return null;
+
+            var subStart = 0;
+            while (subStart < sub.Length && sub[subStart] == ' ')
+            {
+                subStart++;
+            }
+
+            if (subStart >= sub.Length) return null;
+
+            var i = strStart;
+            while (i < str.Length)
+            {
+                if (str[i] == sub[subStart])
+                {
+                    var strPos = i;
+                    var subPos = subStart;
+
+                    while (strPos < str.Length && subPos < sub.Length)
+                    {
+                        if (sub[subPos] == ' ')
+                        {
+                            subPos++;
+                            continue;
+                        }
+
+                        if (str[strPos] == ' ')
+                        {
+                            strPos++;
+                            continue;
+                        }
+
+                        if (str[strPos] != sub[subPos]) break;
+
+                        strPos++;
+                        subPos++;
+                    }
+
+                    if (subPos >= sub.Length)
+                    {
+                        return new Range(i, strPos);
+                    }
+                }
+
+                i++;
+            }
+
+            return null;
         }
     }
 }
