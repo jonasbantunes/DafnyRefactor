@@ -45,19 +45,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             sourceEdits = new List<SourceEdit>();
             assertSourceEdits = new List<SourceEdit>();
 
-            AddDeclAssertive();
             Visit(program);
-        }
-
-        protected void AddDeclAssertive()
-        {
-            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= extractStmt.Tok.pos);
-            if (divisorIndex < 1) return;
-            var ghostPos = stmtDivisors[divisorIndex - 1] + 1;
-
-            var varRaw = rawProgram.Substring(exprRange.start, exprRange.end - exprRange.start);
-            var ghostRaw = $"\n ghost var {varName}___RefactorGhostExpr := {varRaw};";
-            assertSourceEdits.Add(new SourceEdit(ghostPos, ghostRaw));
         }
 
         protected override void Visit(Expression exp)
@@ -89,7 +77,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             if (replacedRaw.Equals(expRaw)) return;
             sourceEdits.Add(new SourceEdit(range.start, range.end, replacedRaw));
 
-            var assert = $"\n assert ({varName}___RefactorGhostExpr) == ( {varRaw} );";
+            var assert = $"\n assert {varName} == ( {varRaw} );";
             var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= exp.tok.pos);
             if (divisorIndex < 1) return;
             var assertPos = stmtDivisors[divisorIndex - 1] + 1;
