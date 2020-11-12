@@ -11,7 +11,7 @@ namespace Microsoft.DafnyRefactor.MoveMethod
 
         public override void Handle(TState state)
         {
-            if (state == null || state.MvtMethod == null || state.MvtParam == null || state.MvtSourceCode == null)
+            if (state == null || state.MvtParam == null || state.MvtSourceCode == null)
                 throw new ArgumentNullException();
 
             inState = state;
@@ -24,13 +24,14 @@ namespace Microsoft.DafnyRefactor.MoveMethod
 
         protected void MoveMethod()
         {
-            var replacedEdits = MethodReplacer.Replace(inState.MvtMethod, inState.MvtParam, inState.MvtSourceCode);
+            var replacedEdits =
+                MethodReplacer.Replace(inState.MvtParam.Method, inState.MvtParam.Formal, inState.MvtSourceCode);
 
-            var tokStart = inState.MvtMethod.tok.pos;
+            var tokStart = inState.MvtParam.Method.tok.pos;
             var start = inState.MvtSourceCode.LastIndexOf("method", tokStart, StringComparison.Ordinal);
-            var end = inState.MvtMethod.BodyEndTok.pos + 1;
+            var end = inState.MvtParam.Method.BodyEndTok.pos + 1;
 
-            var paramType = (UserDefinedType) inState.MvtParam.Type;
+            var paramType = (UserDefinedType) inState.MvtParam.Formal.Type;
             var pos = paramType.ResolvedClass.ViewAsClass.BodyEndTok.pos;
 
             var methodCode = inState.MvtSourceCode.Substring(start, end - start);
@@ -45,9 +46,9 @@ namespace Microsoft.DafnyRefactor.MoveMethod
 
         protected void Clean()
         {
-            var tokStart = inState.MvtMethod.tok.pos;
+            var tokStart = inState.MvtParam.Method.tok.pos;
             var start = inState.MvtSourceCode.LastIndexOf("method", tokStart, StringComparison.Ordinal);
-            var end = inState.MvtMethod.BodyEndTok.pos + 1;
+            var end = inState.MvtParam.Method.BodyEndTok.pos + 1;
 
             var edit = new SourceEdit(start, end, "");
             inState.SourceEdits.Add(edit);

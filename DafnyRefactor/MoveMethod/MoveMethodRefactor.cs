@@ -42,6 +42,7 @@ namespace Microsoft.DafnyRefactor.MoveMethod
             steps.Add(new ParseInstancePositionStep<MoveMethodState>());
             steps.Add(new LocateTargetStep<MoveMethodState>());
             steps.Add(new MoveToTargetStep<MoveMethodState>());
+            steps.Add(new UpdateCallsStep<MoveMethodState>());
             steps.Add(new SaveChangesStep<MoveMethodState>());
             if (options.Stdin)
             {

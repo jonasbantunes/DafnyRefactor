@@ -5,6 +5,7 @@ using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.ExtractVariable
 {
+    // TOOD: Replace some methods with ExprRangeFinder.
     public class ExprOcurrencesReplacer : DafnyVisitor
     {
         protected List<SourceEdit> assertSourceEdits;

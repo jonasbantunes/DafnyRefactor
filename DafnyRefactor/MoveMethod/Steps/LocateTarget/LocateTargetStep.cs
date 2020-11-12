@@ -9,15 +9,14 @@ namespace Microsoft.DafnyRefactor.MoveMethod
         {
             if (state == null || state.Program == null) throw new ArgumentNullException();
 
-            var (param, method) = TargetLocator.Locate(state.Program, state.MvtUserTarget);
-            if (param == null || method == null)
+            var mvtParam = TargetLocator.Locate(state.Program, state.MvtUserTarget);
+            if (mvtParam == null)
             {
                 state.AddError("Error: can't locate target's parameter to be moved.");
                 return;
             }
 
-            state.MvtMethod = method;
-            state.MvtParam = param;
+            state.MvtParam = mvtParam;
 
             base.Handle(state);
         }

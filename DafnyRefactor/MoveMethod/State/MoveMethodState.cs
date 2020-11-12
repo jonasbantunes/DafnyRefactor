@@ -10,8 +10,7 @@ namespace Microsoft.DafnyRefactor.MoveMethod
         string MvtSourceCode { get; set; }
         ApplyMoveMethodOptions MvtOptions { get; }
         int MvtUserTarget { get; set; }
-        Method MvtMethod { get; set; }
-        Formal MvtParam { get; set; }
+        IMvtParam MvtParam { get; set; }
     }
 
     public class MoveMethodState : IMoveMethodState
@@ -42,7 +41,6 @@ namespace Microsoft.DafnyRefactor.MoveMethod
         public string MvtSourceCode { get; set; }
         public ApplyMoveMethodOptions MvtOptions => options;
         public int MvtUserTarget { get; set; }
-        public Method MvtMethod { get; set; }
-        public Formal MvtParam { get; set; }
+        public IMvtParam MvtParam { get; set; }
     }
 }

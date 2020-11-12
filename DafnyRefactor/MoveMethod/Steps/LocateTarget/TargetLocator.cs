@@ -6,8 +6,7 @@ namespace Microsoft.DafnyRefactor.MoveMethod
 {
     public class TargetLocator : DafnyVisitorWithNearests
     {
-        protected Method foundMethod;
-        protected Formal foundParam;
+        protected IMvtParam mvtParam;
         protected int position;
         protected Program program;
 
@@ -21,28 +20,28 @@ namespace Microsoft.DafnyRefactor.MoveMethod
 
         protected void Execute()
         {
-            foundParam = null;
+            mvtParam = null;
             Visit(program);
         }
 
         protected override void Visit(Method mt)
         {
-            foreach (var @in in mt.Ins)
+            for (var index = 0; index < mt.Ins.Count; index++)
             {
+                var @in = mt.Ins[index];
                 var inStart = @in.tok.pos;
                 var inEnd = @in.tok.pos + @in.tok.val.Length;
                 if (inStart > position || position >= inEnd) continue;
 
-                foundParam = @in;
-                foundMethod = mt;
+                mvtParam = new MvtParam(@in, index, mt);
             }
         }
 
-        public static (Formal param, Method method) Locate(Program program, int position)
+        public static IMvtParam Locate(Program program, int position)
         {
             var locator = new TargetLocator(program, position);
             locator.Execute();
-            return (locator.foundParam, locator.foundMethod);
+            return locator.mvtParam;
         }
     }
 }

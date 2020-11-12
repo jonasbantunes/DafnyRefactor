@@ -29,6 +29,19 @@ namespace DafnyRefactorTests
         };
 
         [Test]
+        public void ComplexClassesT1()
+        {
+            testFileDir = $"{testDir}\\complex_classes";
+            testNumber = 1;
+            instancePosition = "24:23";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(0, exitCode);
+            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
+
+
+        [Test]
         public void SimpleClassesT1()
         {
             testFileDir = $"{testDir}\\simple_classes";

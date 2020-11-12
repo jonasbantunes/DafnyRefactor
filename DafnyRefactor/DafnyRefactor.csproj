@@ -101,6 +101,7 @@
   <ItemGroup>
     <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
+    <Compile Include="MoveMethod\State\MvtParam.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprOcurrencesReplacer.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprIsReplaceableChecker.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\FindExprNeighbourWithParens.cs" />
@@ -113,6 +114,9 @@
     <Compile Include="MoveMethod\Steps\ParseSelection\ParseInstancePositionStep.cs" />
     <Compile Include="MoveMethod\Steps\ReplaceThisRefs\MoveToTargetStep.cs" />
     <Compile Include="MoveMethod\Steps\ReplaceThisRefs\MethodReplacer.cs" />
+    <Compile Include="MoveMethod\Steps\UpdateCalls\CallsUpdater.cs" />
+    <Compile Include="MoveMethod\Steps\UpdateCalls\UpdateCallsStep.cs" />
+    <Compile Include="Utils\ExprRangeFinder.cs" />
     <Compile Include="Utils\StringIndexOfNthExtension.cs" />
     <Compile Include="ExtractVariable\Steps\FindStatement\StmtFinder.cs" />
     <Compile Include="ExtractVariable\Steps\FindExprRange\IsSubExprChecker.cs" />
