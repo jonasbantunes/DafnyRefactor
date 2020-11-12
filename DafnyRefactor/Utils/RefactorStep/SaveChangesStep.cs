@@ -63,6 +63,7 @@ namespace Microsoft.DafnyRefactor.Utils
             sourceEditor.Apply();
         }
 
+        // TODO: Use EditsValidator instead
         protected void VerifySourceProof()
         {
             var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";

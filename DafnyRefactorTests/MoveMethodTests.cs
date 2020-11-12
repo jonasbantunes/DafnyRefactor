@@ -25,7 +25,7 @@ namespace DafnyRefactorTests
 
         protected string[] Args => new[]
         {
-            "apply-move-method", "-f", TestFilePath, "-i", instancePosition, "-o", TestOutputPath,
+            "apply-move-method", "-f", TestFilePath, "-i", instancePosition, "-o", TestOutputPath
         };
 
         [Test]
@@ -38,6 +38,17 @@ namespace DafnyRefactorTests
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(0, exitCode);
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
+
+        [Test]
+        public void SimpleClassesT2()
+        {
+            testFileDir = $"{testDir}\\simple_classes";
+            testNumber = 2;
+            instancePosition = "14:29";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
         }
     }
 }

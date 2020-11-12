@@ -1,0 +1,21 @@
+class Logger
+{
+    method Log(message: string)
+    {
+        print(message);
+    }
+
+method LogDrawing(shape: Shape)
+    {
+        var message := "Shape was drawn at " + shape.x + ":" + shape.y;
+        this.Log(message);
+    }
+}
+
+class Shape
+{
+    var x: string;
+    var y: string;
+
+    
+}

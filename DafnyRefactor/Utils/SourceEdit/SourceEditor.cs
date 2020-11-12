@@ -33,5 +33,12 @@ namespace Microsoft.DafnyRefactor.Utils
 
             Source = sourceBuilder.ToString();
         }
+
+        public static string Edit(string source, List<SourceEdit> edits)
+        {
+            var editor = new SourceEditor(source, edits);
+            editor.Apply();
+            return editor.Source;
+        }
     }
 }

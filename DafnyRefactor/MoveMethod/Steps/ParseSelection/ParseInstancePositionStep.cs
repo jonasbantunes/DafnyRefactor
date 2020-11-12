@@ -28,7 +28,7 @@ namespace Microsoft.DafnyRefactor.MoveMethod
             }
 
             var position = index + col;
-            state.MvtUserInstance = position;
+            state.MvtUserTarget = position;
 
             base.Handle(state);
         }

@@ -108,7 +108,11 @@
     <Compile Include="MoveMethod\MoveMethodRefactor.cs" />
     <Compile Include="MoveMethod\State\MoveMethodState.cs" />
     <Compile Include="MoveMethod\Steps\LoadRawSourceCode\LoadRawSourceStep.cs" />
+    <Compile Include="MoveMethod\Steps\LocateTarget\TargetLocator.cs" />
+    <Compile Include="MoveMethod\Steps\LocateTarget\LocateTargetStep.cs" />
     <Compile Include="MoveMethod\Steps\ParseSelection\ParseInstancePositionStep.cs" />
+    <Compile Include="MoveMethod\Steps\ReplaceThisRefs\MoveToTargetStep.cs" />
+    <Compile Include="MoveMethod\Steps\ReplaceThisRefs\MethodReplacer.cs" />
     <Compile Include="Utils\StringIndexOfNthExtension.cs" />
     <Compile Include="ExtractVariable\Steps\FindStatement\StmtFinder.cs" />
     <Compile Include="ExtractVariable\Steps\FindExprRange\IsSubExprChecker.cs" />
