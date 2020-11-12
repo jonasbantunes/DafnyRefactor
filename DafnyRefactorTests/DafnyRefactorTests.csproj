@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="ExtractVariableTests.cs" />
     <Compile Include="InlineTempTests.cs" />
+    <Compile Include="MoveMethodTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

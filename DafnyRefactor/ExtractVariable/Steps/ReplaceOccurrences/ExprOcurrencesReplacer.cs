@@ -168,8 +168,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             if (range == null) return null;
             if (rawExpr[range.start] == '-' && !StartsWithUnary(rawExpr, range.start)) return null;
             return range;
-
-            
         }
 
         protected bool StartsWithUnary(string rawExpr, int exprStart)

@@ -104,6 +104,11 @@
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprOcurrencesReplacer.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprIsReplaceableChecker.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\FindExprNeighbourWithParens.cs" />
+    <Compile Include="MoveMethod\ApplyMoveMethodOptions.cs" />
+    <Compile Include="MoveMethod\MoveMethodRefactor.cs" />
+    <Compile Include="MoveMethod\State\MoveMethodState.cs" />
+    <Compile Include="MoveMethod\Steps\LoadRawSourceCode\LoadRawSourceStep.cs" />
+    <Compile Include="MoveMethod\Steps\ParseSelection\ParseInstancePositionStep.cs" />
     <Compile Include="Utils\StringIndexOfNthExtension.cs" />
     <Compile Include="ExtractVariable\Steps\FindStatement\StmtFinder.cs" />
     <Compile Include="ExtractVariable\Steps\FindExprRange\IsSubExprChecker.cs" />

@@ -6,6 +6,7 @@ using CommandLine;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.ExtractVariable;
 using Microsoft.DafnyRefactor.InlineTemp;
+using Microsoft.DafnyRefactor.MoveMethod;
 using Microsoft.DafnyRefactor.Utils;
 using Parser = CommandLine.Parser;
 using Type = System.Type;
@@ -24,7 +25,8 @@ namespace DafnyRefactor
 
         public static int Main(string[] args)
         {
-            Type[] types = {typeof(ApplyInlineTempOptions), typeof(ApplyExtractVariableOptions)};
+            Type[] types =
+                {typeof(ApplyInlineTempOptions), typeof(ApplyExtractVariableOptions), typeof(ApplyMoveMethodOptions)};
             var parsedArgs = Parser.Default.ParseArguments(args, types);
             return parsedArgs.MapResult(Run, HandleParseError);
         }
@@ -74,6 +76,11 @@ namespace DafnyRefactor
                     var extractVariableRefactor = new ExtractVariableRefactor(extractVariableOptions);
                     extractVariableRefactor.Apply();
                     exitCode = extractVariableRefactor.ExitCode;
+                    break;
+                case ApplyMoveMethodOptions moveMethodOptions:
+                    var moveMethodRefactor = new MoveMethodRefactor(moveMethodOptions);
+                    moveMethodRefactor.Apply();
+                    exitCode = moveMethodRefactor.ExitCode;
                     break;
                 default:
                     exitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
