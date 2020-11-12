@@ -13,7 +13,7 @@ class Shape
 
     method LogDrawing(logger: Logger)
     {
-        var message := "Shape was drawn at " + this.x + ":" + this.y;
+        var message := "Shape was drawn at " + x + ":" + this.y;
         logger.Log(message);
     }
 }

@@ -37,10 +37,7 @@ namespace Microsoft.DafnyRefactor.MoveMethod
 
                 var start = @in.tok.pos;
                 var end = start;
-                while (end <= sourceCode.Length && sourceCode[end] != ',' && sourceCode[end] != ')')
-                {
-                    end++;
-                }
+                while (end <= sourceCode.Length && sourceCode[end] != ',' && sourceCode[end] != ')') end++;
 
                 var className = method.EnclosingClass.Name;
                 newParamName = char.ToLower(className[0]) + className.Substring(1);
@@ -52,19 +49,23 @@ namespace Microsoft.DafnyRefactor.MoveMethod
 
         protected override void Visit(NameSegment nameSeg)
         {
-            if (nameSeg.Name != param.Name) return;
+            if (nameSeg.Name == param.Name)
+            {
+                var start = nameSeg.tok.pos;
+                var end = nameSeg.tok.pos + nameSeg.tok.val.Length;
+                var edit = new SourceEdit(start, end, "this");
+                edits.Add(edit);
+            }
 
-            var start = nameSeg.tok.pos;
-            var end = nameSeg.tok.pos + nameSeg.tok.val.Length;
-            var edit = new SourceEdit(start, end, "this");
-            edits.Add(edit);
+            base.Visit(nameSeg);
         }
 
         protected override void Visit(ThisExpr thisExpr)
         {
             var start = thisExpr.tok.pos;
             var end = thisExpr.tok.pos + thisExpr.tok.val.Length;
-            var edit = new SourceEdit(start, end, newParamName);
+            var paramName = thisExpr.tok.val == "this" ? newParamName : $"{newParamName}.{thisExpr.tok.val}";
+            var edit = new SourceEdit(start, end, paramName);
             edits.Add(edit);
         }
 
