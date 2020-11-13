@@ -40,6 +40,28 @@ namespace DafnyRefactorTests
             FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
         }
 
+        [Test]
+        public void EqualMethodsT1()
+        {
+            testFileDir = $"{testDir}\\equal_methods";
+            testNumber = 1;
+            instancePosition = "28:23";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
+        }
+
+        [Test]
+        public void EqualMethodsT2()
+        {
+            testFileDir = $"{testDir}\\equal_methods";
+            testNumber = 2;
+            instancePosition = "36:17";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(0, exitCode);
+            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
 
         [Test]
         public void SimpleClassesT1()

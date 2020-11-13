@@ -89,6 +89,16 @@ namespace Microsoft.DafnyRefactor.Utils
             base.Visit(iteExpr);
         }
 
+        protected override void Visit(ThisExpr thisExpr)
+        {
+            if (!thisExpr.IsImplicit)
+            {
+                VerifyExpr(thisExpr);
+            }
+
+            base.Visit(thisExpr);
+        }
+
         protected void VerifyExpr(Expression expr)
         {
             var endTokPos = expr.tok.pos + expr.tok.val.Length - 1;

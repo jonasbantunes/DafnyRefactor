@@ -108,6 +108,7 @@
     <Compile Include="MoveMethod\ApplyMoveMethodOptions.cs" />
     <Compile Include="MoveMethod\MoveMethodRefactor.cs" />
     <Compile Include="MoveMethod\State\MoveMethodState.cs" />
+    <Compile Include="MoveMethod\Steps\CheckClassSignature\CheckClassSignatureStep.cs" />
     <Compile Include="MoveMethod\Steps\LoadRawSourceCode\LoadRawSourceStep.cs" />
     <Compile Include="MoveMethod\Steps\LocateTarget\TargetLocator.cs" />
     <Compile Include="MoveMethod\Steps\LocateTarget\LocateTargetStep.cs" />

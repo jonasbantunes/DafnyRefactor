@@ -8,6 +8,10 @@ class Logger
     {
         print(message);
     }
+
+    method LogDrawing(shape: Shape)
+    {
+    }
 }
 
 class Shape
@@ -33,7 +37,12 @@ class Shape
     modifies this
     {
         LogDrawing(logger);
-        (this).LogDrawing(logger);
+        this.LogDrawing(logger);
+
+        {
+            var logger := new Logger();
+            this.LogDrawing(logger);
+        }
     }
 }
 

@@ -45,6 +45,22 @@ namespace Microsoft.DafnyRefactor.MoveMethod
                 var edit = new SourceEdit(start, end, newParamRaw);
                 edits.Add(edit);
             }
+
+            // TODO: Add this to DafnyVisitor
+            foreach (var modifies in method.Mod.Expressions)
+            {
+                Visit(modifies.E);
+            }
+
+            foreach (var requires in method.Req)
+            {
+                Visit(requires.E);
+            }
+
+            foreach (var ensures in method.Ens)
+            {
+                Visit(ensures.E);
+            }
         }
 
         protected override void Visit(NameSegment nameSeg)
@@ -62,6 +78,9 @@ namespace Microsoft.DafnyRefactor.MoveMethod
 
         protected override void Visit(ThisExpr thisExpr)
         {
+            // TODO: Analyse a better approach to constructors
+            if (thisExpr.tok.val == "new") return;
+
             var start = thisExpr.tok.pos;
             var end = thisExpr.tok.pos + thisExpr.tok.val.Length;
             var paramName = thisExpr.tok.val == "this" ? newParamName : $"{newParamName}.{thisExpr.tok.val}";

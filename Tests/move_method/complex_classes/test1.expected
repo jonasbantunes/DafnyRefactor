@@ -10,6 +10,8 @@ class Logger
     }
 
 method LogDrawing(shape: Shape)
+    modifies shape
+    ensures shape.x == shape.x;
     {
         var message := "Shape was drawn at " + shape.x + ":" + shape.y;
         this.Log(message);
@@ -30,6 +32,7 @@ class Shape
     
 
     method Draw(logger: Logger)
+    modifies this
     {
         (logger).LogDrawing(this);
         (logger).LogDrawing((this));

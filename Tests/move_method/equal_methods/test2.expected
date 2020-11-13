@@ -8,6 +8,22 @@ class Logger
     {
         print(message);
     }
+
+    method LogDrawing(shape: Shape)
+    {
+    }
+
+method Draw(shape: Shape)
+    modifies shape
+    {
+        shape.LogDrawing(this);
+        shape.LogDrawing(this);
+
+        {
+            var logger := new Logger();
+            shape.LogDrawing(this);
+        }
+    }
 }
 
 class Shape
@@ -29,12 +45,7 @@ class Shape
         logger.Log(message);
     }
 
-    method Draw(logger: Logger)
-    modifies this
-    {
-        LogDrawing(logger);
-        (this).LogDrawing(logger);
-    }
+    
 }
 
 method Main()
