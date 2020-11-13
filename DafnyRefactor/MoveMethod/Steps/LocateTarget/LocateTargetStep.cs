@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 
 namespace Microsoft.DafnyRefactor.MoveMethod
@@ -13,6 +14,24 @@ namespace Microsoft.DafnyRefactor.MoveMethod
             if (mvtParam == null)
             {
                 state.AddError("Error: can't locate target's parameter to be moved.");
+                return;
+            }
+
+            if (!(mvtParam.Formal.Type is UserDefinedType userDefinedType))
+            {
+                state.AddError("Error: target type is built-in.");
+                return;
+            }
+
+            if (!(userDefinedType.ResolvedClass is NonNullTypeDecl) && !(userDefinedType.ResolvedClass is ClassDecl))
+            {
+                state.AddError("Error: target type is built-in.");
+                return;
+            }
+
+            if (userDefinedType.ResolvedClass is ClassDecl && !userDefinedType.IsNonNullRefType)
+            {
+                state.AddError("Error: target type is nullable.");
                 return;
             }
 

@@ -31,11 +31,17 @@ class Shape
 
     
 
-    method Draw(logger: Logger)
+    method Draw(logger: Logger?)
     modifies this
     {
+        if (logger != null) {
+            (logger).LogDrawing(this);
+            (logger).LogDrawing((this));    
+        }
+
+        var logger := new Logger();
         (logger).LogDrawing(this);
-        (logger).LogDrawing((this));
+        
     }
 }
 

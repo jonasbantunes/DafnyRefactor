@@ -41,6 +41,28 @@ namespace DafnyRefactorTests
         }
 
         [Test]
+        public void ComplexClassesT2()
+        {
+            testFileDir = $"{testDir}\\complex_classes";
+            testNumber = 2;
+            instancePosition = "7:16";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
+        }
+
+        [Test]
+        public void ComplexClassesT3()
+        {
+            testFileDir = $"{testDir}\\complex_classes";
+            testNumber = 3;
+            instancePosition = "32:17";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
+        }
+
+        [Test]
         public void EqualMethodsT1()
         {
             testFileDir = $"{testDir}\\equal_methods";
