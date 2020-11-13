@@ -11,15 +11,15 @@ using Microsoft.DafnyRefactor.Utils;
 using Parser = CommandLine.Parser;
 using Type = System.Type;
 
-namespace DafnyRefactor
+namespace Microsoft.DafnyRefactor
 {
     /// <summary>
     ///     The entrypoint of <c>DafnyRefactor</c> project.
     ///     ParseVariables args from CLI and call the adequate <c>Refactor</c> class.
     /// </summary>
-    public class DafnyRefactorDriver
+    public static class DafnyRefactorDriver
     {
-        protected static int exitCode = (int) DafnyDriver.ExitValue.VERIFIED;
+        private static int _exitCode = (int) DafnyDriver.ExitValue.VERIFIED;
         public static TextWriter consoleOutput;
         public static TextWriter consoleError;
 
@@ -31,7 +31,7 @@ namespace DafnyRefactor
             return parsedArgs.MapResult(Run, HandleParseError);
         }
 
-        protected static int HandleParseError(IEnumerable<Error> errs)
+        private static int HandleParseError(IEnumerable<Error> errs)
         {
             var errors = errs as Error[] ?? errs.ToArray();
             if (errors.IsVersion())
@@ -50,7 +50,7 @@ namespace DafnyRefactor
             return (int) DafnyDriver.ExitValue.DAFNY_ERROR;
         }
 
-        protected static int Run(object obj)
+        private static int Run(object obj)
         {
             switch (obj)
             {
@@ -61,7 +61,7 @@ namespace DafnyRefactor
             return (int) DafnyDriver.ExitValue.DAFNY_ERROR;
         }
 
-        protected static int Run(ApplyOptions options)
+        private static int Run(ApplyOptions options)
         {
             SetupConsole();
 
@@ -70,31 +70,31 @@ namespace DafnyRefactor
                 case ApplyInlineTempOptions inlineTempOptions:
                     var inlineRefactor = new InlineRefactor(inlineTempOptions);
                     inlineRefactor.Apply();
-                    exitCode = inlineRefactor.ExitCode;
+                    _exitCode = inlineRefactor.ExitCode;
                     break;
                 case ApplyExtractVariableOptions extractVariableOptions:
                     var extractVariableRefactor = new ExtractVariableRefactor(extractVariableOptions);
                     extractVariableRefactor.Apply();
-                    exitCode = extractVariableRefactor.ExitCode;
+                    _exitCode = extractVariableRefactor.ExitCode;
                     break;
                 case ApplyMoveMethodOptions moveMethodOptions:
                     var moveMethodRefactor = new MoveMethodRefactor(moveMethodOptions);
                     moveMethodRefactor.Apply();
-                    exitCode = moveMethodRefactor.ExitCode;
+                    _exitCode = moveMethodRefactor.ExitCode;
                     break;
                 default:
-                    exitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
+                    _exitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
                     break;
             }
 
-            return exitCode;
+            return _exitCode;
         }
 
         /// <summary>
         ///     Hide stdin and stdout references from third-party libraries.
         ///     Without this, the Dafny compiler will output several log messages.
         /// </summary>
-        protected static void SetupConsole()
+        private static void SetupConsole()
         {
             consoleOutput = Console.Out;
             consoleError = Console.Error;

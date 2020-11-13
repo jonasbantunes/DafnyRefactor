@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using DafnyRefactor.InlineTemp.State;
 using Microsoft.Boogie;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;

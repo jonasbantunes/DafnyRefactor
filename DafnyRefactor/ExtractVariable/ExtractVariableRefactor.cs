@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DafnyRefactor;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Dafny;
 using Type = Microsoft.Dafny.Type;
 
-namespace DafnyRefactor.InlineTemp.State
+namespace Microsoft.DafnyRefactor.InlineTemp
 {
     /// <summary>
     ///     Represents the neccesary information of method, from a <c>Dafny.Program</c>, to apply the
