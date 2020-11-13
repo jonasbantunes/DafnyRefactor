@@ -101,9 +101,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             if (startExpr is ExprDotName exprDotName)
             {
                 var lhs = exprDotName.Lhs;
-                while (!(lhs is NameSegment))
+                while (lhs is ExprDotName subDotExpr)
                 {
-                    var subDotExpr = (ExprDotName) lhs;
                     lhs = subDotExpr.Lhs;
                 }
 

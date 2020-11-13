@@ -107,9 +107,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         protected void FindStartExprDotName(ExprDotName exprDotName)
         {
             var lhs = exprDotName.Lhs;
-            while (!(lhs is NameSegment))
+            while (lhs is ExprDotName subDotName)
             {
-                var subDotName = (ExprDotName) lhs;
                 lhs = subDotName.Lhs;
             }
 
@@ -149,9 +148,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         protected void FindEndExprDotName()
         {
             var lhs = endFinder.RightExpr;
-            while (!(lhs is NameSegment))
+            while (lhs is ExprDotName subDotName)
             {
-                var subDotName = (ExprDotName) lhs;
                 var lhsPos = subDotName.tok.pos;
                 var lhsEndPos = subDotName.tok.pos + subDotName.tok.val.Length;
                 if (lhsPos < inState.EvUserSelection.end && inState.EvUserSelection.end < lhsEndPos) break;

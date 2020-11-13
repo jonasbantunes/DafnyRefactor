@@ -6,7 +6,7 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 
 ## Requirements
 
-- Windows 10 (tested on 2004 version, may work on previous versions)
+- Windows 10 (tested on 20H2 version, may work on previous versions)
 - Visual Studio 2019
 - .NET Framework 4.5.2
 
@@ -26,7 +26,7 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 ```
 
 - Build _Dafny_ project located on `dafny\Source\Dafny.sln`
-- Build _Dafny Refactor_ project located on `DafnyRefactor\DafnyRefactor.sln`
+- Build _DafnyRefactor_ project located on `DafnyRefactor\DafnyRefactor.sln`
 
 ## Usage
 
@@ -34,9 +34,25 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 DafnyRefactor.exe [refactor-type] [refactor-params*]
 ```
 
-Currently, only _inline temp_ refactor is supported.
+Currently, the these refactors are supported:
 
-### Inline temp
+- Extract Variable;
+- Inline Temp;
+- Move Method.
+
+### Extract Variable
+
+```batch
+DafnyRefactor.exe apply-extract-variable [options]
+```
+
+Example:
+
+```batch
+DafnyRefator.exe apply-extract-variable -f example.dfy -s "2:7" -e "2:9" -v "newVarName"
+```
+
+### Inline Temp
 
 ```batch
 DafnyRefactor.exe apply-inline-temp [options]
@@ -48,8 +64,17 @@ Example:
 DafnyRefator.exe apply-inline-temp -f example.dfy -l 2 -c 7
 ```
 
-Currently limitations:
-- Only non-object expressions are guaranteed to be correctly refactored;
+### Move Method
+
+```batch
+DafnyRefactor.exe apply-move-method [options]
+```
+
+Example:
+
+```batch
+DafnyRefator.exe apply-move-method -f example.dfy -i "2:7"
+```
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
