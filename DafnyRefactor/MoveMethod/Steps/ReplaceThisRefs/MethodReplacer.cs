@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.MoveMethod
+namespace DafnyRefactor.MoveMethod
 {
     public class MethodReplacer : DafnyVisitorWithNearests
     {
@@ -46,7 +46,6 @@ namespace Microsoft.DafnyRefactor.MoveMethod
                 edits.Add(edit);
             }
 
-            // TODO: Add this to DafnyVisitor
             foreach (var modifies in method.Mod.Expressions)
             {
                 Visit(modifies.E);

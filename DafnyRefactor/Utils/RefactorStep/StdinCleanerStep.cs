@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Remove temporary file created by <c>StdinLoaderStep</c>

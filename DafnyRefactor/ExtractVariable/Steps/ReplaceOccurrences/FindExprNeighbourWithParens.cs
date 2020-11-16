@@ -1,7 +1,7 @@
-﻿using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
+﻿using DafnyRefactor.Utils;
+using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     public class FindExprNeighbourWithParens : FindExprNeighbours
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.DafnyRefactor.Utils;
+using DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     public class EvGenerateScopeStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {

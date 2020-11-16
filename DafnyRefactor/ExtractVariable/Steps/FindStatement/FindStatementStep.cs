@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.DafnyRefactor.Utils;
+using DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that finds the statement with informed selection.

@@ -1,8 +1,8 @@
 ﻿using System;
+using DafnyRefactor.ExtractVariable;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.ExtractVariable;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     public class ExprRangeFinder
     {

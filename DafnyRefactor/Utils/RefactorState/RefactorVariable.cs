@@ -1,6 +1,6 @@
 ﻿using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Represents a variable from AST that is used during the refactor process.

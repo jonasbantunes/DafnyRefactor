@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Represents a set of base CLI options that should be used on all refactors.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     ParseVariables a <c>Dafny.Program</c> and generate a list of statement divisors (<c>StmtDivisors</c>).

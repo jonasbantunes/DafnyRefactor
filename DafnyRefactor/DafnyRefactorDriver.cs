@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommandLine;
+using DafnyRefactor.ExtractVariable;
+using DafnyRefactor.InlineTemp;
+using DafnyRefactor.MoveMethod;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.ExtractVariable;
-using Microsoft.DafnyRefactor.InlineTemp;
-using Microsoft.DafnyRefactor.MoveMethod;
-using Microsoft.DafnyRefactor.Utils;
 using Parser = CommandLine.Parser;
 using Type = System.Type;
 
-namespace Microsoft.DafnyRefactor
+namespace DafnyRefactor
 {
     /// <summary>
     ///     The entrypoint of <c>DafnyRefactor</c> project.

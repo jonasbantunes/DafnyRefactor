@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     /// <summary>
     ///     Represents the state of a "Extract Variable" refactor.

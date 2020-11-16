@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Represents the state of a refactor.

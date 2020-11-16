@@ -1,8 +1,8 @@
 ﻿using System;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     public class IsSubExprChecker : DafnyVisitor
     {

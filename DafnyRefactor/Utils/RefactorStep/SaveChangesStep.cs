@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that saves a list of <c>SourceEdit</c> to a file.
@@ -49,7 +48,7 @@ namespace Microsoft.DafnyRefactor.Utils
         public void Save()
         {
             ApplyChanges();
-            VerifySourceProof();
+            ChangesInvalidateSource = !EditsValidator.IsValid(edits, filePath);
             if (ChangesInvalidateSource) return;
 
             SaveTo();
@@ -60,17 +59,6 @@ namespace Microsoft.DafnyRefactor.Utils
             var source = File.ReadAllText(filePath);
             sourceEditor = new SourceEditor(source, edits);
             sourceEditor.Apply();
-        }
-
-        // TODO: Use EditsValidator instead
-        protected void VerifySourceProof()
-        {
-            var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
-            File.WriteAllText(tempPath, sourceEditor.Source);
-            var res = DafnyDriver.Main(new[] {tempPath, "/compile:0"});
-            File.Delete(tempPath);
-
-            ChangesInvalidateSource = res != 0;
         }
 
         protected void SaveTo()

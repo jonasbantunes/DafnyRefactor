@@ -1,8 +1,8 @@
 ﻿using System;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that locate the start and end of selected expression, according with AST.

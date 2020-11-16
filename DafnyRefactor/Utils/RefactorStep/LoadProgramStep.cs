@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     A step that loads and parse a program from a valid file.

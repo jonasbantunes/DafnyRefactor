@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Represents a change to be applied on source code.

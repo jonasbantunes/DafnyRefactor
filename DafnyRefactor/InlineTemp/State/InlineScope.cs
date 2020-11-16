@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
+using DafnyRefactor.Utils;
 using Microsoft.Boogie;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 using LocalVariable = Microsoft.Dafny.LocalVariable;
 using Type = Microsoft.Dafny.Type;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace DafnyRefactor.InlineTemp
 {
     /// <summary>
     ///     Represents the state of a scope of a "Inline Temp" refactor.
@@ -89,7 +89,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public IInlineVariable LookupInlineVariable(string name)
         {
-            // TODO: Find better way to implice type
             return LookupVariable(name) as IInlineVariable;
         }
 
@@ -108,7 +107,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public IInlineScope FindInlineScope(int hashCode)
         {
-            // TODO: Find better way to implice type
             return FindScope(hashCode) as IInlineScope;
         }
 

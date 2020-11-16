@@ -1,7 +1,7 @@
 ﻿using CommandLine;
-using Microsoft.DafnyRefactor.Utils;
+using DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.MoveMethod
+namespace DafnyRefactor.MoveMethod
 {
     [Verb("apply-move-method")]
     public class ApplyMoveMethodOptions : ApplyOptions

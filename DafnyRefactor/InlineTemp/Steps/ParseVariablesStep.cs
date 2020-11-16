@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace DafnyRefactor.InlineTemp
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that parses all variables of a <c>Dafny.Program</c> into <c>RefactorVariable</c>

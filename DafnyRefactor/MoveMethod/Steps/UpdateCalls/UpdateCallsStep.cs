@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.DafnyRefactor.Utils;
+using DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.MoveMethod
+namespace DafnyRefactor.MoveMethod
 {
     public class UpdateCallsStep<TState> : RefactorStep<TState> where TState : IMoveMethodState
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace DafnyRefactor.InlineTemp
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that verifies if all usages of a <c>InlineVariable</c> are constant.

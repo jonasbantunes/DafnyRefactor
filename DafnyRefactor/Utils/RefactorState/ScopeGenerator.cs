@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     ParseVariables a <c>Dafny.Program</c> and generate it's respectives <c>IRefactorScope</c>.

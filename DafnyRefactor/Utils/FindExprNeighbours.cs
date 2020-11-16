@@ -1,8 +1,7 @@
 ﻿using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
-    // TODO: Change this to accept rootExpr only.
     /// <summary>
     ///     Finds the leftmost and rightmost expressions of a informed expression on AST>
     /// </summary>

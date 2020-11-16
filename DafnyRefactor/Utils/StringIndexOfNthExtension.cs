@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     public static class StringIndexOfNthExtension
     {

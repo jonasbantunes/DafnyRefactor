@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.MoveMethod
+namespace DafnyRefactor.MoveMethod
 {
     public interface IMoveMethodState : IRefactorState
     {

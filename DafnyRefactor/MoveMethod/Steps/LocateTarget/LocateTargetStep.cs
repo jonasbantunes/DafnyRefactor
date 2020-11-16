@@ -1,12 +1,11 @@
 ﻿using System;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.MoveMethod
+namespace DafnyRefactor.MoveMethod
 {
     public class LocateTargetStep<TState> : RefactorStep<TState> where TState : IMoveMethodState
     {
-        // TODO: too many IFs.
         public override void Handle(TState state)
         {
             if (state == null || state.Program == null) throw new ArgumentNullException();

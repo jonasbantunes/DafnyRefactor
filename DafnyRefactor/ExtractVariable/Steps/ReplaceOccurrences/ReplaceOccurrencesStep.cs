@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.DafnyRefactor.Utils;
+using DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that replaces all occurences of extracted expression.

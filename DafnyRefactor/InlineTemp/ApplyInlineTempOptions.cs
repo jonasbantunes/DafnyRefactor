@@ -2,7 +2,7 @@
 using CommandLine;
 using CommandLine.Text;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Represents a set of CLI options to apply an "Inline Temp" refactor.

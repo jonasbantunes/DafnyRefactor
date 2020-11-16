@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace DafnyRefactor.InlineTemp
 {
     /// <summary>
     ///     Apply "Inline Temp" refactor on a <c>Dafny.Program</c> file.

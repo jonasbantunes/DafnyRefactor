@@ -1,7 +1,7 @@
-﻿using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
+﻿using DafnyRefactor.Utils;
+using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace DafnyRefactor.InlineTemp
 {
     /// <summary>
     ///     Represents a variable from AST that is used during the refactor process.
@@ -31,7 +31,6 @@ namespace Microsoft.DafnyRefactor.InlineTemp
 
         public Expression Expr { get; set; }
 
-        // TODO: Give a better name
         public UpdateStmt InitStmt { get; set; } = null;
 
         public bool IsConstant()

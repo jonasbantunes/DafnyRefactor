@@ -1,6 +1,6 @@
 ﻿using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace DafnyRefactor.InlineTemp
 {
     /// <summary>
     ///     Represents a <c>RefactorMethod</c> argument info.

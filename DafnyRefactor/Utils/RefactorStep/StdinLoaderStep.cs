@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Load source code from stdin and save to a temporary file.

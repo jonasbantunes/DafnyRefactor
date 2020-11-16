@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Base class representing a step from a refactor, using a similar approach to "Chain of Responsability" pattern.

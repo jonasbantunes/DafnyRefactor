@@ -2,7 +2,7 @@
 using Microsoft.Boogie;
 using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     An extension of <c>DafnyVisitor</c> that saves some nearest objects from

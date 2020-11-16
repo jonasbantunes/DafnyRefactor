@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     [Verb("apply-extract-variable")]
     public class ApplyExtractVariableOptions : ApplyOptions

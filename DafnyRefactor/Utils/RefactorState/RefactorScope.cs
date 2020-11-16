@@ -3,7 +3,7 @@ using Microsoft.Boogie;
 using Microsoft.Dafny;
 using LocalVariable = Microsoft.Dafny.LocalVariable;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Represents the state of a scope.

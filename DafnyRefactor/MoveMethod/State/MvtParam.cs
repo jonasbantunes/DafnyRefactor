@@ -1,6 +1,6 @@
 ﻿using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.MoveMethod
+namespace DafnyRefactor.MoveMethod
 {
     public interface IMvtParam
     {

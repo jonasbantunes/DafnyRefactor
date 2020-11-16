@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using DafnyRefactor.Utils;
 using Microsoft.Boogie;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 using LocalVariable = Microsoft.Dafny.LocalVariable;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     public interface IExtractVariableScope : IRefactorScope
     {

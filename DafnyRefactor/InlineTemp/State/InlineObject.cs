@@ -1,6 +1,6 @@
 ﻿using Microsoft.Dafny;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace DafnyRefactor.InlineTemp
 {
     /// <summary>
     ///     Represents an object from the expression to be refactored.

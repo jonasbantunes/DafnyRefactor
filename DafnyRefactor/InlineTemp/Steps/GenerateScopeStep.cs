@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.DafnyRefactor.Utils;
+using DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.InlineTemp
+namespace DafnyRefactor.InlineTemp
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that generate all <c>RefactorScope</c> from a <c>Dafny.Program</c>.

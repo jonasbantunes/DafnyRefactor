@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.DafnyRefactor.Utils
+namespace DafnyRefactor.Utils
 {
     /// <summary>
     ///     Represents the lower and upper bounds of a sequence. <c>start</c> is always smaller or equal than <c>end</c>.

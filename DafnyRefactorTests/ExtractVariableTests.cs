@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Microsoft.DafnyRefactor;
+using DafnyRefactor;
 using NUnit.Framework;
 
 namespace DafnyRefactorTests

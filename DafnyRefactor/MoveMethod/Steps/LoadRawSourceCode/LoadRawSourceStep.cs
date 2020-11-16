@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Microsoft.DafnyRefactor.Utils;
+using DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.MoveMethod
+namespace DafnyRefactor.MoveMethod
 {
     public class LoadRawSourceStep<TState> : RefactorStep<TState> where TState : IMoveMethodState
     {

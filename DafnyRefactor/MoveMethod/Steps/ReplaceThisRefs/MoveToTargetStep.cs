@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using DafnyRefactor.Utils;
 using Microsoft.Dafny;
-using Microsoft.DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.MoveMethod
+namespace DafnyRefactor.MoveMethod
 {
     public class MoveToTargetStep<TState> : RefactorStep<TState> where TState : IMoveMethodState
     {

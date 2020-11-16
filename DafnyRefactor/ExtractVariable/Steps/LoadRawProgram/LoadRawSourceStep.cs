@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Microsoft.DafnyRefactor.Utils;
+using DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that loads a string, non-parsed, version of Program.

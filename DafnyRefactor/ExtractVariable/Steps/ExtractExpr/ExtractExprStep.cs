@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.DafnyRefactor.Utils;
+using DafnyRefactor.Utils;
 
-namespace Microsoft.DafnyRefactor.ExtractVariable
+namespace DafnyRefactor.ExtractVariable
 {
     /// <summary>
     ///     A <c>RefactorStep</c> that extracts the selected expression from <c>state.EvStmt</c>.
@@ -36,7 +36,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var varName = inState.EvOptions.VarName;
             var editRaw = $"\nvar {varName} := {exprRaw};";
 
-            // TODO: extract this pattern to a static method
             var divisorIndex =
                 inState.StmtDivisors.FindIndex(divisor => divisor > inState.EvStmt.Tok.pos);
             var editPos = inState.StmtDivisors[divisorIndex - 1] + 1;
