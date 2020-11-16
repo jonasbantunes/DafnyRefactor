@@ -188,8 +188,21 @@ namespace DafnyRefactorTests
         {
             testFileDir = $"{testDir}\\scope_diff";
             testNumber = 2;
-            startRange = "7:23";
-            endRange = "7:28";
+            startRange = "8:23";
+            endRange = "8:28";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(0, exitCode);
+            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
+        }
+
+        [Test]
+        public void ScopeDiffT3()
+        {
+            testFileDir = $"{testDir}\\scope_diff";
+            testNumber = 3;
+            startRange = "5:9";
+            endRange = "5:16";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(0, exitCode);

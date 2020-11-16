@@ -36,8 +36,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var varName = inState.EvOptions.VarName;
             var editRaw = $"\nvar {varName} := {exprRaw};";
 
+            // TODO: extract this pattern to a static method
             var divisorIndex =
-                inState.StmtDivisors.FindIndex(divisor => divisor >= inState.EvStmt.EndTok.pos);
+                inState.StmtDivisors.FindIndex(divisor => divisor > inState.EvStmt.Tok.pos);
             var editPos = inState.StmtDivisors[divisorIndex - 1] + 1;
             var edit = new SourceEdit(editPos, editRaw);
             inState.SourceEdits.Add(edit);

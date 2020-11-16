@@ -35,7 +35,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected bool StmtContainsSelection(Statement stmt)
         {
-            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= stmt.EndTok.pos);
+            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor > stmt.Tok.pos);
             if (divisorIndex < 1) return false;
 
             var stmtStart = stmtDivisors[divisorIndex - 1];

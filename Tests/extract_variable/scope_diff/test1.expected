@@ -3,6 +3,7 @@ method Main() {
 var extractedVar := x + 5;
     var y := 5* (extractedVar);
 
+    if (x == 15)
     {
         var x := 1;
         var y := 7 + (x + 5);
