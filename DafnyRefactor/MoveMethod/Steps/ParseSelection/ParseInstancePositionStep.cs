@@ -20,7 +20,12 @@ namespace Microsoft.DafnyRefactor.MoveMethod
             var line = int.Parse(positionRawSplitted[0]);
             var col = int.Parse(positionRawSplitted[1]);
 
-            var index = state.MvtSourceCode.IndexOfNth("\n", line - 1);
+            var index = 0;
+            if (line - 1 > 0)
+            {
+                index = state.MvtSourceCode.IndexOfNth("\n", line - 1);
+            }
+
             if (index == -1)
             {
                 state.Errors.Add("Error: Instance position is invalid");

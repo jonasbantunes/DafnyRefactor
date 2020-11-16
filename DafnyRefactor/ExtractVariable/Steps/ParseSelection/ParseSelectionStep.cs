@@ -25,14 +25,24 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             var endLine = int.Parse(endRawSplitted[0]);
             var endCol = int.Parse(endRawSplitted[1]);
 
-            var startIndex = state.EvSourceCode.IndexOfNth("\n", startLine - 1);
+            var startIndex = 0;
+            if (startLine - 1 > 0)
+            {
+                startIndex = state.EvSourceCode.IndexOfNth("\n", startLine - 1);
+            }
+
             if (startIndex == -1)
             {
                 state.Errors.Add("Error: EvUserSelection is invalid");
                 return;
             }
 
-            var endIndex = state.EvSourceCode.IndexOfNth("\n", endLine - 1);
+            var endIndex = 0;
+            if (endLine - 1 > 0)
+            {
+                endIndex = state.EvSourceCode.IndexOfNth("\n", endLine - 1);
+            }
+
             if (endIndex == -1)
             {
                 state.Errors.Add("Error: EvUserSelection is invalid");
