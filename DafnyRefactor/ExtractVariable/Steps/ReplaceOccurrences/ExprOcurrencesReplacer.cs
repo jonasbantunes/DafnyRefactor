@@ -6,22 +6,22 @@ using Microsoft.DafnyRefactor.Utils;
 namespace Microsoft.DafnyRefactor.ExtractVariable
 {
     // TOOD: Replace some methods with ExprRangeFinder.
-    public class ExprOcurrencesReplacer : DafnyVisitor
+    public class ExprOcurrencesReplacer : DafnyVisitorWithNearests
     {
         protected List<SourceEdit> assertSourceEdits;
         protected Range exprRange;
         protected Statement extractStmt;
-        protected Expression furtherstExpr;
         protected Program program;
         protected string rawProgram;
-        protected IRefactorScope rootScope;
+        protected IExtractVariableScope rootScope;
         protected List<SourceEdit> sourceEdits;
         protected List<int> stmtDivisors;
         protected List<IRefactorVariable> variables;
         protected string varName;
 
         protected ExprOcurrencesReplacer(Program program, string rawProgram, Range exprRange, string varName,
-            List<int> stmtDivisors, Statement extractStmt, IRefactorScope rootScope, List<IRefactorVariable> variables)
+            List<int> stmtDivisors, Statement extractStmt, IExtractVariableScope rootScope,
+            List<IRefactorVariable> variables)
         {
             if (program == null || rawProgram == null || exprRange == null || varName == null || rootScope == null ||
                 variables == null)
@@ -42,7 +42,6 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected void Execute()
         {
-            furtherstExpr = null;
             sourceEdits = new List<SourceEdit>();
             assertSourceEdits = new List<SourceEdit>();
 
@@ -51,6 +50,9 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected override void Visit(Expression exp)
         {
+            var curScope = rootScope.EvrFindScope(nearestScopeToken.GetHashCode());
+            if (curScope == null) return;
+            if (!curScope.IsReplacable()) return;
             if (extractStmt.Tok.pos > exp.tok.pos) return;
             if (exp is AutoGhostIdentifierExpr) return;
 
@@ -190,7 +192,8 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         public static (List<SourceEdit> edits, List<SourceEdit> asserts) Replace(Program program, string rawProgram,
             Range exprRange, string varName,
-            List<int> stmtDivisors, Statement extractStmt, IRefactorScope rootScope, List<IRefactorVariable> variables)
+            List<int> stmtDivisors, Statement extractStmt, IExtractVariableScope rootScope,
+            List<IRefactorVariable> variables)
         {
             var replacer = new ExprOcurrencesReplacer(program, rawProgram, exprRange, varName, stmtDivisors,
                 extractStmt, rootScope, variables);

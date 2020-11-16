@@ -15,7 +15,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         Range EvExprRange { get; set; }
         ApplyExtractVariableOptions EvOptions { get; }
         Statement EvStmt { get; set; }
-        IRefactorScope EvRootScope { get; set; }
+        IExtractVariableScope EvRootScope { get; set; }
         List<IRefactorVariable> EvExprVariables { get; }
     }
 
@@ -52,7 +52,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         public Range EvExprRange { get; set; }
         public ApplyExtractVariableOptions EvOptions => options;
         public Statement EvStmt { get; set; }
-        public IRefactorScope EvRootScope { get; set; }
+        public IExtractVariableScope EvRootScope { get; set; }
         public List<IRefactorVariable> EvExprVariables { get; }
     }
 }

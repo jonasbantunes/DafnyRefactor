@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Dafny;
 using Microsoft.DafnyRefactor.Utils;
 
@@ -8,14 +9,19 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     {
         protected Statement foundStmt;
         protected Program program;
+        protected IExtractVariableScope rootScope;
         protected Range selection;
         protected List<int> stmtDivisors;
 
-        protected StmtFinder(Program program, Range selection, List<int> stmtDivisors)
+        protected StmtFinder(Program program, Range selection, List<int> stmtDivisors, IExtractVariableScope rootScope)
         {
+            if (program == null || selection == null || stmtDivisors == null || rootScope == null)
+                throw new ArgumentNullException();
+
             this.program = program;
             this.selection = selection;
             this.stmtDivisors = stmtDivisors;
+            this.rootScope = rootScope;
         }
 
         public void Execute()
@@ -27,7 +33,10 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
         {
             if (StmtContainsSelection(stmt))
             {
+                var curScope = rootScope.EvrFindScope(nearestScopeToken.GetHashCode());
+                if (curScope == null) return;
                 foundStmt = stmt;
+                curScope.CanReplace = true;
             }
 
             base.Visit(stmt);
@@ -44,9 +53,10 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
             return stmtStart <= selection.start && selection.end <= stmtEnd;
         }
 
-        public static Statement Find(Program program, Range selection, List<int> stmtDivisors)
+        public static Statement Find(Program program, Range selection, List<int> stmtDivisors,
+            IExtractVariableScope rootScope)
         {
-            var finder = new StmtFinder(program, selection, stmtDivisors);
+            var finder = new StmtFinder(program, selection, stmtDivisors, rootScope);
             finder.Execute();
             return finder.foundStmt;
         }

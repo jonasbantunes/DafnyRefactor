@@ -10,10 +10,11 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.FilePath == null || state.EvUserSelection == null || state.StmtDivisors == null)
-                throw new ArgumentNullException();
+            if (state == null || state.FilePath == null || state.EvUserSelection == null ||
+                state.StmtDivisors == null || state.EvRootScope == null) throw new ArgumentNullException();
 
-            var foundStmt = StmtFinder.Find(state.Program, state.EvUserSelection, state.StmtDivisors);
+            var foundStmt =
+                StmtFinder.Find(state.Program, state.EvUserSelection, state.StmtDivisors, state.EvRootScope);
             if (foundStmt == null)
             {
                 state.Errors.Add("Error: Couldn't find selected expression.");

@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
+    <Compile Include="ExtractVariable\State\ExtractVariableScope.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
     <Compile Include="MoveMethod\State\MvtParam.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprOcurrencesReplacer.cs" />
