@@ -86,6 +86,17 @@ namespace DafnyRefactorTests
         }
 
         [Test]
+        public void MethodCallT1()
+        {
+            testFileDir = $"{testDir}\\method_call";
+            testNumber = 1;
+            instancePosition = "27:19";
+
+            var exitCode = DafnyRefactorDriver.Main(Args);
+            Assert.AreEqual(2, exitCode);
+        }
+
+        [Test]
         public void SimpleClassesT1()
         {
             testFileDir = $"{testDir}\\simple_classes";
