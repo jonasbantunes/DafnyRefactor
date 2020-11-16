@@ -31,7 +31,7 @@ namespace Microsoft.DafnyRefactor.ExtractVariable
 
         protected override void Visit(Statement stmt)
         {
-            if (StmtContainsSelection(stmt))
+            if (!(stmt is AssignStmt) && StmtContainsSelection(stmt))
             {
                 var curScope = rootScope.EvrFindScope(nearestScopeToken.GetHashCode());
                 if (curScope == null) return;
