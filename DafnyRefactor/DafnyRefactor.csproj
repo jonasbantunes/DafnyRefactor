@@ -103,8 +103,16 @@
     <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableScope.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
+    <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\IndexOfWithIgnoresExtension.cs" />
+    <Compile Include="InlineTemp\Steps\AssertImmutabilitySimplified\AssertivesSimplifiedAdder.cs" />
+    <Compile Include="InlineTemp\Steps\AssertImmutability\AssertivesAdder.cs" />
+    <Compile Include="InlineTemp\Steps\AssertImmutability\InlineObjectsParser.cs" />
     <Compile Include="InlineTemp\Steps\LocateVariable\VariableLocator.cs" />
+    <Compile Include="InlineTemp\Steps\ParseMethods\MethodParser.cs" />
     <Compile Include="InlineTemp\Steps\ParsePosition\ParsePositionStep.cs" />
+    <Compile Include="InlineTemp\Steps\ParseVariables\VariableParser.cs" />
+    <Compile Include="InlineTemp\Steps\RemoveDeclaration\DeclarationRemover.cs" />
+    <Compile Include="InlineTemp\Steps\ReplaceVariable\InlineTempApplier.cs" />
     <Compile Include="MoveMethod\State\MvtParam.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprOcurrencesReplacer.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprIsReplaceableChecker.cs" />
@@ -122,6 +130,8 @@
     <Compile Include="MoveMethod\Steps\UpdateCalls\CallsUpdater.cs" />
     <Compile Include="MoveMethod\Steps\UpdateCalls\UpdateCallsStep.cs" />
     <Compile Include="Utils\ExprRangeFinder.cs" />
+    <Compile Include="Utils\RefactorStep\ParseStmtDivisors\StmtDivisorsParser.cs" />
+    <Compile Include="Utils\RefactorStep\SaveChanges\ChangesSaver.cs" />
     <Compile Include="Utils\StringIndexOfNthExtension.cs" />
     <Compile Include="ExtractVariable\Steps\FindStatement\StmtFinder.cs" />
     <Compile Include="ExtractVariable\Steps\FindExprRange\IsSubExprChecker.cs" />

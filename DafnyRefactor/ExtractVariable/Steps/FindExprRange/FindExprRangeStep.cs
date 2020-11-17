@@ -9,11 +9,11 @@ namespace DafnyRefactor.ExtractVariable
     /// </summary>
     public class FindExprRangeStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
-        protected Expression endExpr;
-        protected FindExprNeighbours endFinder;
-        protected TState inState;
-        protected Expression startExpr;
-        protected FindExprNeighbours startFinder;
+        private Expression _endExpr;
+        private FindExprNeighbours _endFinder;
+        private TState _inState;
+        private Expression _startExpr;
+        private FindExprNeighbours _startFinder;
 
 
         public override void Handle(TState state)
@@ -22,7 +22,7 @@ namespace DafnyRefactor.ExtractVariable
                 state.EvStmt == null)
                 throw new ArgumentNullException();
 
-            inState = state;
+            _inState = state;
 
             Setup();
             if (state.Errors.Count > 0) return;
@@ -35,75 +35,75 @@ namespace DafnyRefactor.ExtractVariable
             base.Handle(state);
         }
 
-        protected void Setup()
+        private void Setup()
         {
-            startFinder = new FindExprNeighbours(inState.EvStmt, inState.EvUserSelection.start);
-            startFinder.Execute();
-            endFinder = new FindExprNeighbours(inState.EvStmt, inState.EvUserSelection.end);
-            endFinder.Execute();
+            _startFinder = new FindExprNeighbours(_inState.EvStmt, _inState.EvUserSelection.start);
+            _startFinder.Execute();
+            _endFinder = new FindExprNeighbours(_inState.EvStmt, _inState.EvUserSelection.end);
+            _endFinder.Execute();
 
-            if (startFinder.LeftExpr == null && startFinder.RightExpr == null ||
-                endFinder.LeftExpr == null && endFinder.RightExpr == null)
+            if (_startFinder.LeftExpr == null && _startFinder.RightExpr == null ||
+                _endFinder.LeftExpr == null && _endFinder.RightExpr == null)
             {
-                inState.AddError(ExtractVariableErrorMsg.NotAnExpr());
+                _inState.AddError(ExtractVariableErrorMsg.NotAnExpr());
             }
         }
 
-        protected void FindStart()
+        private void FindStart()
         {
-            if (startFinder.LeftExpr is NegationExpression negationExpr &&
-                !IsSubExprChecker.IsSubExpr(endFinder.LeftExpr, negationExpr))
+            if (_startFinder.LeftExpr is NegationExpression negationExpr &&
+                !IsSubExprChecker.IsSubExpr(_endFinder.LeftExpr, negationExpr))
             {
-                inState.AddError(ExtractVariableErrorMsg.NegationSlice());
+                _inState.AddError(ExtractVariableErrorMsg.NegationSlice());
                 return;
             }
 
-            if (startFinder.RightExpr is BinaryExpr)
+            if (_startFinder.RightExpr is BinaryExpr)
             {
-                inState.AddError(ExtractVariableErrorMsg.StartsWithBinExp());
+                _inState.AddError(ExtractVariableErrorMsg.StartsWithBinExp());
                 return;
             }
 
-            if (startFinder.RightExpr is ExprDotName exprDotName)
+            if (_startFinder.RightExpr is ExprDotName exprDotName)
             {
                 FindStartExprDotName(exprDotName);
                 return;
             }
 
-            startExpr = startFinder.RightExpr;
+            _startExpr = _startFinder.RightExpr;
         }
 
-        protected void FindEnd()
+        private void FindEnd()
         {
-            if (endFinder.LeftExpr == null || endFinder.LeftExpr is BinaryExpr ||
-                endFinder.LeftExpr is NegationExpression)
+            if (_endFinder.LeftExpr == null || _endFinder.LeftExpr is BinaryExpr ||
+                _endFinder.LeftExpr is NegationExpression)
             {
                 FindEndInvalidLeft();
                 return;
             }
 
-            if (endFinder.LeftExpr == startFinder.LeftExpr && endFinder.RightExpr == startFinder.RightExpr)
+            if (_endFinder.LeftExpr == _startFinder.LeftExpr && _endFinder.RightExpr == _startFinder.RightExpr)
             {
-                endExpr = endFinder.RightExpr;
+                _endExpr = _endFinder.RightExpr;
                 return;
             }
 
-            endExpr = endFinder.LeftExpr;
+            _endExpr = _endFinder.LeftExpr;
         }
 
-        protected void CalcExprRange()
+        private void CalcExprRange()
         {
-            var selectionStart = inState.EvUserSelection.start;
-            var selectionEnd = inState.EvUserSelection.end;
-            var exprStart = startExpr.tok.pos;
-            var exprEnd = endExpr.tok.pos + endExpr.tok.val.Length;
+            var selectionStart = _inState.EvUserSelection.start;
+            var selectionEnd = _inState.EvUserSelection.end;
+            var exprStart = _startExpr.tok.pos;
+            var exprEnd = _endExpr.tok.pos + _endExpr.tok.val.Length;
 
             var startPos = selectionStart <= exprStart ? selectionStart : exprStart;
             var endPos = selectionEnd >= exprEnd ? selectionEnd : exprEnd;
-            inState.EvExprRange = new Range(startPos, endPos);
+            _inState.EvExprRange = new Range(startPos, endPos);
         }
 
-        protected void FindStartExprDotName(ExprDotName exprDotName)
+        private void FindStartExprDotName(ExprDotName exprDotName)
         {
             var lhs = exprDotName.Lhs;
             while (lhs is ExprDotName subDotName)
@@ -114,49 +114,49 @@ namespace DafnyRefactor.ExtractVariable
             var startPos = lhs.tok.pos;
             var endPos = lhs.tok.pos + lhs.tok.val.Length;
 
-            if (startPos > inState.EvUserSelection.start || inState.EvUserSelection.start > endPos)
+            if (startPos > _inState.EvUserSelection.start || _inState.EvUserSelection.start > endPos)
             {
-                inState.AddError(ExtractVariableErrorMsg.ObjectSlice());
+                _inState.AddError(ExtractVariableErrorMsg.ObjectSlice());
                 return;
             }
 
-            startExpr = lhs;
+            _startExpr = lhs;
         }
 
 
-        protected void FindEndInvalidLeft()
+        private void FindEndInvalidLeft()
         {
-            if (endFinder.RightExpr is ExprDotName)
+            if (_endFinder.RightExpr is ExprDotName)
             {
                 FindEndExprDotName();
                 return;
             }
 
-            var tokPos = endFinder.RightExpr.tok.pos;
-            var endTokPos = endFinder.RightExpr.tok.pos + endFinder.RightExpr.tok.val.Length;
-            if (tokPos < inState.EvUserSelection.end && inState.EvUserSelection.end < endTokPos)
+            var tokPos = _endFinder.RightExpr.tok.pos;
+            var endTokPos = _endFinder.RightExpr.tok.pos + _endFinder.RightExpr.tok.val.Length;
+            if (tokPos < _inState.EvUserSelection.end && _inState.EvUserSelection.end < endTokPos)
             {
-                endExpr = endFinder.RightExpr;
+                _endExpr = _endFinder.RightExpr;
             }
             else
             {
-                inState.AddError(ExtractVariableErrorMsg.EndsWithBinExp());
+                _inState.AddError(ExtractVariableErrorMsg.EndsWithBinExp());
             }
         }
 
-        protected void FindEndExprDotName()
+        private void FindEndExprDotName()
         {
-            var lhs = endFinder.RightExpr;
+            var lhs = _endFinder.RightExpr;
             while (lhs is ExprDotName subDotName)
             {
                 var lhsPos = subDotName.tok.pos;
                 var lhsEndPos = subDotName.tok.pos + subDotName.tok.val.Length;
-                if (lhsPos < inState.EvUserSelection.end && inState.EvUserSelection.end < lhsEndPos) break;
+                if (lhsPos < _inState.EvUserSelection.end && _inState.EvUserSelection.end < lhsEndPos) break;
 
                 lhs = subDotName.Lhs;
             }
 
-            endExpr = lhs;
+            _endExpr = lhs;
         }
     }
 }

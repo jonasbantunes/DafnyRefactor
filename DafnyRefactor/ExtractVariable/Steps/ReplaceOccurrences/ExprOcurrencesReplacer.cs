@@ -8,18 +8,18 @@ namespace DafnyRefactor.ExtractVariable
     // TOOD: Replace some methods with ExprRangeFinder.
     public class ExprOcurrencesReplacer : DafnyVisitorWithNearests
     {
-        protected List<SourceEdit> assertSourceEdits;
-        protected Range exprRange;
-        protected Statement extractStmt;
-        protected Program program;
-        protected string rawProgram;
-        protected IExtractVariableScope rootScope;
-        protected List<SourceEdit> sourceEdits;
-        protected List<int> stmtDivisors;
-        protected List<IRefactorVariable> variables;
-        protected string varName;
+        private readonly Range _exprRange;
+        private readonly Statement _extractStmt;
+        private readonly Program _program;
+        private readonly string _rawProgram;
+        private readonly IExtractVariableScope _rootScope;
+        private readonly List<int> _stmtDivisors;
+        private readonly List<IRefactorVariable> _variables;
+        private readonly string _varName;
+        private List<SourceEdit> _assertSourceEdits;
+        private List<SourceEdit> _sourceEdits;
 
-        protected ExprOcurrencesReplacer(Program program, string rawProgram, Range exprRange, string varName,
+        private ExprOcurrencesReplacer(Program program, string rawProgram, Range exprRange, string varName,
             List<int> stmtDivisors, Statement extractStmt, IExtractVariableScope rootScope,
             List<IRefactorVariable> variables)
         {
@@ -27,40 +27,37 @@ namespace DafnyRefactor.ExtractVariable
                 variables == null)
                 throw new ArgumentNullException();
 
-            this.program = program;
-            this.rawProgram = rawProgram;
-            this.exprRange = exprRange;
-            this.varName = varName;
-            this.stmtDivisors = stmtDivisors;
-            this.extractStmt = extractStmt;
-            this.rootScope = rootScope;
-            this.variables = variables;
+            _program = program;
+            _rawProgram = rawProgram;
+            _exprRange = exprRange;
+            _varName = varName;
+            _stmtDivisors = stmtDivisors;
+            _extractStmt = extractStmt;
+            _rootScope = rootScope;
+            _variables = variables;
         }
 
-        //protected string VarName => $"({varName})";
-        protected string VarName => varName;
-
-        protected void Execute()
+        private void Execute()
         {
-            sourceEdits = new List<SourceEdit>();
-            assertSourceEdits = new List<SourceEdit>();
+            _sourceEdits = new List<SourceEdit>();
+            _assertSourceEdits = new List<SourceEdit>();
 
-            Visit(program);
+            Visit(_program);
         }
 
         protected override void Visit(Expression exp)
         {
-            var curScope = rootScope.EvrFindScope(nearestScopeToken.GetHashCode());
+            var curScope = _rootScope.EvrFindScope(nearestScopeToken.GetHashCode());
             if (curScope == null) return;
             if (!curScope.IsReplacable()) return;
-            if (extractStmt.Tok.pos > exp.tok.pos) return;
+            if (_extractStmt.Tok.pos > exp.tok.pos) return;
             if (exp is AutoGhostIdentifierExpr) return;
 
             var range = FindExprRange(exp);
             if (range.start == 0 && range.end == 0) return;
 
-            var expRaw = rawProgram.Substring(range.start, range.end - range.start);
-            var varRaw = rawProgram.Substring(exprRange.start, exprRange.end - exprRange.start).Trim();
+            var expRaw = _rawProgram.Substring(range.start, range.end - range.start);
+            var varRaw = _rawProgram.Substring(_exprRange.start, _exprRange.end - _exprRange.start).Trim();
 
             var ranges = SubExprRawRanges(expRaw, varRaw);
             if (ranges.Count == 0) return;
@@ -70,24 +67,24 @@ namespace DafnyRefactor.ExtractVariable
             {
                 var subRange = ranges[i];
                 var offsettedRange = new Range(range.start + subRange.start, range.start + subRange.end);
-                if (!ExprIsReplaceableChecker.IsReplacable(program, offsettedRange, rootScope, variables))
+                if (!ExprIsReplaceableChecker.IsReplacable(_program, offsettedRange, _rootScope, _variables))
                     continue;
 
                 replacedRaw = replacedRaw.Remove(subRange.start, subRange.end - subRange.start)
-                    .Insert(subRange.start, VarName);
+                    .Insert(subRange.start, _varName);
             }
 
             if (replacedRaw.Equals(expRaw)) return;
-            sourceEdits.Add(new SourceEdit(range.start, range.end, replacedRaw));
+            _sourceEdits.Add(new SourceEdit(range.start, range.end, replacedRaw));
 
-            var assert = $"{Environment.NewLine} assert {varName} == ( {varRaw} );";
-            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= exp.tok.pos);
+            var assert = $"{Environment.NewLine} assert {_varName} == ( {varRaw} );";
+            var divisorIndex = _stmtDivisors.FindIndex(divisor => divisor >= exp.tok.pos);
             if (divisorIndex < 1) return;
-            var assertPos = stmtDivisors[divisorIndex - 1] + 1;
-            assertSourceEdits.Add(new SourceEdit(assertPos, assert));
+            var assertPos = _stmtDivisors[divisorIndex - 1] + 1;
+            _assertSourceEdits.Add(new SourceEdit(assertPos, assert));
         }
 
-        protected Range FindExprRange(Expression exp)
+        private Range FindExprRange(Expression exp)
         {
             var startFinder = new FindExprNeighbourWithParens(exp, 0);
             startFinder.Execute();
@@ -119,13 +116,13 @@ namespace DafnyRefactor.ExtractVariable
             return new Range(startPos, endPos);
         }
 
-        protected int FindRealEnd(int realStart, int end)
+        private int FindRealEnd(int realStart, int end)
         {
             var openedParens = 0;
             var i = realStart;
             while (i < end || openedParens > 0)
             {
-                var c = rawProgram[i];
+                var c = _rawProgram[i];
 
                 switch (c)
                 {
@@ -143,7 +140,7 @@ namespace DafnyRefactor.ExtractVariable
             return i;
         }
 
-        protected List<Range> SubExprRawRanges(string rawExpr, string rawSub)
+        private List<Range> SubExprRawRanges(string rawExpr, string rawSub)
         {
             var ranges = new List<Range>();
 
@@ -159,7 +156,7 @@ namespace DafnyRefactor.ExtractVariable
             return ranges;
         }
 
-        protected Range SubExprRawRange(string rawExpr, string rawSub, int offset)
+        private Range SubExprRawRange(string rawExpr, string rawSub, int offset)
         {
             //var start = rawExpr.IndexOf(rawSub, offset, StringComparison.Ordinal);
             //if (start == -1) return null;
@@ -172,7 +169,7 @@ namespace DafnyRefactor.ExtractVariable
             return range;
         }
 
-        protected bool StartsWithUnary(string rawExpr, int exprStart)
+        private bool StartsWithUnary(string rawExpr, int exprStart)
         {
             if (rawExpr[exprStart] != '-') return false;
 
@@ -198,68 +195,7 @@ namespace DafnyRefactor.ExtractVariable
             var replacer = new ExprOcurrencesReplacer(program, rawProgram, exprRange, varName, stmtDivisors,
                 extractStmt, rootScope, variables);
             replacer.Execute();
-            return (replacer.sourceEdits, replacer.assertSourceEdits);
-        }
-    }
-
-    public static class IndexOfWithIgnoresExtension
-    {
-        public static Range IndexOfWithIgnores(this string str, string sub, int offset)
-        {
-            var strStart = offset;
-            while (strStart < str.Length && str[strStart] == ' ')
-            {
-                strStart++;
-            }
-
-            if (strStart >= str.Length) return null;
-
-            var subStart = 0;
-            while (subStart < sub.Length && sub[subStart] == ' ')
-            {
-                subStart++;
-            }
-
-            if (subStart >= sub.Length) return null;
-
-            var i = strStart;
-            while (i < str.Length)
-            {
-                if (str[i] == sub[subStart])
-                {
-                    var strPos = i;
-                    var subPos = subStart;
-
-                    while (strPos < str.Length && subPos < sub.Length)
-                    {
-                        if (sub[subPos] == ' ')
-                        {
-                            subPos++;
-                            continue;
-                        }
-
-                        if (str[strPos] == ' ')
-                        {
-                            strPos++;
-                            continue;
-                        }
-
-                        if (str[strPos] != sub[subPos]) break;
-
-                        strPos++;
-                        subPos++;
-                    }
-
-                    if (subPos >= sub.Length)
-                    {
-                        return new Range(i, strPos);
-                    }
-                }
-
-                i++;
-            }
-
-            return null;
+            return (replacer._sourceEdits, replacer._assertSourceEdits);
         }
     }
 }

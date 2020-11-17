@@ -7,30 +7,29 @@ namespace DafnyRefactor.Utils
 {
     public class EditsValidator
     {
-        protected List<SourceEdit> edits;
-        protected string filePath;
-        protected bool isValid;
+        private readonly List<SourceEdit> _edits;
+        private readonly string _filePath;
+        private bool _isValid;
 
-        protected EditsValidator(string filePath, List<SourceEdit> edits)
+        private EditsValidator(string filePath, List<SourceEdit> edits)
         {
             if (filePath == null || edits == null) throw new ArgumentNullException();
 
-            this.filePath = filePath;
-            this.edits = edits;
+            _filePath = filePath;
+            _edits = edits;
         }
 
-        protected void Execute()
+        private void Execute()
         {
-            var source = File.ReadAllText(filePath);
-            var sourceEditor = new SourceEditor(source, edits);
-            sourceEditor.Apply();
+            var source = File.ReadAllText(_filePath);
+            var editedSource = SourceEditor.Edit(source, _edits);
 
             var tempPath = Path.GetTempPath() + Guid.NewGuid() + ".dfy";
-            File.WriteAllText(tempPath, sourceEditor.Source);
+            File.WriteAllText(tempPath, editedSource);
 
             var args = new[] {tempPath, "/compile:0"};
             var res = DafnyDriver.Main(args);
-            isValid = res == 0;
+            _isValid = res == 0;
             File.Delete(tempPath);
         }
 
@@ -38,7 +37,7 @@ namespace DafnyRefactor.Utils
         {
             var validator = new EditsValidator(filePath, edits);
             validator.Execute();
-            return validator.isValid;
+            return validator._isValid;
         }
     }
 }

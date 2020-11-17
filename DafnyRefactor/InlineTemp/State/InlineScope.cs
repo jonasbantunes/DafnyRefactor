@@ -27,40 +27,36 @@ namespace DafnyRefactor.InlineTemp
 
     public class InlineScope : IInlineScope
     {
-        protected readonly IToken token;
-        protected List<IInlineObject> inlineObjects = new List<IInlineObject>();
-        protected List<IRefactorMethod> methods = new List<IRefactorMethod>();
-        protected IInlineScope parent;
-        protected List<IInlineScope> subScopes = new List<IInlineScope>();
-        protected List<IInlineVariable> variables = new List<IInlineVariable>();
+        private readonly List<IRefactorMethod> _methods = new List<IRefactorMethod>();
+        private readonly List<IInlineScope> _subScopes = new List<IInlineScope>();
 
         public InlineScope()
         {
         }
 
-        public InlineScope(IToken token = null, IInlineScope parent = null)
+        private InlineScope(IToken token = null, IInlineScope parent = null)
         {
-            this.parent = parent;
-            this.token = token;
+            InlineParent = parent;
+            Token = token;
         }
 
-        public IRefactorScope Parent => parent;
-        public IInlineScope InlineParent => parent;
-        public IToken Token => token;
-        public List<IRefactorVariable> Variables => new List<IRefactorVariable>(variables);
-        public List<IInlineVariable> InlineVariables => variables;
-        public List<IInlineObject> InlineObjects => inlineObjects;
+        public IRefactorScope Parent => InlineParent;
+        public IInlineScope InlineParent { get; }
+        public IToken Token { get; }
+        public List<IRefactorVariable> Variables => new List<IRefactorVariable>(InlineVariables);
+        public List<IInlineVariable> InlineVariables { get; } = new List<IInlineVariable>();
+        public List<IInlineObject> InlineObjects { get; } = new List<IInlineObject>();
 
         public void InsertVariable(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
             var symbol = new InlineVariable(localVariable, varDeclStmt);
-            variables.Add(symbol);
+            InlineVariables.Add(symbol);
         }
 
         public void InsertScope(IToken tok)
         {
             var table = new InlineScope(tok, this);
-            subScopes.Add(table);
+            _subScopes.Add(table);
         }
 
         public IRefactorVariable LookupVariable(string name)
@@ -75,7 +71,7 @@ namespace DafnyRefactor.InlineTemp
                 return this;
             }
 
-            foreach (var subTable in subScopes)
+            foreach (var subTable in _subScopes)
             {
                 var result = subTable.FindScope(hashCode);
                 if (result != null)
@@ -94,7 +90,7 @@ namespace DafnyRefactor.InlineTemp
 
         public IRefactorScope LookupScope(int hashCode)
         {
-            foreach (var subTable in subScopes)
+            foreach (var subTable in _subScopes)
             {
                 if (subTable.GetHashCode() == hashCode)
                 {
@@ -112,7 +108,7 @@ namespace DafnyRefactor.InlineTemp
 
         public IInlineScope FindScopeByVariable(IInlineVariable inlineVariable)
         {
-            foreach (var symbol in variables)
+            foreach (var symbol in InlineVariables)
             {
                 if (symbol.GetHashCode() == inlineVariable.GetHashCode())
                 {
@@ -120,7 +116,7 @@ namespace DafnyRefactor.InlineTemp
                 }
             }
 
-            foreach (var subTable in subScopes)
+            foreach (var subTable in _subScopes)
             {
                 var result = subTable.FindScopeByVariable(inlineVariable);
                 if (result != null) return result;
@@ -132,7 +128,7 @@ namespace DafnyRefactor.InlineTemp
         public void InsertInlineObject(string objPrinted, string lhsPrinted, Type objType, Type memberType)
         {
             var inlineObject = new InlineObject(objPrinted, lhsPrinted, objType, memberType);
-            inlineObjects.Add(inlineObject);
+            InlineObjects.Add(inlineObject);
         }
 
         public List<IInlineObject> GetInlineObjects()
@@ -142,7 +138,7 @@ namespace DafnyRefactor.InlineTemp
 
         public IRefactorMethod LookupMethod(int hashCode)
         {
-            foreach (var method in methods)
+            foreach (var method in _methods)
             {
                 if (method.GetHashCode() == hashCode)
                 {
@@ -157,10 +153,10 @@ namespace DafnyRefactor.InlineTemp
         public void InsertMethod(Method mt)
         {
             var method = new RefactorMethod(mt);
-            methods.Add(method);
+            _methods.Add(method);
         }
 
-        protected List<IInlineObject> RetrieveInlineObjects(IInlineScope scope)
+        private List<IInlineObject> RetrieveInlineObjects(IInlineScope scope)
         {
             if (scope.Parent == null) return scope.InlineObjects;
 
@@ -180,7 +176,7 @@ namespace DafnyRefactor.InlineTemp
             return objects;
         }
 
-        protected IRefactorVariable LookupSymbol(string name, IInlineScope scope)
+        private IRefactorVariable LookupSymbol(string name, IInlineScope scope)
         {
             foreach (var decl in scope.Variables)
             {
@@ -200,7 +196,7 @@ namespace DafnyRefactor.InlineTemp
 
         public override int GetHashCode()
         {
-            return token?.GetHashCode() ?? 0;
+            return Token?.GetHashCode() ?? 0;
         }
     }
 }

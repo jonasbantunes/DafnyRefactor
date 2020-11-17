@@ -7,9 +7,9 @@ namespace DafnyRefactor.Utils
     /// </summary>
     public class SourceEdit
     {
-        public string content;
-        public int endPos;
-        public int startPos;
+        public readonly string content;
+        public readonly int endPos;
+        public readonly int startPos;
 
         public SourceEdit(int startPos, int endPos, string content)
         {

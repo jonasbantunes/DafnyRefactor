@@ -7,14 +7,14 @@ namespace DafnyRefactor.MoveMethod
 {
     public class MoveToTargetStep<TState> : RefactorStep<TState> where TState : IMoveMethodState
     {
-        protected TState inState;
+        private TState _inState;
 
         public override void Handle(TState state)
         {
             if (state == null || state.MvtParam == null || state.SourceCode == null)
                 throw new ArgumentNullException();
 
-            inState = state;
+            _inState = state;
             MoveMethod();
             Clean();
 
@@ -22,36 +22,36 @@ namespace DafnyRefactor.MoveMethod
         }
 
 
-        protected void MoveMethod()
+        private void MoveMethod()
         {
             var replacedEdits =
-                MethodReplacer.Replace(inState.MvtParam.Method, inState.MvtParam.Formal, inState.SourceCode);
+                MethodReplacer.Replace(_inState.MvtParam.Method, _inState.MvtParam.Formal, _inState.SourceCode);
 
-            var tokStart = inState.MvtParam.Method.tok.pos;
-            var start = inState.SourceCode.LastIndexOf("method", tokStart, StringComparison.Ordinal);
-            var end = inState.MvtParam.Method.BodyEndTok.pos + 1;
+            var tokStart = _inState.MvtParam.Method.tok.pos;
+            var start = _inState.SourceCode.LastIndexOf("method", tokStart, StringComparison.Ordinal);
+            var end = _inState.MvtParam.Method.BodyEndTok.pos + 1;
 
-            var paramType = (UserDefinedType) inState.MvtParam.Formal.Type;
+            var paramType = (UserDefinedType) _inState.MvtParam.Formal.Type;
             var pos = paramType.ResolvedClass.ViewAsClass.BodyEndTok.pos;
 
-            var methodCode = inState.SourceCode.Substring(start, end - start);
+            var methodCode = _inState.SourceCode.Substring(start, end - start);
             var methodEdits = replacedEdits
                 .Select(ed => new SourceEdit(ed.startPos - start, ed.endPos - start, ed.content)).ToList();
             var replacedCode = SourceEditor.Edit(methodCode, methodEdits);
             var content = $"{Environment.NewLine}{replacedCode}{Environment.NewLine}";
 
             var edit = new SourceEdit(pos, content);
-            inState.SourceEdits.Add(edit);
+            _inState.SourceEdits.Add(edit);
         }
 
-        protected void Clean()
+        private void Clean()
         {
-            var tokStart = inState.MvtParam.Method.tok.pos;
-            var start = inState.SourceCode.LastIndexOf("method", tokStart, StringComparison.Ordinal);
-            var end = inState.MvtParam.Method.BodyEndTok.pos + 1;
+            var tokStart = _inState.MvtParam.Method.tok.pos;
+            var start = _inState.SourceCode.LastIndexOf("method", tokStart, StringComparison.Ordinal);
+            var end = _inState.MvtParam.Method.BodyEndTok.pos + 1;
 
             var edit = new SourceEdit(start, end, "");
-            inState.SourceEdits.Add(edit);
+            _inState.SourceEdits.Add(edit);
         }
     }
 }

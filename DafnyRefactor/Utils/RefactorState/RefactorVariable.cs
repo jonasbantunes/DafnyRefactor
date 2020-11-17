@@ -14,22 +14,19 @@ namespace DafnyRefactor.Utils
 
     public class RefactorVariable : IRefactorVariable
     {
-        protected readonly LocalVariable localVariable;
-        protected VarDeclStmt varDeclStmt;
-
         public RefactorVariable(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
-            this.localVariable = localVariable;
-            this.varDeclStmt = varDeclStmt;
+            LocalVariable = localVariable;
+            VarDeclStmt = varDeclStmt;
         }
 
-        public LocalVariable LocalVariable => localVariable;
-        public VarDeclStmt VarDeclStmt => varDeclStmt;
+        public LocalVariable LocalVariable { get; }
+        public VarDeclStmt VarDeclStmt { get; }
         public string Name => LocalVariable?.Name;
 
         public override int GetHashCode()
         {
-            return localVariable?.GetHashCode() ?? 0;
+            return LocalVariable?.GetHashCode() ?? 0;
         }
 
         public override bool Equals(object obj)

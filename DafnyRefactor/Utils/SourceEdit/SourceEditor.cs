@@ -10,20 +10,20 @@ namespace DafnyRefactor.Utils
     /// </summary>
     public class SourceEditor
     {
-        protected List<SourceEdit> edits;
+        private readonly List<SourceEdit> _edits;
 
-        public SourceEditor(string source, List<SourceEdit> edits)
+        private string _sourceCode;
+
+        private SourceEditor(string sourceCode, List<SourceEdit> edits)
         {
-            Source = source;
-            this.edits = edits ?? throw new ArgumentNullException();
+            _sourceCode = sourceCode;
+            _edits = edits ?? throw new ArgumentNullException();
         }
 
-        public string Source { get; protected set; }
-
-        public void Apply()
+        private void Apply()
         {
-            var sourceBuilder = new StringBuilder(Source);
-            var sortedEdits = edits.OrderBy(edit => edit.startPos).ToList();
+            var sourceBuilder = new StringBuilder(_sourceCode);
+            var sortedEdits = _edits.OrderBy(edit => edit.startPos).ToList();
             for (var i = sortedEdits.Count - 1; i >= 0; i--)
             {
                 var edit = sortedEdits[i];
@@ -31,14 +31,14 @@ namespace DafnyRefactor.Utils
                 sourceBuilder.Insert(edit.startPos, edit.content);
             }
 
-            Source = sourceBuilder.ToString();
+            _sourceCode = sourceBuilder.ToString();
         }
 
         public static string Edit(string source, List<SourceEdit> edits)
         {
             var editor = new SourceEditor(source, edits);
             editor.Apply();
-            return editor.Source;
+            return editor._sourceCode;
         }
     }
 }

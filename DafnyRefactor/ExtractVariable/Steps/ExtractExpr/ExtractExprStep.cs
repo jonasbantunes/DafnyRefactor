@@ -8,7 +8,7 @@ namespace DafnyRefactor.ExtractVariable
     /// </summary>
     public class ExtractExprStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
-        protected TState inState;
+        private TState _inState;
 
         public override void Handle(TState state)
         {
@@ -17,7 +17,7 @@ namespace DafnyRefactor.ExtractVariable
                 state.StmtDivisors == null || state.EvRootScope == null)
                 throw new ArgumentNullException();
 
-            inState = state;
+            _inState = state;
 
             ExtractExpr();
             ExtractVarsFromExpr();
@@ -27,34 +27,34 @@ namespace DafnyRefactor.ExtractVariable
             base.Handle(state);
         }
 
-        protected void ExtractExpr()
+        private void ExtractExpr()
         {
-            var exprStart = inState.EvExprRange.start;
-            var exprEnd = inState.EvExprRange.end;
-            var exprRaw = inState.SourceCode.Substring(exprStart, exprEnd - exprStart).Trim();
+            var exprStart = _inState.EvExprRange.start;
+            var exprEnd = _inState.EvExprRange.end;
+            var exprRaw = _inState.SourceCode.Substring(exprStart, exprEnd - exprStart).Trim();
 
-            var varName = inState.EvOptions.VarName;
+            var varName = _inState.EvOptions.VarName;
             var editRaw = $"{Environment.NewLine}var {varName} := {exprRaw};";
 
             var divisorIndex =
-                inState.StmtDivisors.FindIndex(divisor => divisor > inState.EvStmt.Tok.pos);
-            var editPos = inState.StmtDivisors[divisorIndex - 1] + 1;
+                _inState.StmtDivisors.FindIndex(divisor => divisor > _inState.EvStmt.Tok.pos);
+            var editPos = _inState.StmtDivisors[divisorIndex - 1] + 1;
             var edit = new SourceEdit(editPos, editRaw);
-            inState.SourceEdits.Add(edit);
+            _inState.SourceEdits.Add(edit);
         }
 
-        protected void ExtractVarsFromExpr()
+        private void ExtractVarsFromExpr()
         {
-            var variables = ExprVarsExtractor.Extract(inState.Program, inState.EvExprRange, inState.EvRootScope);
-            inState.EvExprVariables.AddRange(variables);
+            var variables = ExprVarsExtractor.Extract(_inState.Program, _inState.EvExprRange, _inState.EvRootScope);
+            _inState.EvExprVariables.AddRange(variables);
         }
 
-        protected void ValidateExpr()
+        private void ValidateExpr()
         {
-            var isValid = EditsValidator.IsValid(inState.SourceEdits, inState.FilePath);
+            var isValid = EditsValidator.IsValid(_inState.SourceEdits, _inState.FilePath);
             if (!isValid)
             {
-                inState.AddError(ExtractVariableErrorMsg.ExprInvalid());
+                _inState.AddError(ExtractVariableErrorMsg.ExprInvalid());
             }
         }
     }

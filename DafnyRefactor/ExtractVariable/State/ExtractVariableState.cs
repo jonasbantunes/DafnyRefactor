@@ -20,25 +20,21 @@ namespace DafnyRefactor.ExtractVariable
 
     public class ExtractVariableState : IExtractVariableState
     {
-        protected List<string> errors;
-        protected ApplyExtractVariableOptions options;
-
         public ExtractVariableState(ApplyExtractVariableOptions options)
         {
-            this.options = options ?? throw new ArgumentNullException();
+            EvOptions = options ?? throw new ArgumentNullException();
 
             SourceEdits = new List<SourceEdit>();
             EvExprVariables = new List<IRefactorVariable>();
-            errors = new List<string>();
+            Errors = new List<string>();
         }
 
-        public string EvSourceCode { get; set; }
+        public List<string> Errors { get; }
 
-        public List<string> Errors => errors;
-        public ApplyOptions Options => options;
+        public ApplyOptions Options => EvOptions;
         public Program Program { get; set; }
         public string TempFilePath { get; set; }
-        public string FilePath => options.Stdin ? TempFilePath : options.FilePath;
+        public string FilePath => EvOptions.Stdin ? TempFilePath : EvOptions.FilePath;
         public List<int> StmtDivisors { get; set; }
 
         public List<SourceEdit> SourceEdits { get; }
@@ -46,12 +42,12 @@ namespace DafnyRefactor.ExtractVariable
 
         public void AddError(string description)
         {
-            errors.Add(description);
+            Errors.Add(description);
         }
 
         public Range EvUserSelection { get; set; }
         public Range EvExprRange { get; set; }
-        public ApplyExtractVariableOptions EvOptions => options;
+        public ApplyExtractVariableOptions EvOptions { get; }
         public Statement EvStmt { get; set; }
         public IExtractVariableScope EvRootScope { get; set; }
         public List<IRefactorVariable> EvExprVariables { get; }

@@ -14,21 +14,19 @@ namespace DafnyRefactor.MoveMethod
 
     public class MoveMethodState : IMoveMethodState
     {
-        protected ApplyMoveMethodOptions options;
-
         public MoveMethodState(ApplyMoveMethodOptions options)
         {
-            this.options = options ?? throw new ArgumentNullException();
+            MvtOptions = options ?? throw new ArgumentNullException();
 
             Errors = new List<string>();
             SourceEdits = new List<SourceEdit>();
         }
 
         public List<string> Errors { get; }
-        public ApplyOptions Options => options;
+        public ApplyOptions Options => MvtOptions;
         public Program Program { get; set; }
         public string TempFilePath { get; set; }
-        public string FilePath => options.Stdin ? TempFilePath : options.FilePath;
+        public string FilePath => MvtOptions.Stdin ? TempFilePath : MvtOptions.FilePath;
         public List<int> StmtDivisors { get; set; }
         public List<SourceEdit> SourceEdits { get; }
         public string SourceCode { get; set; }
@@ -38,7 +36,7 @@ namespace DafnyRefactor.MoveMethod
             Errors.Add(description);
         }
 
-        public ApplyMoveMethodOptions MvtOptions => options;
+        public ApplyMoveMethodOptions MvtOptions { get; }
         public int MvtUserTarget { get; set; }
         public IMvtParam MvtParam { get; set; }
     }

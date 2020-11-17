@@ -6,22 +6,20 @@ namespace DafnyRefactor.MoveMethod
 {
     public class TargetLocator : DafnyVisitorWithNearests
     {
-        protected IMvtParam mvtParam;
-        protected int position;
-        protected Program program;
+        private readonly int _position;
+        private readonly Program _program;
+        private IMvtParam _mvtParam;
 
-        protected TargetLocator(Program program, int position)
+        private TargetLocator(Program program, int position)
         {
-            if (program == null) throw new ArgumentNullException();
-
-            this.program = program;
-            this.position = position;
+            _program = program ?? throw new ArgumentNullException();
+            _position = position;
         }
 
-        protected void Execute()
+        private void Execute()
         {
-            mvtParam = null;
-            Visit(program);
+            _mvtParam = null;
+            Visit(_program);
         }
 
         protected override void Visit(Method mt)
@@ -31,9 +29,9 @@ namespace DafnyRefactor.MoveMethod
                 var @in = mt.Ins[index];
                 var inStart = @in.tok.pos;
                 var inEnd = @in.tok.pos + @in.tok.val.Length;
-                if (inStart > position || position >= inEnd) continue;
+                if (inStart > _position || _position >= inEnd) continue;
 
-                mvtParam = new MvtParam(@in, index, mt);
+                _mvtParam = new MvtParam(@in, index, mt);
             }
         }
 
@@ -41,7 +39,7 @@ namespace DafnyRefactor.MoveMethod
         {
             var locator = new TargetLocator(program, position);
             locator.Execute();
-            return locator.mvtParam;
+            return locator._mvtParam;
         }
     }
 }

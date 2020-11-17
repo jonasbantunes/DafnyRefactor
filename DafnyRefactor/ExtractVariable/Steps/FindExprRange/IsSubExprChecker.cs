@@ -6,29 +6,29 @@ namespace DafnyRefactor.ExtractVariable
 {
     public class IsSubExprChecker : DafnyVisitor
     {
-        protected readonly Expression rootExpr;
-        protected readonly Expression subExpr;
-        protected bool isSubExpr;
+        private readonly Expression _rootExpr;
+        private readonly Expression _subExpr;
+        private bool _isSubExpr;
 
-        protected IsSubExprChecker(Expression subExpr, Expression rootExpr)
+        private IsSubExprChecker(Expression subExpr, Expression rootExpr)
         {
             if (subExpr == null || rootExpr == null) throw new ArgumentNullException();
 
-            this.subExpr = subExpr;
-            this.rootExpr = rootExpr;
+            _subExpr = subExpr;
+            _rootExpr = rootExpr;
         }
 
-        protected void Execute()
+        private void Execute()
         {
-            isSubExpr = false;
-            Visit(rootExpr);
+            _isSubExpr = false;
+            Visit(_rootExpr);
         }
 
         protected override void Visit(Expression exp)
         {
-            if (exp == subExpr)
+            if (exp == _subExpr)
             {
-                isSubExpr = true;
+                _isSubExpr = true;
                 return;
             }
 
@@ -39,7 +39,7 @@ namespace DafnyRefactor.ExtractVariable
         {
             var checker = new IsSubExprChecker(subExpr, rootExpr);
             checker.Execute();
-            return checker.isSubExpr;
+            return checker._isSubExpr;
         }
     }
 }

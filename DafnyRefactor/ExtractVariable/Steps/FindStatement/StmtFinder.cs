@@ -7,50 +7,50 @@ namespace DafnyRefactor.ExtractVariable
 {
     public class StmtFinder : DafnyVisitorWithNearests
     {
-        protected Statement foundStmt;
-        protected Program program;
-        protected IExtractVariableScope rootScope;
-        protected Range selection;
-        protected List<int> stmtDivisors;
+        private readonly Program _program;
+        private readonly IExtractVariableScope _rootScope;
+        private readonly Range _selection;
+        private readonly List<int> _stmtDivisors;
+        private Statement _foundStmt;
 
-        protected StmtFinder(Program program, Range selection, List<int> stmtDivisors, IExtractVariableScope rootScope)
+        private StmtFinder(Program program, Range selection, List<int> stmtDivisors, IExtractVariableScope rootScope)
         {
             if (program == null || selection == null || stmtDivisors == null || rootScope == null)
                 throw new ArgumentNullException();
 
-            this.program = program;
-            this.selection = selection;
-            this.stmtDivisors = stmtDivisors;
-            this.rootScope = rootScope;
+            _program = program;
+            _selection = selection;
+            _stmtDivisors = stmtDivisors;
+            _rootScope = rootScope;
         }
 
-        public void Execute()
+        private void Execute()
         {
-            Visit(program);
+            Visit(_program);
         }
 
         protected override void Visit(Statement stmt)
         {
             if (!(stmt is AssignStmt) && StmtContainsSelection(stmt))
             {
-                var curScope = rootScope.EvrFindScope(nearestScopeToken.GetHashCode());
+                var curScope = _rootScope.EvrFindScope(nearestScopeToken.GetHashCode());
                 if (curScope == null) return;
-                foundStmt = stmt;
+                _foundStmt = stmt;
                 curScope.CanReplace = true;
             }
 
             base.Visit(stmt);
         }
 
-        protected bool StmtContainsSelection(Statement stmt)
+        private bool StmtContainsSelection(Statement stmt)
         {
-            var divisorIndex = stmtDivisors.FindIndex(divisor => divisor > stmt.Tok.pos);
+            var divisorIndex = _stmtDivisors.FindIndex(divisor => divisor > stmt.Tok.pos);
             if (divisorIndex < 1) return false;
 
-            var stmtStart = stmtDivisors[divisorIndex - 1];
-            var stmtEnd = stmtDivisors[divisorIndex];
+            var stmtStart = _stmtDivisors[divisorIndex - 1];
+            var stmtEnd = _stmtDivisors[divisorIndex];
 
-            return stmtStart <= selection.start && selection.end <= stmtEnd;
+            return stmtStart <= _selection.start && _selection.end <= stmtEnd;
         }
 
         public static Statement Find(Program program, Range selection, List<int> stmtDivisors,
@@ -58,7 +58,7 @@ namespace DafnyRefactor.ExtractVariable
         {
             var finder = new StmtFinder(program, selection, stmtDivisors, rootScope);
             finder.Execute();
-            return finder.foundStmt;
+            return finder._foundStmt;
         }
     }
 }

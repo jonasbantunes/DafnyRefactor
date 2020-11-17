@@ -6,35 +6,35 @@ namespace DafnyRefactor.ExtractVariable
 {
     public class ExprVarsExtractor : DafnyVisitorWithNearests
     {
-        protected Range exprRange;
-        protected Program program;
-        protected IRefactorScope rootScope;
-        protected List<IRefactorVariable> variables;
+        private readonly Range _exprRange;
+        private readonly Program _program;
+        private readonly IRefactorScope _rootScope;
+        private List<IRefactorVariable> _variables;
 
-        protected ExprVarsExtractor(Program program, Range exprRange, IRefactorScope rootScope)
+        private ExprVarsExtractor(Program program, Range exprRange, IRefactorScope rootScope)
         {
-            this.program = program;
-            this.exprRange = exprRange;
-            this.rootScope = rootScope;
+            _program = program;
+            _exprRange = exprRange;
+            _rootScope = rootScope;
         }
 
-        protected void Execute()
+        private void Execute()
         {
-            variables = new List<IRefactorVariable>();
-            Visit(program);
+            _variables = new List<IRefactorVariable>();
+            Visit(_program);
         }
 
         protected override void Visit(NameSegment nameSeg)
         {
-            if (exprRange.start > nameSeg.tok.pos || nameSeg.tok.pos > exprRange.end) return;
+            if (_exprRange.start > nameSeg.tok.pos || nameSeg.tok.pos > _exprRange.end) return;
 
-            var curScope = rootScope.FindScope(nearestScopeToken.GetHashCode());
+            var curScope = _rootScope.FindScope(nearestScopeToken.GetHashCode());
             if (curScope == null) return;
 
             var variable = curScope.LookupVariable(nameSeg.Name);
             if (variable == null) return;
 
-            variables.Add(variable);
+            _variables.Add(variable);
 
             base.Visit(nameSeg);
         }
@@ -43,7 +43,7 @@ namespace DafnyRefactor.ExtractVariable
         {
             var extractor = new ExprVarsExtractor(program, expRange, rootScope);
             extractor.Execute();
-            return extractor.variables;
+            return extractor._variables;
         }
     }
 }

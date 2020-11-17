@@ -6,41 +6,41 @@ namespace DafnyRefactor.ExtractVariable
 {
     public class ExprIsReplaceableChecker : DafnyVisitorWithNearests
     {
-        protected Range expRange;
-        protected bool isReplaceable;
-        protected Program program;
-        protected IRefactorScope rootScope;
-        protected List<IRefactorVariable> variables;
+        private readonly Range _expRange;
+        private readonly Program _program;
+        private readonly IRefactorScope _rootScope;
+        private readonly List<IRefactorVariable> _variables;
+        private bool _isReplaceable;
 
-        protected ExprIsReplaceableChecker(Program program, Range expRange, IRefactorScope rootScope,
+        private ExprIsReplaceableChecker(Program program, Range expRange, IRefactorScope rootScope,
             List<IRefactorVariable> variables)
         {
-            this.program = program;
-            this.expRange = expRange;
-            this.rootScope = rootScope;
-            this.variables = variables;
+            _program = program;
+            _expRange = expRange;
+            _rootScope = rootScope;
+            _variables = variables;
         }
 
-        protected void Execute()
+        private void Execute()
         {
-            isReplaceable = true;
-            Visit(program);
+            _isReplaceable = true;
+            Visit(_program);
         }
 
         protected override void Visit(NameSegment nameSeg)
         {
-            if (expRange.start > nameSeg.tok.pos || nameSeg.tok.pos > expRange.end) return;
+            if (_expRange.start > nameSeg.tok.pos || nameSeg.tok.pos > _expRange.end) return;
 
-            var curScope = rootScope.FindScope(nearestScopeToken.GetHashCode());
+            var curScope = _rootScope.FindScope(nearestScopeToken.GetHashCode());
             if (curScope == null) return;
 
             var variable = curScope.LookupVariable(nameSeg.Name);
             if (variable == null) return;
 
-            var found = variables.FindIndex(v => v.Equals(variable));
+            var found = _variables.FindIndex(v => v.Equals(variable));
             if (found == -1)
             {
-                isReplaceable = false;
+                _isReplaceable = false;
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace DafnyRefactor.ExtractVariable
         {
             var checker = new ExprIsReplaceableChecker(program, expRange, rootScope, variables);
             checker.Execute();
-            return checker.isReplaceable;
+            return checker._isReplaceable;
         }
     }
 }

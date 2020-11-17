@@ -8,16 +8,16 @@ namespace DafnyRefactor.MoveMethod
 {
     public class MoveMethodRefactor
     {
-        protected readonly ApplyMoveMethodOptions options;
-        protected MoveMethodState state;
-        protected List<RefactorStep<MoveMethodState>> steps;
+        private readonly ApplyMoveMethodOptions _options;
+        private MoveMethodState _state;
+        private List<RefactorStep<MoveMethodState>> _steps;
 
         public MoveMethodRefactor(ApplyMoveMethodOptions options)
         {
-            this.options = options ?? throw new ArgumentNullException();
+            _options = options ?? throw new ArgumentNullException();
         }
 
-        public int ExitCode { get; protected set; }
+        public int ExitCode { get; private set; }
 
         public void Apply()
         {
@@ -25,43 +25,43 @@ namespace DafnyRefactor.MoveMethod
             Execute();
         }
 
-        protected void Setup()
+        private void Setup()
         {
-            state = new MoveMethodState(options);
+            _state = new MoveMethodState(_options);
 
-            steps = new List<RefactorStep<MoveMethodState>>();
-            if (options.Stdin)
+            _steps = new List<RefactorStep<MoveMethodState>>();
+            if (_options.Stdin)
             {
-                steps.Add(new StdinLoaderStep<MoveMethodState>());
+                _steps.Add(new StdinLoaderStep<MoveMethodState>());
             }
 
-            steps.Add(new LoadProgramStep<MoveMethodState>());
-            steps.Add(new LoadRawSourceStep<MoveMethodState>());
-            steps.Add(new ParseStmtDivisorsStep<MoveMethodState>());
-            steps.Add(new ParseInstancePositionStep<MoveMethodState>());
-            steps.Add(new LocateTargetStep<MoveMethodState>());
-            steps.Add(new CheckClassSignatureStep<MoveMethodState>());
-            steps.Add(new MoveToTargetStep<MoveMethodState>());
-            steps.Add(new UpdateCallsStep<MoveMethodState>());
-            steps.Add(new SaveChangesStep<MoveMethodState>());
-            if (options.Stdin)
+            _steps.Add(new LoadProgramStep<MoveMethodState>());
+            _steps.Add(new LoadRawSourceStep<MoveMethodState>());
+            _steps.Add(new ParseStmtDivisorsStep<MoveMethodState>());
+            _steps.Add(new ParseInstancePositionStep<MoveMethodState>());
+            _steps.Add(new LocateTargetStep<MoveMethodState>());
+            _steps.Add(new CheckClassSignatureStep<MoveMethodState>());
+            _steps.Add(new MoveToTargetStep<MoveMethodState>());
+            _steps.Add(new UpdateCallsStep<MoveMethodState>());
+            _steps.Add(new SaveChangesStep<MoveMethodState>());
+            if (_options.Stdin)
             {
-                steps.Add(new StdinCleanerStep<MoveMethodState>());
+                _steps.Add(new StdinCleanerStep<MoveMethodState>());
             }
 
-            for (var i = 0; i < steps.Count - 1; i++)
+            for (var i = 0; i < _steps.Count - 1; i++)
             {
-                steps[i].next = steps[i + 1];
+                _steps[i].next = _steps[i + 1];
             }
         }
 
-        protected void Execute()
+        private void Execute()
         {
-            steps.First().Handle(state);
+            _steps.First().Handle(_state);
 
-            if (state.Errors.Count > 0)
+            if (_state.Errors.Count > 0)
             {
-                foreach (var error in state.Errors)
+                foreach (var error in _state.Errors)
                 {
                     DafnyRefactorDriver.consoleError.WriteLine(error);
                 }

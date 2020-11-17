@@ -27,10 +27,7 @@ namespace DafnyRefactor.Utils
 
     public class RefactorScope : IRefactorScope
     {
-        protected readonly IToken token;
-        protected IRefactorScope parent;
-        protected List<IRefactorScope> subScopes = new List<IRefactorScope>();
-        protected List<IRefactorVariable> variables = new List<IRefactorVariable>();
+        private readonly List<IRefactorScope> _subScopes = new List<IRefactorScope>();
 
         public RefactorScope()
         {
@@ -38,24 +35,24 @@ namespace DafnyRefactor.Utils
 
         public RefactorScope(IToken token = null, IRefactorScope parent = null)
         {
-            this.token = token;
-            this.parent = parent;
+            Token = token;
+            Parent = parent;
         }
 
-        public IRefactorScope Parent => parent;
-        public IToken Token => token;
-        public List<IRefactorVariable> Variables => variables;
+        public IRefactorScope Parent { get; }
+        public IToken Token { get; }
+        public List<IRefactorVariable> Variables { get; } = new List<IRefactorVariable>();
 
         public void InsertVariable(LocalVariable localVariable, VarDeclStmt varDeclStmt)
         {
             var symbol = new RefactorVariable(localVariable, varDeclStmt);
-            variables.Add(symbol);
+            Variables.Add(symbol);
         }
 
         public void InsertScope(IToken tok)
         {
             var table = new RefactorScope(tok, this);
-            subScopes.Add(table);
+            _subScopes.Add(table);
         }
 
         public IRefactorVariable LookupVariable(string name)
@@ -65,7 +62,7 @@ namespace DafnyRefactor.Utils
 
         public IRefactorScope LookupScope(int hashCode)
         {
-            foreach (var subScope in subScopes)
+            foreach (var subScope in _subScopes)
             {
                 if (subScope.GetHashCode() == hashCode)
                 {
@@ -83,7 +80,7 @@ namespace DafnyRefactor.Utils
                 return this;
             }
 
-            foreach (var subTable in subScopes)
+            foreach (var subTable in _subScopes)
             {
                 var result = subTable.FindScope(hashCode);
                 if (result != null)
@@ -95,7 +92,7 @@ namespace DafnyRefactor.Utils
             return null;
         }
 
-        protected IRefactorVariable LookupSymbol(string name, IRefactorScope scope)
+        private IRefactorVariable LookupSymbol(string name, IRefactorScope scope)
         {
             foreach (var decl in scope.Variables)
             {
@@ -115,7 +112,7 @@ namespace DafnyRefactor.Utils
 
         public override int GetHashCode()
         {
-            return token?.GetHashCode() ?? 0;
+            return Token?.GetHashCode() ?? 0;
         }
     }
 }

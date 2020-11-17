@@ -18,25 +18,24 @@ namespace DafnyRefactor.InlineTemp
 
     public class InlineState : IInlineState
     {
-        protected List<string> errors;
-        protected ApplyInlineTempOptions options;
-
         public InlineState(ApplyInlineTempOptions options)
         {
-            this.options = options ?? throw new ArgumentNullException();
+            InlineOptions = options ?? throw new ArgumentNullException();
 
             SourceEdits = new List<SourceEdit>();
-            errors = new List<string>();
+            Errors = new List<string>();
         }
 
-        public ApplyInlineTempOptions InlineOptions => options;
+        public ApplyInlineTempOptions InlineOptions { get; }
+
         public IInlineVariable InlineVariable { get; set; }
         public List<SourceEdit> SourceEdits { get; }
         public string SourceCode { get; set; }
         public IInlineScope RootScope { get; set; }
         public int IvrVariablePos { get; set; }
-        public List<string> Errors => errors;
-        public ApplyOptions Options => options;
+        public List<string> Errors { get; }
+
+        public ApplyOptions Options => InlineOptions;
         public Program Program { get; set; }
         public string TempFilePath { get; set; }
         public string FilePath => Options.Stdin ? TempFilePath : Options.FilePath;
@@ -44,7 +43,7 @@ namespace DafnyRefactor.InlineTemp
 
         public void AddError(string description)
         {
-            errors.Add(description);
+            Errors.Add(description);
         }
     }
 }

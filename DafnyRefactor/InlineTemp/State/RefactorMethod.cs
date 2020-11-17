@@ -21,16 +21,13 @@ namespace DafnyRefactor.InlineTemp
 
     public class RefactorMethod : IRefactorMethod
     {
-        protected readonly Method method;
-        protected List<IMethodArg> args = new List<IMethodArg>();
-
         public RefactorMethod(Method method)
         {
-            this.method = method ?? throw new ArgumentNullException();
+            Method = method ?? throw new ArgumentNullException();
         }
 
-        public Method Method => method;
-        public List<IMethodArg> Args => args;
+        public Method Method { get; }
+        public List<IMethodArg> Args { get; } = new List<IMethodArg>();
 
         public void InsertArg(string name, Type type, bool isInput, bool isOutput, bool canBeModified)
         {
@@ -43,18 +40,18 @@ namespace DafnyRefactor.InlineTemp
                 CanBeModified = canBeModified
             };
 
-            args.Add(arg);
+            Args.Add(arg);
         }
 
         public IMethodArg LookupArg(string name)
         {
-            return args.FirstOrDefault(arg => arg.Name == name);
+            return Args.FirstOrDefault(arg => arg.Name == name);
         }
 
 
         public override int GetHashCode()
         {
-            return method.GetHashCode();
+            return Method.GetHashCode();
         }
     }
 }

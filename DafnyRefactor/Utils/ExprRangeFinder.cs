@@ -6,27 +6,27 @@ namespace DafnyRefactor.Utils
 {
     public class ExprRangeFinder
     {
-        protected Expression exp;
-        protected Range exprRange;
-        protected string sourceCode;
+        private readonly Expression _exp;
+        private readonly string _sourceCode;
+        private Range _exprRange;
 
-        protected ExprRangeFinder(Expression exp, string sourceCode)
+        private ExprRangeFinder(Expression exp, string sourceCode)
         {
             if (exp == null || sourceCode == null) throw new ArgumentNullException();
 
-            this.exp = exp;
-            this.sourceCode = sourceCode;
+            _exp = exp;
+            _sourceCode = sourceCode;
         }
 
-        protected void Execute()
+        private void Execute()
         {
-            exprRange = null;
+            _exprRange = null;
 
-            var startFinder = new FindExprNeighbourWithParens(exp, 0);
+            var startFinder = new FindExprNeighbourWithParens(_exp, 0);
             startFinder.Execute();
             var startExpr = startFinder.RightExpr;
 
-            var endFinder = new FindExprNeighbourWithParens(exp, int.MaxValue);
+            var endFinder = new FindExprNeighbourWithParens(_exp, int.MaxValue);
             endFinder.Execute();
             var endExpr = endFinder.LeftExpr;
 
@@ -50,16 +50,16 @@ namespace DafnyRefactor.Utils
             }
 
             var endPos = FindRealEnd(startPos, endExpr.tok.pos + endExpr.tok.val.Length);
-            exprRange = new Range(startPos, endPos);
+            _exprRange = new Range(startPos, endPos);
         }
 
-        protected int FindRealEnd(int realStart, int end)
+        private int FindRealEnd(int realStart, int end)
         {
             var openedParens = 0;
             var i = realStart;
             while (i < end || openedParens > 0)
             {
-                var c = sourceCode[i];
+                var c = _sourceCode[i];
 
                 switch (c)
                 {
@@ -81,7 +81,7 @@ namespace DafnyRefactor.Utils
         {
             var finder = new ExprRangeFinder(exp, sourceCode);
             finder.Execute();
-            return finder.exprRange;
+            return finder._exprRange;
         }
     }
 }

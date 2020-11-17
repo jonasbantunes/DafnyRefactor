@@ -10,9 +10,9 @@ namespace DafnyRefactor.ExtractVariable
     /// </summary>
     public class ReplaceOccurrencesStep<TState> : RefactorStep<TState> where TState : IExtractVariableState
     {
-        protected List<SourceEdit> assertEdits;
-        protected TState inState;
-        protected List<SourceEdit> sourceEdits;
+        private List<SourceEdit> _assertEdits;
+        private TState _inState;
+        private List<SourceEdit> _sourceEdits;
 
         public override void Handle(TState state)
         {
@@ -21,33 +21,33 @@ namespace DafnyRefactor.ExtractVariable
                 state.SourceEdits == null || state.EvRootScope == null)
                 throw new ArgumentNullException();
 
-            inState = state;
+            _inState = state;
 
             Replace();
             Validate();
             if (state.Errors.Count > 0) return;
 
-            state.SourceEdits.AddRange(sourceEdits);
+            state.SourceEdits.AddRange(_sourceEdits);
             base.Handle(state);
         }
 
-        protected void Replace()
+        private void Replace()
         {
-            (sourceEdits, assertEdits) = ExprOcurrencesReplacer.Replace(inState.Program, inState.SourceCode,
-                inState.EvExprRange, inState.EvOptions.VarName, inState.StmtDivisors, inState.EvStmt,
-                inState.EvRootScope, inState.EvExprVariables);
+            (_sourceEdits, _assertEdits) = ExprOcurrencesReplacer.Replace(_inState.Program, _inState.SourceCode,
+                _inState.EvExprRange, _inState.EvOptions.VarName, _inState.StmtDivisors, _inState.EvStmt,
+                _inState.EvRootScope, _inState.EvExprVariables);
         }
 
-        protected void Validate()
+        private void Validate()
         {
             var edits = new List<SourceEdit>();
-            edits.AddRange(inState.SourceEdits);
-            edits.AddRange(assertEdits);
-            var isValid = EditsValidator.IsValid(edits, inState.FilePath);
+            edits.AddRange(_inState.SourceEdits);
+            edits.AddRange(_assertEdits);
+            var isValid = EditsValidator.IsValid(edits, _inState.FilePath);
 
             if (!isValid)
             {
-                inState.AddError(ExtractVariableErrorMsg.CantReplaceOccurrences());
+                _inState.AddError(ExtractVariableErrorMsg.CantReplaceOccurrences());
             }
         }
     }

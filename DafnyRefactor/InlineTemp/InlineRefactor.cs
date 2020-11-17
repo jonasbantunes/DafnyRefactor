@@ -11,16 +11,16 @@ namespace DafnyRefactor.InlineTemp
     /// </summary>
     public class InlineRefactor
     {
-        protected readonly ApplyInlineTempOptions options;
-        protected InlineState state;
-        protected List<RefactorStep<InlineState>> steps;
+        private readonly ApplyInlineTempOptions _options;
+        private InlineState _state;
+        private List<RefactorStep<InlineState>> _steps;
 
         public InlineRefactor(ApplyInlineTempOptions options)
         {
-            this.options = options ?? throw new ArgumentNullException();
+            _options = options ?? throw new ArgumentNullException();
         }
 
-        public int ExitCode { get; protected set; }
+        public int ExitCode { get; private set; }
 
         public void Apply()
         {
@@ -28,47 +28,47 @@ namespace DafnyRefactor.InlineTemp
             Execute();
         }
 
-        protected void Setup()
+        private void Setup()
         {
-            state = new InlineState(options);
+            _state = new InlineState(_options);
 
-            steps = new List<RefactorStep<InlineState>>();
-            if (options.Stdin)
+            _steps = new List<RefactorStep<InlineState>>();
+            if (_options.Stdin)
             {
-                steps.Add(new StdinLoaderStep<InlineState>());
+                _steps.Add(new StdinLoaderStep<InlineState>());
             }
 
-            steps.Add(new LoadProgramStep<InlineState>());
-            steps.Add(new LoadRawSourceStep<InlineState>());
-            steps.Add(new ParsePositionStep<InlineState>());
-            steps.Add(new ParseStmtDivisorsStep<InlineState>());
-            steps.Add(new GenerateScopeStep<InlineState>());
-            steps.Add(new ParseMethodsStep<InlineState>());
-            steps.Add(new ParseVariablesStep<InlineState>());
-            steps.Add(new LocateVariableStep<InlineState>());
-            steps.Add(new AssertImmutabilitySimplifiedStep<InlineState>());
-            steps.Add(new AssertImmutabilityStep<InlineState>());
-            steps.Add(new ReplaceVariableStep<InlineState>());
-            steps.Add(new RemoveDeclarationStep<InlineState>());
-            steps.Add(new SaveChangesStep<InlineState>());
-            if (options.Stdin)
+            _steps.Add(new LoadProgramStep<InlineState>());
+            _steps.Add(new LoadRawSourceStep<InlineState>());
+            _steps.Add(new ParsePositionStep<InlineState>());
+            _steps.Add(new ParseStmtDivisorsStep<InlineState>());
+            _steps.Add(new GenerateScopeStep<InlineState>());
+            _steps.Add(new ParseMethodsStep<InlineState>());
+            _steps.Add(new ParseVariablesStep<InlineState>());
+            _steps.Add(new LocateVariableStep<InlineState>());
+            _steps.Add(new AssertImmutabilitySimplifiedStep<InlineState>());
+            _steps.Add(new AssertImmutabilityStep<InlineState>());
+            _steps.Add(new ReplaceVariableStep<InlineState>());
+            _steps.Add(new RemoveDeclarationStep<InlineState>());
+            _steps.Add(new SaveChangesStep<InlineState>());
+            if (_options.Stdin)
             {
-                steps.Add(new StdinCleanerStep<InlineState>());
+                _steps.Add(new StdinCleanerStep<InlineState>());
             }
 
-            for (var i = 0; i < steps.Count - 1; i++)
+            for (var i = 0; i < _steps.Count - 1; i++)
             {
-                steps[i].next = steps[i + 1];
+                _steps[i].next = _steps[i + 1];
             }
         }
 
-        protected void Execute()
+        private void Execute()
         {
-            steps.First().Handle(state);
+            _steps.First().Handle(_state);
 
-            if (state.Errors.Count > 0)
+            if (_state.Errors.Count > 0)
             {
-                foreach (var error in state.Errors)
+                foreach (var error in _state.Errors)
                 {
                     DafnyRefactorDriver.consoleError.WriteLine(error);
                 }

@@ -8,16 +8,16 @@ namespace DafnyRefactor.ExtractVariable
 {
     public class ExtractVariableRefactor
     {
-        protected readonly ApplyExtractVariableOptions options;
-        protected ExtractVariableState state;
-        protected List<RefactorStep<ExtractVariableState>> steps;
+        private readonly ApplyExtractVariableOptions _options;
+        private ExtractVariableState _state;
+        private List<RefactorStep<ExtractVariableState>> _steps;
 
         public ExtractVariableRefactor(ApplyExtractVariableOptions options)
         {
-            this.options = options ?? throw new ArgumentNullException();
+            _options = options ?? throw new ArgumentNullException();
         }
 
-        public int ExitCode { get; protected set; }
+        public int ExitCode { get; private set; }
 
         public void Apply()
         {
@@ -25,44 +25,44 @@ namespace DafnyRefactor.ExtractVariable
             Execute();
         }
 
-        protected void Setup()
+        private void Setup()
         {
-            state = new ExtractVariableState(options);
+            _state = new ExtractVariableState(_options);
 
-            steps = new List<RefactorStep<ExtractVariableState>>();
-            if (options.Stdin)
+            _steps = new List<RefactorStep<ExtractVariableState>>();
+            if (_options.Stdin)
             {
-                steps.Add(new StdinLoaderStep<ExtractVariableState>());
+                _steps.Add(new StdinLoaderStep<ExtractVariableState>());
             }
 
-            steps.Add(new LoadProgramStep<ExtractVariableState>());
-            steps.Add(new EvGenerateScopeStep<ExtractVariableState>());
-            steps.Add(new LoadRawSourceStep<ExtractVariableState>());
-            steps.Add(new ParseStmtDivisorsStep<ExtractVariableState>());
-            steps.Add(new ParseSelectionStep<ExtractVariableState>());
-            steps.Add(new FindStatementStep<ExtractVariableState>());
-            steps.Add(new FindExprRangeStep<ExtractVariableState>());
-            steps.Add(new ExtractExprStep<ExtractVariableState>());
-            steps.Add(new ReplaceOccurrencesStep<ExtractVariableState>());
-            steps.Add(new SaveChangesStep<ExtractVariableState>());
-            if (options.Stdin)
+            _steps.Add(new LoadProgramStep<ExtractVariableState>());
+            _steps.Add(new EvGenerateScopeStep<ExtractVariableState>());
+            _steps.Add(new LoadRawSourceStep<ExtractVariableState>());
+            _steps.Add(new ParseStmtDivisorsStep<ExtractVariableState>());
+            _steps.Add(new ParseSelectionStep<ExtractVariableState>());
+            _steps.Add(new FindStatementStep<ExtractVariableState>());
+            _steps.Add(new FindExprRangeStep<ExtractVariableState>());
+            _steps.Add(new ExtractExprStep<ExtractVariableState>());
+            _steps.Add(new ReplaceOccurrencesStep<ExtractVariableState>());
+            _steps.Add(new SaveChangesStep<ExtractVariableState>());
+            if (_options.Stdin)
             {
-                steps.Add(new StdinCleanerStep<ExtractVariableState>());
+                _steps.Add(new StdinCleanerStep<ExtractVariableState>());
             }
 
-            for (var i = 0; i < steps.Count - 1; i++)
+            for (var i = 0; i < _steps.Count - 1; i++)
             {
-                steps[i].next = steps[i + 1];
+                _steps[i].next = _steps[i + 1];
             }
         }
 
-        protected void Execute()
+        private void Execute()
         {
-            steps.First().Handle(state);
+            _steps.First().Handle(_state);
 
-            if (state.Errors.Count > 0)
+            if (_state.Errors.Count > 0)
             {
-                foreach (var error in state.Errors)
+                foreach (var error in _state.Errors)
                 {
                     DafnyRefactorDriver.consoleError.WriteLine(error);
                 }
