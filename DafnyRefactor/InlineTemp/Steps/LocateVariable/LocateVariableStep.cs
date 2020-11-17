@@ -17,37 +17,35 @@ namespace DafnyRefactor.InlineTemp
             var foundVariable = VariableLocator.Locate(state.Program, state.RootScope, state.IvrVariablePos);
             if (foundVariable == null)
             {
-                state.AddError(
-                    $"Error: can't locate variable on line {state.InlineOptions.Position}.");
+                state.AddError(InlineTempErrorMsg.NotFoundVariable(state.InlineOptions.Position));
                 return;
             }
 
             state.InlineVariable = foundVariable;
             if (state.InlineVariable.IsUpdated)
             {
-                state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.Position} is not constant.");
+                state.AddError(InlineTempErrorMsg.NotConstant(state.InlineVariable.Name, state.InlineOptions.Position));
                 return;
             }
 
             if (state.InlineVariable.NotAnExpr)
             {
-                state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.Position} is initialized with an object constructor.");
+                state.AddError(InlineTempErrorMsg.InitWithConstructor(state.InlineVariable.Name,
+                    state.InlineOptions.Position));
                 return;
             }
 
             if (state.InlineVariable.Expr == null)
             {
-                state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.Position} is never initialized.");
+                state.AddError(InlineTempErrorMsg.NeverInitialized(state.InlineVariable.Name,
+                    state.InlineOptions.Position));
                 return;
             }
 
             if (state.InlineVariable.Expr is ApplySuffix)
             {
-                state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.Position} contains a method call.");
+                state.AddError(InlineTempErrorMsg.ContainsMethodCall(state.InlineVariable.Name,
+                    state.InlineOptions.Position));
                 return;
             }
 

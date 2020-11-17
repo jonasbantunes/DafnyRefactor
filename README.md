@@ -61,7 +61,7 @@ DafnyRefactor.exe apply-inline-temp [options]
 Example:
 
 ```batch
-DafnyRefator.exe apply-inline-temp -f example.dfy -l 2 -c 7
+DafnyRefator.exe apply-inline-temp -f example.dfy -p "2:7"
 ```
 
 ### Move Method

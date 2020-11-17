@@ -24,8 +24,8 @@ namespace DafnyRefactor.InlineTemp
             var isValid = EditsValidator.IsValid(assertiveEdits, state.FilePath);
             if (!isValid)
             {
-                state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.Position} is not constant according with theorem prover.");
+                state.AddError(InlineTempErrorMsg.NotConstantBySolver(state.InlineVariable.Name,
+                    state.InlineOptions.Position));
                 return;
             }
 

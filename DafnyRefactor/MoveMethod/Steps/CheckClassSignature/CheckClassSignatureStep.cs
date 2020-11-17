@@ -29,7 +29,7 @@ namespace DafnyRefactor.MoveMethod
                 if (method.Name != _inState.MvtParam.Method.Name) continue;
 
                 _inState.AddError(
-                    $"Error: method \"{_inState.MvtParam.Method.Name}()\" already exists on class \"{destClass.Name}\".");
+                    MoveMethodErrorMsg.MethodAlreadyExists(_inState.MvtParam.Method.Name, destClass.Name));
                 return;
             }
         }

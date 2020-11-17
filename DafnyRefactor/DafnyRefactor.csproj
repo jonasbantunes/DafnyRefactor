@@ -104,6 +104,7 @@
     <Compile Include="ExtractVariable\State\ExtractVariableScope.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\IndexOfWithIgnoresExtension.cs" />
+    <Compile Include="InlineTemp\InlineTempErrorMsg.cs" />
     <Compile Include="InlineTemp\Steps\AssertImmutabilitySimplified\AssertivesSimplifiedAdder.cs" />
     <Compile Include="InlineTemp\Steps\AssertImmutability\AssertivesAdder.cs" />
     <Compile Include="InlineTemp\Steps\AssertImmutability\InlineObjectsParser.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="InlineTemp\Steps\ParseVariables\VariableParser.cs" />
     <Compile Include="InlineTemp\Steps\RemoveDeclaration\DeclarationRemover.cs" />
     <Compile Include="InlineTemp\Steps\ReplaceVariable\InlineTempApplier.cs" />
+    <Compile Include="MoveMethod\MoveMethodErrorMsg.cs" />
     <Compile Include="MoveMethod\State\MvtParam.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprOcurrencesReplacer.cs" />
     <Compile Include="ExtractVariable\Steps\ReplaceOccurrences\ExprIsReplaceableChecker.cs" />

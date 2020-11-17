@@ -13,12 +13,22 @@ namespace DafnyRefactor.InlineTemp
             var positionRawSplitted = state.InlineOptions.Position.Split(':');
             if (positionRawSplitted.Length != 2)
             {
-                state.Errors.Add("Error: Incorrect variable position syntax.");
+                state.AddError(InlineTempErrorMsg.WrongPositionSyntax());
                 return;
             }
 
-            var line = int.Parse(positionRawSplitted[0]);
-            var col = int.Parse(positionRawSplitted[1]);
+            int line;
+            int col;
+            try
+            {
+                line = int.Parse(positionRawSplitted[0]);
+                col = int.Parse(positionRawSplitted[1]);
+            }
+            catch (Exception)
+            {
+                state.AddError(InlineTempErrorMsg.InvalidPosition());
+                return;
+            }
 
             var index = 0;
             if (line - 1 > 0)
@@ -28,7 +38,7 @@ namespace DafnyRefactor.InlineTemp
 
             if (index == -1)
             {
-                state.Errors.Add("Error: Variable position is invalid");
+                state.AddError(InlineTempErrorMsg.InvalidPosition());
                 return;
             }
 

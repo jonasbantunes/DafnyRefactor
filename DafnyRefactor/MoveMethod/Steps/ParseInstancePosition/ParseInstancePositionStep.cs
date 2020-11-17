@@ -13,7 +13,7 @@ namespace DafnyRefactor.MoveMethod
             var positionRawSplitted = state.MvtOptions.InstancePosition.Split(':');
             if (positionRawSplitted.Length != 2)
             {
-                state.Errors.Add("Error: Incorrect instance position syntax.");
+                state.AddError(MoveMethodErrorMsg.WrongPositionSyntax());
                 return;
             }
 
@@ -28,7 +28,7 @@ namespace DafnyRefactor.MoveMethod
 
             if (index == -1)
             {
-                state.Errors.Add("Error: Instance position is invalid");
+                state.AddError(MoveMethodErrorMsg.InvalidPosition());
                 return;
             }
 

@@ -13,31 +13,31 @@ namespace DafnyRefactor.MoveMethod
             var mvtParam = TargetLocator.Locate(state.Program, state.MvtUserTarget);
             if (mvtParam == null)
             {
-                state.AddError("Error: can't locate target's parameter to be moved.");
+                state.AddError(MoveMethodErrorMsg.NotFoundTarget());
                 return;
             }
 
             if (!(mvtParam.Formal.Type is UserDefinedType userDefinedType))
             {
-                state.AddError("Error: target type is built-in.");
+                state.AddError(MoveMethodErrorMsg.IsBuilIn());
                 return;
             }
 
             if (!(userDefinedType.ResolvedClass is NonNullTypeDecl) && !(userDefinedType.ResolvedClass is ClassDecl))
             {
-                state.AddError("Error: target type is built-in.");
+                state.AddError(MoveMethodErrorMsg.IsBuilIn());
                 return;
             }
 
             if (userDefinedType.ResolvedClass is ClassDecl && !userDefinedType.IsNonNullRefType)
             {
-                state.AddError("Error: target type is nullable.");
+                state.AddError(MoveMethodErrorMsg.IsNullable());
                 return;
             }
 
             if (mvtParam.Method.EnclosingClass is DefaultClassDecl)
             {
-                state.AddError($"Error: \"{mvtParam.Method.Name}()\" doesn't belong to a defined class.");
+                state.AddError(MoveMethodErrorMsg.DestClassDoesntExist(mvtParam.Method.Name));
                 return;
             }
 
