@@ -134,7 +134,8 @@ namespace DafnyRefactor.InlineTemp
                 var obj = memberSelectExpr.Obj;
                 if (!obj.Type.Equals(inlineObject.ObjType)) continue;
 
-                var assertStmtExpr = $"\n assert {Printer.ExprToString(obj)} != {inlineObject.LhsPrinted};";
+                var assertStmtExpr =
+                    $"{Environment.NewLine} assert {Printer.ExprToString(obj)} != {inlineObject.LhsPrinted};";
                 var pos = stmtDivisors[findIndex - 1] + 1;
                 var edit = new SourceEdit(pos, assertStmtExpr);
                 Edits.Add(edit);
@@ -160,7 +161,7 @@ namespace DafnyRefactor.InlineTemp
                     if (!methodArg.Type.Equals(inlineObject.ObjType)) continue;
 
                     var argPrinted = Printer.ExprToString(arg);
-                    var assertStmtExpr = $"\n assert {argPrinted} != {inlineObject.ObjPrinted};";
+                    var assertStmtExpr = $"{Environment.NewLine} assert {argPrinted} != {inlineObject.ObjPrinted};";
 
                     var pos = stmtDivisors[divisorIndex - 1] + 1;
                     var edit = new SourceEdit(pos, assertStmtExpr);

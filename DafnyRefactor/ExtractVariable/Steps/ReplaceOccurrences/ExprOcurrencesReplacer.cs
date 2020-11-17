@@ -80,7 +80,7 @@ namespace DafnyRefactor.ExtractVariable
             if (replacedRaw.Equals(expRaw)) return;
             sourceEdits.Add(new SourceEdit(range.start, range.end, replacedRaw));
 
-            var assert = $"\n assert {varName} == ( {varRaw} );";
+            var assert = $"{Environment.NewLine} assert {varName} == ( {varRaw} );";
             var divisorIndex = stmtDivisors.FindIndex(divisor => divisor >= exp.tok.pos);
             if (divisorIndex < 1) return;
             var assertPos = stmtDivisors[divisorIndex - 1] + 1;

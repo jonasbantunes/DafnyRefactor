@@ -34,7 +34,7 @@ namespace DafnyRefactor.ExtractVariable
             var exprRaw = inState.EvSourceCode.Substring(exprStart, exprEnd - exprStart).Trim();
 
             var varName = inState.EvOptions.VarName;
-            var editRaw = $"\nvar {varName} := {exprRaw};";
+            var editRaw = $"{Environment.NewLine}var {varName} := {exprRaw};";
 
             var divisorIndex =
                 inState.StmtDivisors.FindIndex(divisor => divisor > inState.EvStmt.Tok.pos);

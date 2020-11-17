@@ -38,7 +38,7 @@ namespace DafnyRefactor.MoveMethod
             var methodEdits = replacedEdits
                 .Select(ed => new SourceEdit(ed.startPos - start, ed.endPos - start, ed.content)).ToList();
             var replacedCode = SourceEditor.Edit(methodCode, methodEdits);
-            var content = $"\n{replacedCode}\n";
+            var content = $"{Environment.NewLine}{replacedCode}{Environment.NewLine}";
 
             var edit = new SourceEdit(pos, content);
             inState.SourceEdits.Add(edit);
