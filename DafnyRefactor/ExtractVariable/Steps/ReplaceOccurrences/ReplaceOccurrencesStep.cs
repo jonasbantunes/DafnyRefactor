@@ -17,7 +17,7 @@ namespace DafnyRefactor.ExtractVariable
         public override void Handle(TState state)
         {
             if (state == null || state.EvExprRange == null || state.EvStmt == null || state.Program == null ||
-                state.EvSourceCode == null || state.EvOptions == null || state.StmtDivisors == null ||
+                state.SourceCode == null || state.EvOptions == null || state.StmtDivisors == null ||
                 state.SourceEdits == null || state.EvRootScope == null)
                 throw new ArgumentNullException();
 
@@ -33,7 +33,7 @@ namespace DafnyRefactor.ExtractVariable
 
         protected void Replace()
         {
-            (sourceEdits, assertEdits) = ExprOcurrencesReplacer.Replace(inState.Program, inState.EvSourceCode,
+            (sourceEdits, assertEdits) = ExprOcurrencesReplacer.Replace(inState.Program, inState.SourceCode,
                 inState.EvExprRange, inState.EvOptions.VarName, inState.StmtDivisors, inState.EvStmt,
                 inState.EvRootScope, inState.EvExprVariables);
         }

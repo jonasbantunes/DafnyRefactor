@@ -28,7 +28,7 @@ namespace DafnyRefactor.InlineTemp
             if (!isValid)
             {
                 state.AddError(
-                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.VarLine}:{state.InlineOptions.VarColumn} is not constant according with theorem prover.");
+                    $"Error: variable {state.InlineVariable.Name} located on {state.InlineOptions.Position} is not constant according with theorem prover.");
                 return;
             }
 

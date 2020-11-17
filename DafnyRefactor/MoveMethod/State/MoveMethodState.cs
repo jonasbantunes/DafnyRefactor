@@ -7,7 +7,6 @@ namespace DafnyRefactor.MoveMethod
 {
     public interface IMoveMethodState : IRefactorState
     {
-        string MvtSourceCode { get; set; }
         ApplyMoveMethodOptions MvtOptions { get; }
         int MvtUserTarget { get; set; }
         IMvtParam MvtParam { get; set; }
@@ -32,13 +31,13 @@ namespace DafnyRefactor.MoveMethod
         public string FilePath => options.Stdin ? TempFilePath : options.FilePath;
         public List<int> StmtDivisors { get; set; }
         public List<SourceEdit> SourceEdits { get; }
+        public string SourceCode { get; set; }
 
         public void AddError(string description)
         {
             Errors.Add(description);
         }
 
-        public string MvtSourceCode { get; set; }
         public ApplyMoveMethodOptions MvtOptions => options;
         public int MvtUserTarget { get; set; }
         public IMvtParam MvtParam { get; set; }

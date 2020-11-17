@@ -10,7 +10,7 @@ namespace DafnyRefactor.ExtractVariable
     {
         public override void Handle(TState state)
         {
-            if (state == null || state.Options == null || state.EvSourceCode == null) throw new ArgumentNullException();
+            if (state == null || state.Options == null || state.SourceCode == null) throw new ArgumentNullException();
 
             var startRawSplitted = state.EvOptions.StartPosition.Split(':');
             var endRawSplitted = state.EvOptions.EndPosition.Split(':');
@@ -28,7 +28,7 @@ namespace DafnyRefactor.ExtractVariable
             var startIndex = 0;
             if (startLine - 1 > 0)
             {
-                startIndex = state.EvSourceCode.IndexOfNth("\n", startLine - 1);
+                startIndex = state.SourceCode.IndexOfNth("\n", startLine - 1);
             }
 
             if (startIndex == -1)
@@ -40,7 +40,7 @@ namespace DafnyRefactor.ExtractVariable
             var endIndex = 0;
             if (endLine - 1 > 0)
             {
-                endIndex = state.EvSourceCode.IndexOfNth("\n", endLine - 1);
+                endIndex = state.SourceCode.IndexOfNth("\n", endLine - 1);
             }
 
             if (endIndex == -1)

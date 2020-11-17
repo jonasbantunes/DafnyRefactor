@@ -1,19 +1,19 @@
 ﻿using System;
 using DafnyRefactor.Utils;
 
-namespace DafnyRefactor.MoveMethod
+namespace DafnyRefactor.InlineTemp
 {
-    public class ParseInstancePositionStep<TState> : RefactorStep<TState> where TState : IMoveMethodState
+    public class ParsePositionStep<TState> : RefactorStep<TState> where TState : IInlineState
     {
         public override void Handle(TState state)
         {
             if (state == null || state.Options == null || state.SourceCode == null)
                 throw new ArgumentNullException();
 
-            var positionRawSplitted = state.MvtOptions.InstancePosition.Split(':');
+            var positionRawSplitted = state.InlineOptions.Position.Split(':');
             if (positionRawSplitted.Length != 2)
             {
-                state.Errors.Add("Error: Incorrect instance position syntax.");
+                state.Errors.Add("Error: Incorrect variable position syntax.");
                 return;
             }
 
@@ -28,12 +28,12 @@ namespace DafnyRefactor.MoveMethod
 
             if (index == -1)
             {
-                state.Errors.Add("Error: Instance position is invalid");
+                state.Errors.Add("Error: Variable position is invalid");
                 return;
             }
 
             var position = index + col;
-            state.MvtUserTarget = position;
+            state.IvrVariablePos = position;
 
             base.Handle(state);
         }

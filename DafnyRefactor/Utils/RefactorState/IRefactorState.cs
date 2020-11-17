@@ -18,6 +18,7 @@ namespace DafnyRefactor.Utils
         string FilePath { get; }
         List<int> StmtDivisors { get; set; }
         List<SourceEdit> SourceEdits { get; }
+        string SourceCode { get; set; }
 
         void AddError(string description);
     }

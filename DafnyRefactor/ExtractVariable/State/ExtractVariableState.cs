@@ -10,7 +10,6 @@ namespace DafnyRefactor.ExtractVariable
     /// </summary>
     public interface IExtractVariableState : IRefactorState
     {
-        string EvSourceCode { get; set; }
         Range EvUserSelection { get; set; }
         Range EvExprRange { get; set; }
         ApplyExtractVariableOptions EvOptions { get; }
@@ -33,6 +32,8 @@ namespace DafnyRefactor.ExtractVariable
             errors = new List<string>();
         }
 
+        public string EvSourceCode { get; set; }
+
         public List<string> Errors => errors;
         public ApplyOptions Options => options;
         public Program Program { get; set; }
@@ -41,13 +42,13 @@ namespace DafnyRefactor.ExtractVariable
         public List<int> StmtDivisors { get; set; }
 
         public List<SourceEdit> SourceEdits { get; }
+        public string SourceCode { get; set; }
 
         public void AddError(string description)
         {
             errors.Add(description);
         }
 
-        public string EvSourceCode { get; set; }
         public Range EvUserSelection { get; set; }
         public Range EvExprRange { get; set; }
         public ApplyExtractVariableOptions EvOptions => options;

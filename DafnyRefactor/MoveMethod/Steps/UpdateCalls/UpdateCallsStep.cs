@@ -8,9 +8,9 @@ namespace DafnyRefactor.MoveMethod
         public override void Handle(TState state)
         {
             if (state == null || state.Program == null || state.MvtParam == null ||
-                state.MvtSourceCode == null) throw new ArgumentNullException();
+                state.SourceCode == null) throw new ArgumentNullException();
 
-            var updatedEdits = CallsUpdater.Update(state.Program, state.MvtSourceCode, state.MvtParam);
+            var updatedEdits = CallsUpdater.Update(state.Program, state.SourceCode, state.MvtParam);
             state.SourceEdits.AddRange(updatedEdits);
 
             base.Handle(state);

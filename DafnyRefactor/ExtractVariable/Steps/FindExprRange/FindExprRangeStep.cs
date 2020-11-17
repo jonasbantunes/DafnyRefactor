@@ -18,7 +18,7 @@ namespace DafnyRefactor.ExtractVariable
 
         public override void Handle(TState state)
         {
-            if (state == null || state.Program == null || state.EvSourceCode == null || state.EvUserSelection == null ||
+            if (state == null || state.Program == null || state.SourceCode == null || state.EvUserSelection == null ||
                 state.EvStmt == null)
                 throw new ArgumentNullException();
 

@@ -13,7 +13,7 @@ namespace DafnyRefactor.ExtractVariable
         public override void Handle(TState state)
         {
             if (state == null || state.EvExprRange == null || state.EvStmt == null ||
-                state.EvOptions == null || state.Program == null || state.EvSourceCode == null ||
+                state.EvOptions == null || state.Program == null || state.SourceCode == null ||
                 state.StmtDivisors == null || state.EvRootScope == null)
                 throw new ArgumentNullException();
 
@@ -31,7 +31,7 @@ namespace DafnyRefactor.ExtractVariable
         {
             var exprStart = inState.EvExprRange.start;
             var exprEnd = inState.EvExprRange.end;
-            var exprRaw = inState.EvSourceCode.Substring(exprStart, exprEnd - exprStart).Trim();
+            var exprRaw = inState.SourceCode.Substring(exprStart, exprEnd - exprStart).Trim();
 
             var varName = inState.EvOptions.VarName;
             var editRaw = $"{Environment.NewLine}var {varName} := {exprRaw};";

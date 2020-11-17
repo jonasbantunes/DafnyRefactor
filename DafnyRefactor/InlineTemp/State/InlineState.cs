@@ -13,6 +13,7 @@ namespace DafnyRefactor.InlineTemp
         ApplyInlineTempOptions InlineOptions { get; }
         IInlineVariable InlineVariable { get; set; }
         IInlineScope RootScope { get; set; }
+        int IvrVariablePos { get; set; }
     }
 
     public class InlineState : IInlineState
@@ -31,7 +32,9 @@ namespace DafnyRefactor.InlineTemp
         public ApplyInlineTempOptions InlineOptions => options;
         public IInlineVariable InlineVariable { get; set; }
         public List<SourceEdit> SourceEdits { get; }
+        public string SourceCode { get; set; }
         public IInlineScope RootScope { get; set; }
+        public int IvrVariablePos { get; set; }
         public List<string> Errors => errors;
         public ApplyOptions Options => options;
         public Program Program { get; set; }

@@ -39,6 +39,8 @@ namespace DafnyRefactor.InlineTemp
             }
 
             steps.Add(new LoadProgramStep<InlineState>());
+            steps.Add(new LoadRawSourceStep<InlineState>());
+            steps.Add(new ParsePositionStep<InlineState>());
             steps.Add(new ParseStmtDivisorsStep<InlineState>());
             steps.Add(new GenerateScopeStep<InlineState>());
             steps.Add(new ParseMethodsStep<InlineState>());
