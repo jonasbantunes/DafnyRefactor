@@ -11,29 +11,29 @@ namespace DafnyRefactorTests
         protected void SetUp()
         {
             var testRunnerDir = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-            testDir = $"{testRunnerDir.Parent?.Parent?.Parent?.FullName}\\Tests\\move_method";
+            _testDir = $"{testRunnerDir.Parent?.Parent?.Parent?.FullName}\\Tests";
         }
 
-        protected string testDir;
-        protected string testFileDir;
-        protected int testNumber;
-        protected string instancePosition;
+        private string _testDir;
+        private string _testFileDir;
+        private int _testNumber;
+        private string _instancePosition;
 
-        protected string TestFilePath => $"{testFileDir}\\source.dfy";
-        protected string TestOutputPath => $"{testFileDir}\\test{testNumber}.out";
-        protected string TestExpectedPath => $"{testFileDir}\\test{testNumber}.expected";
+        private string TestFilePath => $"{_testFileDir}\\source.dfy";
+        private string TestOutputPath => $"{_testFileDir}\\test{_testNumber}.out";
+        private string TestExpectedPath => $"{_testFileDir}\\test{_testNumber}.expected";
 
-        protected string[] Args => new[]
+        private string[] Args => new[]
         {
-            "apply-move-method", "-f", TestFilePath, "-i", instancePosition, "-o", TestOutputPath
+            "apply-move-method", "-f", TestFilePath, "-i", _instancePosition, "-o", TestOutputPath
         };
 
         [Test]
         public void ComplexClassesT1()
         {
-            testFileDir = $"{testDir}\\complex_classes";
-            testNumber = 1;
-            instancePosition = "24:23";
+            _testFileDir = $"{_testDir}\\complex_classes";
+            _testNumber = 1;
+            _instancePosition = "24:23";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(0, exitCode);
@@ -43,9 +43,9 @@ namespace DafnyRefactorTests
         [Test]
         public void ComplexClassesT2()
         {
-            testFileDir = $"{testDir}\\complex_classes";
-            testNumber = 2;
-            instancePosition = "7:16";
+            _testFileDir = $"{_testDir}\\complex_classes";
+            _testNumber = 2;
+            _instancePosition = "7:16";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
@@ -54,9 +54,9 @@ namespace DafnyRefactorTests
         [Test]
         public void ComplexClassesT3()
         {
-            testFileDir = $"{testDir}\\complex_classes";
-            testNumber = 3;
-            instancePosition = "32:17";
+            _testFileDir = $"{_testDir}\\complex_classes";
+            _testNumber = 3;
+            _instancePosition = "32:17";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
@@ -65,9 +65,9 @@ namespace DafnyRefactorTests
         [Test]
         public void EqualMethodsT1()
         {
-            testFileDir = $"{testDir}\\equal_methods";
-            testNumber = 1;
-            instancePosition = "28:23";
+            _testFileDir = $"{_testDir}\\equal_methods";
+            _testNumber = 1;
+            _instancePosition = "28:23";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
@@ -76,9 +76,9 @@ namespace DafnyRefactorTests
         [Test]
         public void EqualMethodsT2()
         {
-            testFileDir = $"{testDir}\\equal_methods";
-            testNumber = 2;
-            instancePosition = "36:17";
+            _testFileDir = $"{_testDir}\\equal_methods";
+            _testNumber = 2;
+            _instancePosition = "36:17";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(0, exitCode);
@@ -88,9 +88,9 @@ namespace DafnyRefactorTests
         [Test]
         public void MethodCallT1()
         {
-            testFileDir = $"{testDir}\\method_call";
-            testNumber = 1;
-            instancePosition = "27:19";
+            _testFileDir = $"{_testDir}\\class_method_call";
+            _testNumber = 1;
+            _instancePosition = "27:19";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
@@ -99,9 +99,9 @@ namespace DafnyRefactorTests
         [Test]
         public void SimpleClassesT1()
         {
-            testFileDir = $"{testDir}\\simple_classes";
-            testNumber = 1;
-            instancePosition = "14:23";
+            _testFileDir = $"{_testDir}\\simple_classes";
+            _testNumber = 1;
+            _instancePosition = "14:23";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(0, exitCode);
@@ -111,9 +111,9 @@ namespace DafnyRefactorTests
         [Test]
         public void SimpleClassesT2()
         {
-            testFileDir = $"{testDir}\\simple_classes";
-            testNumber = 2;
-            instancePosition = "14:29";
+            _testFileDir = $"{_testDir}\\simple_classes";
+            _testNumber = 2;
+            _instancePosition = "14:29";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(2, exitCode);
