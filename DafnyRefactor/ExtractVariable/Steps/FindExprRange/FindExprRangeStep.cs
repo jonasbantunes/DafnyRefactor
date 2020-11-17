@@ -45,23 +45,22 @@ namespace DafnyRefactor.ExtractVariable
             if (startFinder.LeftExpr == null && startFinder.RightExpr == null ||
                 endFinder.LeftExpr == null && endFinder.RightExpr == null)
             {
-                inState.Errors.Add("Error: selection is not an expression.");
+                inState.AddError(ExtractVariableErrorMsg.NotAnExpr());
             }
         }
 
         protected void FindStart()
-
         {
             if (startFinder.LeftExpr is NegationExpression negationExpr &&
                 !IsSubExprChecker.IsSubExpr(endFinder.LeftExpr, negationExpr))
             {
-                inState.Errors.Add("Error: Selected expression is invalid");
+                inState.AddError(ExtractVariableErrorMsg.NegationSlice());
                 return;
             }
 
             if (startFinder.RightExpr is BinaryExpr)
             {
-                inState.Errors.Add("Error: selected expression starts with a binary operand.");
+                inState.AddError(ExtractVariableErrorMsg.StartsWithBinExp());
                 return;
             }
 
@@ -117,7 +116,7 @@ namespace DafnyRefactor.ExtractVariable
 
             if (startPos > inState.EvUserSelection.start || inState.EvUserSelection.start > endPos)
             {
-                inState.Errors.Add("Error: EvUserSelection should start on beginning of object");
+                inState.AddError(ExtractVariableErrorMsg.ObjectSlice());
                 return;
             }
 
@@ -141,7 +140,7 @@ namespace DafnyRefactor.ExtractVariable
             }
             else
             {
-                inState.Errors.Add("Error: selected expression ends with a operand.");
+                inState.AddError(ExtractVariableErrorMsg.EndsWithBinExp());
             }
         }
 

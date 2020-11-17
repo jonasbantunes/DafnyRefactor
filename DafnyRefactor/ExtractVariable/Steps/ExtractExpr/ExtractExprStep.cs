@@ -54,7 +54,7 @@ namespace DafnyRefactor.ExtractVariable
             var isValid = EditsValidator.IsValid(inState.SourceEdits, inState.FilePath);
             if (!isValid)
             {
-                inState.Errors.Add("Error: Selected expression is invalid");
+                inState.AddError(ExtractVariableErrorMsg.ExprInvalid());
             }
         }
     }

@@ -47,7 +47,7 @@ namespace DafnyRefactor.ExtractVariable
 
             if (!isValid)
             {
-                inState.Errors.Add("Error: Invalid selection");
+                inState.AddError(ExtractVariableErrorMsg.CantReplaceOccurrences());
             }
         }
     }

@@ -16,7 +16,7 @@ namespace DafnyRefactor.ExtractVariable
             var endRawSplitted = state.EvOptions.EndPosition.Split(':');
             if (startRawSplitted.Length != 2 || endRawSplitted.Length != 2)
             {
-                state.Errors.Add("Error: Incorrect selection range syntax.");
+                state.AddError(ExtractVariableErrorMsg.WrongRangeSyntax());
                 return;
             }
 
@@ -33,7 +33,7 @@ namespace DafnyRefactor.ExtractVariable
 
             if (startIndex == -1)
             {
-                state.Errors.Add("Error: EvUserSelection is invalid");
+                state.AddError(ExtractVariableErrorMsg.RangeOutOfBounds());
                 return;
             }
 
@@ -45,7 +45,7 @@ namespace DafnyRefactor.ExtractVariable
 
             if (endIndex == -1)
             {
-                state.Errors.Add("Error: EvUserSelection is invalid");
+                state.AddError(ExtractVariableErrorMsg.RangeOutOfBounds());
                 return;
             }
 
@@ -53,7 +53,7 @@ namespace DafnyRefactor.ExtractVariable
             var end = endIndex + endCol;
             if (start >= end)
             {
-                state.Errors.Add("Error: EvUserSelection is invalid");
+                state.AddError(ExtractVariableErrorMsg.WrongRange());
                 return;
             }
 

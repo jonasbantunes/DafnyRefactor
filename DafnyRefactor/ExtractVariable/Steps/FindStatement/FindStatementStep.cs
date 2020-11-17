@@ -17,7 +17,7 @@ namespace DafnyRefactor.ExtractVariable
                 StmtFinder.Find(state.Program, state.EvUserSelection, state.StmtDivisors, state.EvRootScope);
             if (foundStmt == null)
             {
-                state.Errors.Add("Error: Couldn't find selected expression.");
+                state.AddError(ExtractVariableErrorMsg.NotFoundStmt());
                 return;
             }
 

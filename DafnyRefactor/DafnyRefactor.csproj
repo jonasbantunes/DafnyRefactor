@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtractVariable\ExtractVariableErrorMsg.cs" />
     <Compile Include="ExtractVariable\ExtractVariableRefactor.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableScope.cs" />
     <Compile Include="ExtractVariable\State\ExtractVariableState.cs" />
