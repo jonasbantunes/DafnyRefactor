@@ -6,9 +6,9 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 
 ## Requirements
 
-- Windows 10 (tested on 20H2 version, may work on previous versions)
+- Windows 10 (tested on 20H2, may work on previous versions)
 - Visual Studio 2019
-- .NET Framework 4.5.2
+- .NET Framework 4.8
 
 ## Building
 
@@ -20,7 +20,7 @@ Dafny Refactor is a utility for apply some refactors on dafny sources.
 - Modify Dafny's _DafnyDriver_ project to output a Library instead of an Executable
 
 ```diff
-// DafnyDriver.csproj:9
+// dafny/Source/DafnyDriver/DafnyDriver.csproj:9
 - <OutputType>Exe</OutputType>
 + <OutputType>Library</OutputType>
 ```
