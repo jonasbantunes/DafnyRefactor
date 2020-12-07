@@ -26,7 +26,10 @@ namespace DafnyRefactor
         public static int Main(string[] args)
         {
             Type[] types =
-                {typeof(ApplyInlineTempOptions), typeof(ApplyExtractVariableOptions), typeof(ApplyMoveMethodOptions)};
+            {
+                typeof(ApplyInlineTempOptions), typeof(ApplyExtractVariableOptions), typeof(ApplyMoveMethodOptions),
+                typeof(GetMoveMethodParamsOptions)
+            };
             var parsedArgs = Parser.Default.ParseArguments(args, types);
             return parsedArgs.MapResult(Run, HandleParseError);
         }
@@ -81,6 +84,11 @@ namespace DafnyRefactor
                     var moveMethodRefactor = new MoveMethodRefactor(moveMethodOptions);
                     moveMethodRefactor.Apply();
                     _exitCode = moveMethodRefactor.ExitCode;
+                    break;
+                case GetMoveMethodParamsOptions getMoveMethodOptions:
+                    var moveMethodParamsGetter = new GetMoveMethodParams(getMoveMethodOptions);
+                    moveMethodParamsGetter.Apply();
+                    _exitCode = moveMethodParamsGetter.ExitCode;
                     break;
                 default:
                     _exitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
