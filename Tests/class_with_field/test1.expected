@@ -1,0 +1,33 @@
+class Logger
+{
+    method Log(message: string)
+    {
+        print(message);
+    }
+
+method LogDrawing(shape: Shape)
+    {
+        var message := "Shape was drawn at " + shape.x + ":" + shape.y;
+        this.Log(message);
+        this.Log(message);
+    }
+}
+
+class Shape
+{
+    var x: string;
+    var y: string;
+    var logger: Logger;
+
+    constructor(logger: Logger){
+        this.logger := logger;
+    }
+
+    
+
+    method Draw()
+    {
+        logger.LogDrawing(this);
+        (this).logger.LogDrawing((this));
+    }
+}

@@ -42,12 +42,20 @@ namespace DafnyRefactor.Utils
                 case Method mt:
                     Visit(mt);
                     break;
+                case Field field:
+                    Visit(field);
+                    break;
             }
         }
 
         protected virtual void Visit(Method mt)
         {
             Visit(mt.Body);
+        }
+
+        protected virtual void Visit(Field field)
+        {
+            Traverse(field.SubExpressions?.ToList());
         }
 
         protected virtual void Visit(Statement stmt)

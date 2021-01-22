@@ -93,6 +93,7 @@
     <Compile Include="GetMoveMethodParamsTests.cs" />
     <Compile Include="InlineTempTests.cs" />
     <Compile Include="MoveMethodTests.cs" />
+    <Compile Include="MoveToAssociatedTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

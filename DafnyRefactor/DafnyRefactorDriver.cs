@@ -6,6 +6,7 @@ using CommandLine;
 using DafnyRefactor.ExtractVariable;
 using DafnyRefactor.InlineTemp;
 using DafnyRefactor.MoveMethod;
+using DafnyRefactor.MoveMethodToAssociated;
 using DafnyRefactor.Utils;
 using Microsoft.Dafny;
 using Parser = CommandLine.Parser;
@@ -28,7 +29,7 @@ namespace DafnyRefactor
             Type[] types =
             {
                 typeof(ApplyInlineTempOptions), typeof(ApplyExtractVariableOptions), typeof(ApplyMoveMethodOptions),
-                typeof(GetMoveMethodParamsOptions)
+                typeof(ApplyMoveToAssociatedOptions), typeof(GetMoveMethodParamsOptions)
             };
             var parsedArgs = Parser.Default.ParseArguments(args, types);
             return parsedArgs.MapResult(Run, HandleParseError);
@@ -89,6 +90,9 @@ namespace DafnyRefactor
                     var moveMethodParamsGetter = new GetMoveMethodParams(getMoveMethodOptions);
                     moveMethodParamsGetter.Apply();
                     _exitCode = moveMethodParamsGetter.ExitCode;
+                    break;
+                case ApplyMoveToAssociatedOptions moveToAssociatedOptions:
+                    _exitCode = MoveToAssociatedRefactor.DoRefactor(moveToAssociatedOptions);
                     break;
                 default:
                     _exitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;
