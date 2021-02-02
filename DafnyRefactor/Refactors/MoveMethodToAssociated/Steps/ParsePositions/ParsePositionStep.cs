@@ -28,6 +28,7 @@ namespace DafnyRefactor.MoveMethodToAssociated
             {
                 originIndex = state.SourceCode.IndexOfNth("\n", originLine - 1);
             }
+
             if (targetLine - 1 > 0)
             {
                 targetIndex = state.SourceCode.IndexOfNth("\n", targetLine - 1);

@@ -29,7 +29,8 @@ namespace DafnyRefactor
             Type[] types =
             {
                 typeof(ApplyInlineTempOptions), typeof(ApplyExtractVariableOptions), typeof(ApplyMoveMethodOptions),
-                typeof(ApplyMoveToAssociatedOptions), typeof(GetMoveMethodParamsOptions)
+                typeof(ApplyMoveToAssociatedOptions), typeof(GetMoveMethodParamsOptions),
+                typeof(GetMoveToAssociatedParamsOptions)
             };
             var parsedArgs = Parser.Default.ParseArguments(args, types);
             return parsedArgs.MapResult(Run, HandleParseError);
@@ -93,6 +94,9 @@ namespace DafnyRefactor
                     break;
                 case ApplyMoveToAssociatedOptions moveToAssociatedOptions:
                     _exitCode = MoveToAssociatedRefactor.DoRefactor(moveToAssociatedOptions);
+                    break;
+                case GetMoveToAssociatedParamsOptions getMoveToAssociatedOptions:
+                    _exitCode = GetMoveToAssociatedParams.DoRefactor(getMoveToAssociatedOptions);
                     break;
                 default:
                     _exitCode = (int) DafnyDriver.ExitValue.DAFNY_ERROR;

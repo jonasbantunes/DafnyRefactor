@@ -9,9 +9,9 @@ namespace DafnyRefactor.MoveMethodToAssociated
     public class MoveToAssociatedRefactor
     {
         private readonly ApplyMoveToAssociatedOptions _options;
+        private int _exitCode;
         private MoveToAssociatedState _state;
         private List<RefactorStep<MoveToAssociatedState>> _steps;
-        private int _exitCode;
 
         private MoveToAssociatedRefactor(ApplyMoveToAssociatedOptions options)
         {

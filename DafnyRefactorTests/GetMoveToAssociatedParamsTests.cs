@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace DafnyRefactorTests
 {
     [TestFixture]
-    public class MoveToAssociatedTests
+    public class GetMoveToAssociatedParamsTests
     {
         [SetUp]
         protected void SetUp()
@@ -17,29 +17,26 @@ namespace DafnyRefactorTests
         private string _testDir;
         private string _testFileDir;
         private int _testNumber;
-        private string _methodPos;
-        private string _fieldPos;
+        private string _methodPosition;
+
         private string TestFilePath => $"{_testFileDir}\\source.dfy";
         private string TestOutputPath => $"{_testFileDir}\\test{_testNumber}.out";
         private string TestExpectedPath => $"{_testFileDir}\\test{_testNumber}.expected";
 
         private string[] Args => new[]
         {
-            "apply-move-method-to-associated", "-f", TestFilePath, "-s", _methodPos, "-t", _fieldPos, "-o",
-            TestOutputPath
+            "get-move-to-associated-params", "-f", TestFilePath, "-p", _methodPosition, "-o", TestOutputPath
         };
 
         [Test]
-        public void ClassWithFieldT1()
+        public void ComplexClassesT1()
         {
             _testFileDir = $"{_testDir}\\class_with_field";
             _testNumber = 1;
-            _methodPos = "19:15";
-            _fieldPos = "13:11";
+            _methodPosition = "19:15";
 
             var exitCode = DafnyRefactorDriver.Main(Args);
             Assert.AreEqual(0, exitCode);
-            FileAssert.AreEqual(TestExpectedPath, TestOutputPath);
         }
     }
 }

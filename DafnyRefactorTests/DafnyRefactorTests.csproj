@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="ExtractVariableTests.cs" />
     <Compile Include="GetMoveMethodParamsTests.cs" />
+    <Compile Include="GetMoveToAssociatedParamsTests.cs" />
     <Compile Include="InlineTempTests.cs" />
     <Compile Include="MoveMethodTests.cs" />
     <Compile Include="MoveToAssociatedTests.cs" />

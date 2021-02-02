@@ -1,6 +1,6 @@
 ﻿namespace DafnyRefactor.MoveMethodToAssociated
 {
-    public class MoveToAssociatedErrors
+    public static class MoveToAssociatedErrors
     {
         public static string InvalidPosition()
         {
@@ -25,7 +25,7 @@
         public static string NotConstantBySolver()
         {
             return
-                $"Error: field is not constant according with theorem prover.";
+                "Error: field is not constant according with theorem prover.";
         }
 
         public static string NotFoundField()

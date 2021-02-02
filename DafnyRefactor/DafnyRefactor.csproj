@@ -227,6 +227,11 @@
     <Compile Include="Utils\RefactorState\RefactorScope.cs" />
     <Compile Include="Utils\RefactorState\RefactorVariable.cs" />
     <Compile Include="Utils\RefactorState\ScopeGenerator.cs" />
+    <Compile Include="VSCodeCommands\MoveToAssociatedGetParams\GetMoveToAssociatedParams.cs" />
+    <Compile Include="VSCodeCommands\MoveToAssociatedGetParams\GetMoveToAssociatedParamsOptions.cs" />
+    <Compile Include="VSCodeCommands\MoveToAssociatedGetParams\State\GetMoveToAssociatedState.cs" />
+    <Compile Include="VSCodeCommands\MoveToAssociatedGetParams\Steps\FindMethod\FindMethodStep.cs" />
+    <Compile Include="VSCodeCommands\MoveToAssociatedGetParams\Steps\ParseMethodPosition\ParseMethodPositionStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\dafny\Binaries\DafnyPrelude.bpl">

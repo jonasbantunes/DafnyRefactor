@@ -3,7 +3,7 @@ using DafnyRefactor.Utils;
 
 namespace DafnyRefactor.MoveMethodToAssociated
 {
-    class AssertFieldImmutabilityStep<TState> : RefactorStep<TState> where TState : IMoveToAssociatedState
+    public class AssertFieldImmutabilityStep<TState> : RefactorStep<TState> where TState : IMoveToAssociatedState
     {
         public override void Handle(TState state)
         {

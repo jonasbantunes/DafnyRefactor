@@ -7,9 +7,9 @@ namespace DafnyRefactor.MoveMethodToAssociated
 {
     public class CallsUpdater : DafnyVisitor
     {
-        private readonly Program _program;
-        private readonly Method _method;
         private readonly Field _field;
+        private readonly Method _method;
+        private readonly Program _program;
         private readonly string _sourceCode;
         private List<SourceEdit> _edits;
 

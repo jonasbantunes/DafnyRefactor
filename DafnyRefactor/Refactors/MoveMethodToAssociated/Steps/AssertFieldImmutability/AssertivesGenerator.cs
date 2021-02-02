@@ -7,11 +7,11 @@ namespace DafnyRefactor.MoveMethodToAssociated
 {
     public class AssertivesGenerator : DafnyVisitorWithNearests
     {
-        private readonly Program _program;
         private readonly Field _field;
         private readonly Method _method;
-        private readonly List<int> _stmtDivisors;
+        private readonly Program _program;
         private readonly string _sourceCode;
+        private readonly List<int> _stmtDivisors;
         private List<SourceEdit> _edits;
 
         private AssertivesGenerator(Field field, Method method, Program program, string sourceCode,

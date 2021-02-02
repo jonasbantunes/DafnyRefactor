@@ -8,8 +8,8 @@ namespace DafnyRefactor.MoveMethodToAssociated
 {
     public class MethodUpdater : DafnyVisitor
     {
-        private readonly Method _method;
         private readonly Field _field;
+        private readonly Method _method;
         private readonly string _sourceCode;
         private List<SourceEdit> _edits;
         private string _newParamName;
